@@ -1,4 +1,5 @@
-// 语音播放：有 audio_url 播文件（经 AnalyserNode 取音量给嘴型），没有就用 speechSynthesis。
+// 语音播放：有 audio_url 就下载解码，用开机时已经启动的 AudioContext 播（经 AnalyserNode 取音量给嘴型），没有就用 speechSynthesis。
+// 不用每段新建 <audio>：iPad Safari 只让用户点过的播放器出声，新建的播放器在没有点击时会被拒绝播放。
 // 一条一条排队播，每条播完回调 onDone（页面据此发 spoke）。
 
 type Item = { text: string; audio_url: string | null }
@@ -11,7 +12,6 @@ export class Player {
   private buf: Uint8Array<ArrayBuffer>
   private ttsLevel = 0
   private voice: SpeechSynthesisVoice | null = null
-  private current: HTMLAudioElement | null = null
   private abort: (() => void) | null = null
   private generation = 0 // stop() 以后被打断的那一句不再回 spoke
   onDone: () => void = () => {}
@@ -42,8 +42,6 @@ export class Player {
   stop() {
     this.generation++
     this.queue = []
-    this.current?.pause()
-    this.current = null
     speechSynthesis.cancel()
     this.ttsLevel = 0
     this.abort?.()
@@ -90,17 +88,25 @@ export class Player {
     void this.next()
   }
 
-  private playUrl(url: string) {
-    return new Promise<void>((resolve, reject) => {
-      const el = new Audio(url)
-      el.crossOrigin = 'anonymous'
-      this.current = el
-      const src = this.ctx.createMediaElementSource(el)
+  private async playUrl(url: string) {
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`audio ${res.status}: ${url}`)
+    const buffer = await this.ctx.decodeAudioData(await res.arrayBuffer())
+    await new Promise<void>((resolve) => {
+      const src = this.ctx.createBufferSource()
+      src.buffer = buffer
       src.connect(this.analyser)
-      this.abort = () => { src.disconnect(); resolve() }
-      el.onended = () => { src.disconnect(); resolve() }
-      el.onerror = () => { src.disconnect(); reject(new Error(`audio failed: ${url}`)) }
-      void el.play()
+      this.abort = () => {
+        src.onended = null
+        src.stop()
+        src.disconnect()
+        resolve()
+      }
+      src.onended = () => {
+        src.disconnect()
+        resolve()
+      }
+      src.start()
     })
   }
 
