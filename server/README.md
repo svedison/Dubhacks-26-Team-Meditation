@@ -20,7 +20,7 @@ npm test
 | --- | --- |
 | `PORT` | `8787`，监听 `0.0.0.0` |
 | `ANTHROPIC_API_KEY` | Claude key，仅供后端使用 |
-| `ANTHROPIC_MODEL` | `claude-opus-5-5`，可由部署者更改 |
+| `ANTHROPIC_MODEL` | `claude-sonnet-5-5`，可由部署者更改。周六夜用真 key 实测：Opus 5.5 每句约 2.2 到 2.5 秒，10 次里 4 次撞到 4 秒截止；Sonnet 5.5 约 1.4 到 2.0 秒，10 次里 1 次。剧本关键句（报价、下单、防诈骗、替代品）是后端模板，模型只做分类，所以换模型不改台词 |
 | `MINIMAX_API_KEY` | TTS 首选。声音 `MINIMAX_VOICE_ID` 默认 `Arrogant_Miss`（嚣张小姐），模型 `MINIMAX_TTS_MODEL` 默认 `speech-02-turbo`，`MINIMAX_TTS_SPEED` 默认 0.9，`MINIMAX_LANGUAGE_BOOST` 默认 English；`MINIMAX_GROUP_ID` 仅旧账号需要 |
 | `OPENAI_API_KEY` | 备用 TTS（没有 MiniMax key 时用），不用于 LLM |
 | `OPENAI_TTS_VOICE` | `sage` |

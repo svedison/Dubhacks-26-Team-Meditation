@@ -33,7 +33,7 @@ test('Anthropic SDK makes one streaming structured-output call with correct para
   globalThis.fetch = async (_input, init) => {
     calls++;
     const request = JSON.parse(String(init?.body));
-    assert.equal(request.model, process.env.ANTHROPIC_MODEL || 'claude-opus-5-5');
+    assert.equal(request.model, process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5');
     assert.equal(request.stream, true); assert.equal(request.output_config.effort, 'low');
     assert.equal(request.output_config.format.type, 'json_schema');
     for (const field of ['thinking', 'temperature', 'budget_tokens', 'tool_choice']) assert.equal(field in request, false);

@@ -36,7 +36,7 @@ export async function decide(text: string, context: Context): Promise<Decision> 
     const ids = context.products.map(p => p.id);
     const schema = decisionSchema.extend({ product_id: ids.length ? z.enum(ids as [string, ...string[]]).nullable() : z.null() });
     const stream = client.messages.stream({
-      model: process.env.ANTHROPIC_MODEL || 'claude-opus-5-5', max_tokens: 350,
+      model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5', max_tokens: 350,
       // 0.80's declaration still imports v3 ZodType although its runtime requires v4.
       output_config: { effort: 'low', format: zodOutputFormat(schema as unknown as Parameters<typeof zodOutputFormat>[0]) },
       system: `You are Milo, an AI shopping assistant living in a picture frame, not a human. Be transparent that you are an AI.

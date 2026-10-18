@@ -45,7 +45,7 @@
 
 | 环节 | 选择 | 理由 |
 | --- | --- | --- |
-| 大模型 | Claude Opus 5.5（`claude-opus-5-5`），`output_config.effort` 设 `low`，用工具调用选货架商品和判断请求类型 | 演示里出错代价最高，用最强的 Opus 系。全场几百次调用在 10 美元以内。effort 调低是为了把回复压到 2 秒内。队友原先写的是 claude-sonnet-5-5，已统一改成 Opus 5.5，要改回去只改一个模型名 |
+| 大模型 | Claude Sonnet 5.5（`claude-sonnet-5-5`），`output_config.effort` 设 `low`，结构化输出选货架商品和判断请求类型 | 周六夜用真 key 实测：Opus 5.5 每句 2.2 到 2.5 秒，10 次里 4 次撞到后端 4 秒截止，超时只会说 Sorry, say that again；Sonnet 5.5 1.4 到 2.0 秒，10 次里 1 次。剧本关键句是后端模板，模型只做分类，所以降一档不改台词。全场几百次调用在 5 美元以内 |
 | 大模型备选 | Claude Haiku 5.5（`claude-haiku-5-5`） | 更快更便宜。现场延迟不满意就换模型名 |
 | 语音转文字 | Deepgram Nova 系列；备选 OpenAI 转写接口 | 流式、延迟低、有试用额度。唤醒词靠转写文字模糊匹配，不用单独的唤醒词模型 |
 | 语音合成 | MiniMax T2A，声音 Arrogant Miss（`Arrogant_Miss`，bright / bouncy / playful）；备选 OpenAI TTS | 队里 10/17 选定的声音；比浏览器自带声音自然很多，直接影响 Design 分 |
