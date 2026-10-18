@@ -66,3 +66,23 @@ test('shelf matching: everyday words count as shopping; the seed carries store p
   assert.equal(shelfSeed.find(p => p.id === 'calcium-120')!.image_url, null); // the demo record keeps the elder page's own picture
   assert.equal(db.get('products', 'oats')!.image_url, shelfSeed.find(p => p.id === 'oats')!.image_url); // survives the database round trip
 });
+test('Claude may pick any catalog id, not only a shortlisted one; ids outside the catalog are still rejected', async () => {
+  const seen: { context: Context | null } = { context: null };
+  const flow = new ConversationPipeline({
+    decide: async (_text, context) => { seen.context = context; return { intent: 'new_request', product_id: 'vitamin-c', reply: '', elder_name: null }; },
+    synthesize: async () => null,
+  });
+  // "What did I buy today?" matches nothing on the shelf, so vitamin C is not among the full records...
+  const result = await flow.handleUtterance('Milo, what did I buy today? Oh, and vitamin C.', 'keyboard');
+  const context = seen.context!;
+  assert.ok(context.catalog!.length >= 100);
+  assert.ok(context.catalog!.some(p => p.id === 'vitamin-c' && /Vitamin C/.test(p.name)));
+  assert.ok(context.products.length <= 12);
+  // ...yet choosing it works, because the whole catalog is choosable.
+  assert.equal(result.card?.product.id, 'vitamin-c');
+  flow.reset();
+  const content = (reply: Decision) => [{ type: 'text' as const, text: JSON.stringify(reply), citations: null }];
+  const decision: Decision = { intent: 'new_request', product_id: 'vitamin-c', reply: 'x', elder_name: null };
+  assert.equal(readDecision({ stop_reason: 'end_turn', content: content(decision) }, [{ id: 'vitamin-c' }]).product_id, 'vitamin-c');
+  assert.equal(readDecision({ stop_reason: 'end_turn', content: content(decision) }, [{ id: 'oats' }]).product_id, null); // not choosable -> fallback
+});

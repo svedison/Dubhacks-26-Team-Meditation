@@ -257,6 +257,8 @@ export class ConversationPipeline {
     const started = Date.now();
     const decision = await this.bounded(`turn #${job.id} Claude`, () => this.dependencies.decide(job.text, context, job.controller.signal), fallbackDecision);
     job.claudeMs = Date.now() - started;
+    // One line per turn in the server log: what was heard and what the model made of it (the iPad shows neither).
+    console.info(`[turn #${job.id}] ${job.source} "${job.text.slice(0, 100)}" -> ${decision.intent}${decision.product_id ? ` ${decision.product_id}` : ''}${decision.intent === 'chat' || decision.intent === 'unwell' ? ` "${decision.reply.slice(0, 80)}"` : ''}`);
     // Claude answered, but the elder went on talking meanwhile: let the rest of the sentence replace this turn.
     if (!this.dead(job) && job.source === 'voice' && (this.elderTalking() || this.finalPending(job))) await this.hold(job);
     return decision;
@@ -361,7 +363,7 @@ export class ConversationPipeline {
     const shopping = shelfMatches(text, shelf) || /\b(buy|bought|order(?:ed|s)?|purchase[sd]?|shop(?:ping)?|get me|food|eat|hungry|snack|drink|groceries)\b/i.test(text);
     const context: Context = { products: shortlist(text, shelf, this.pending?.productId ?? null), settings, chatRounds: this.chatRounds,
       pendingProductId: this.pending?.productId || null, awaitingName: this.awaitingName, history: [...this.history],
-      now: now(), recentOrders: this.recentOrders(shelf) };
+      now: now(), recentOrders: this.recentOrders(shelf), catalog: shelf.map(p => ({ id: p.id, name: p.name })) };
     job.historyEntry = { role: 'user', content: text };
     this.history.push(job.historyEntry);
 
