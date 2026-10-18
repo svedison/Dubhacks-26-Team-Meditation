@@ -85,7 +85,7 @@ curl -s -X POST localhost:8799/api/audio -H 'content-type: audio/webm' --data-bi
 
 - `src/contracts.ts`：共享对象的 TS 类型和输入校验；不在响应中增加支付 ref 等字段。
 - `src/db.ts`：六张表均为 `(id TEXT PRIMARY KEY, data TEXT JSON)`。`get(table,id)` / `all(table)` / `put(table,id,value)` / `remove(table,id)`；`transaction(fn)` 只用于同步、非嵌套操作。Settings 存在 `settings/default`，自由 KV 存状态或去重标记。`sqlite` 也可直接访问。
-- C：替换 `modules/risk.ts` 的 `check(product_id,text)`、`pay(order)`、`ledger()` 和 `publishOrder()`。当前支付始终 simulated_paid，ref 单独存 `kv/payment:<order id>`。pipeline 负责写 Order；C 接管时保持单一写入位置。check 无副作用，可在确认前后重复执行；规则 7 的创建在 pipeline 调 D 的 createAlert，避免双重告警。按要求 `today` 也会触发演示用诈骗规则，规则精度由 C 后续完善。
+- C：`modules/risk.ts` 提供 `check(product_id,text)`、`pay(order)`、`ledger()` 和 `publishOrder()`；`modules/orders.ts` 的 `placeOrder(draft,isCurrent?)` 是成功订单的唯一写入点。当前支付始终 simulated_paid，Order 和私有 `kv/payment:<order id>` 在同一事务写入，随后按分享层级推送；同一 ID 同一支付意图的重试复用结果，不同意图拒绝。check 无副作用，可在确认前后重复执行；规则 7 的创建仍在 pipeline 调 D 的 createAlert，避免双重告警。普通 `today` 不触发，礼品卡、转账、来电及「今天必须」类紧迫话术才触发。付款前校验商品、价格、订单格式和资格。
 - D：`modules/memory.ts` 导出 `createAlert(level,rule,title,body)`、`saveGrandmaNote()`、`markReceived()`、`registerMemoryTicks()` 和 `shelfSeed`。红立即推，普通立即推，黄色暂只存库。库存只更新已有 Memory，不擅自建立吃法。`src/seed.ts` 集中放种子，D 可扩展货架。
 - D：在已注册的 tick 占位回调中实现到货/提醒；`onTick((prevNow,now)=>...)` 返回注销函数。用 `kv` 持久化已触发日期，处理前跳和回拨，避免重复提醒。交互通过 `bus.toElder({type:'ask',...})`、`state`、`awaitSpoke()`；在 `pipeline.ts` 模型判断前接入待回答的 received/dose/reminder 流程。**当前没有实现自动到货、提醒、八条异常规则和 Visa 沙盒，这些仍归 C/D。**
 
@@ -96,3 +96,5 @@ curl -s -X POST localhost:8799/api/audio -H 'content-type: audio/webm' --data-bi
 `npm test` 使用 Node test runner（通过 tsx），覆盖唤醒、播放状态、购物确认、防诈骗、分享过滤、库存幂等、时钟、REST 和 WebSocket handler；provider 测试用模拟 HTTP/SSE 验证请求参数与失败降级，不会调用真实付费 API。
 
 如果执行环境禁止 tsx CLI 建立 IPC socket，可使用 `node --import tsx --test test/*.test.ts` 执行相同测试。REST 和 WS 测试使用 Fastify 的 inject / injectWS，不需要监听 TCP；这不能替代实际端口、HTTPS、iPad 麦克风与有 key 的端到端验收。
+
+C 新增的 `role-c-api.test.ts` 还会监听随机 localhost 端口，实际验证 HTTP/WS 的补货、诈骗告警和替代品购买（只替换外部 Claude 响应，TTS 关闭），并用独立进程验证 SQLite 持久化。因此完整测试需要允许本地 TCP。接入约定、验证范围和既有依赖告警见 [C 交接](../.plans/role-c-handoff.md)，演示问答见 [Visa Q&A](../.plans/visa-qa.md)。

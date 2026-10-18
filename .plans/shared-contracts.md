@@ -50,6 +50,14 @@
 
 ## WebSocket 事件（`/ws`，JSON，字段 `type`）
 
+### 订单与设置响应细节（沿用 B 骨架，C 补充验收说明）
+
+- `GET /api/orders` 返回 `{share_level, month_total_cents, orders}`。minimum：只返回异常订单（`status === "blocked"` 或 `block_reason !== null`），总额为 `null`；default：同样只返回异常订单，加本月成功订单总额；open：全部订单，加本月成功订单总额。本月按演示时钟的 UTC 月份计算，`paid` 和 `simulated_paid` 计入，blocked 不计入。
+- WS `order` 使用同一过滤规则。default/minimum 不推普通订单详情；查看更新的总额需重新 GET 账本。诈骗尝试通过 `alert` 表达，不凭空建立购买订单。
+- `POST /api/orders/:id/received` 返回更新后的 Order；重复请求幂等，未知 ID 为 404，blocked 订单为 409。调用 D 的库存更新接口，每笔订单最多加一包。
+- `PUT /api/settings` 接受 Settings 的部分字段并合并保存；非法字段、未知字段、非四位卡尾号或负数月基线返回 400，原设置保持不变。`monthly_baseline_cents` 是异常判断基线，不是已启用的支付额度。
+- 支付 ref 仅存后端 `kv/payment:<order id>`，不加入 Order 或 WS 消息。`simulated_paid` 必须由前端显示 **Simulated**。
+
 后端 → 老人端：
 
 | type | 载荷 | 老人端做什么 |
