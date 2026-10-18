@@ -45,10 +45,10 @@ export default function LedgerPage() {
         <ul className="g-orders">
           {ledger.orders.slice().reverse().map((o) => (
             <li key={o.id} className="g-order">
-              {products[o.product_id] && <ProductCard product={products[o.product_id]} size="compact" />}
+              {/* 多包时卡片上的价格写这一单的总价，下面一行「数量 × 单价」 */}
+              {products[o.product_id] && <ProductCard product={products[o.product_id]} size="compact" quantity={o.quantity} />}
               <div className="g-order__meta">
                 <span className={`g-pill g-pill--${o.status}`}>{STATUS_TEXT[o.status]}</span>
-                {o.quantity && o.quantity > 1 && <span className="g-qty">× {o.quantity}</span>}
                 {/* 付成功的单写上用的哪张卡：Visa 标志加尾号；下单前 Visa 沙盒校验过这张卡就再加一个勾 */}
                 {o.status !== 'blocked' && settings && (
                   <span className="g-order__card"><VisaMark height={16} /> ••{settings.card_last4}</span>
