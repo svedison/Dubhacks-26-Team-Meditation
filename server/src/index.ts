@@ -13,7 +13,8 @@ import { all, get, getSettings, put, remove, resetDatabase, saveSettings } from 
 import { acknowledgeSpoke, addClient, hasElder, toGuardian } from './bus.js';
 import { now, resetClock, seattleWallNow, setClock, startClock, stopClock } from './clock.js';
 import { memorySchema, settingsSchema } from './contracts.js';
-import { handleUtterance, pipeline } from './pipeline.js';
+import { FIXED_LINES, handleUtterance, pipeline } from './pipeline.js';
+import { synthesize } from './tts.js';
 import { state } from './state.js';
 import { createLiveTranscriber, recentDeepgram, transcribeAudio, type LiveTranscriber } from './stt.js';
 import { ledger, publishOrder, visaMode } from './modules/risk.js';
@@ -297,4 +298,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   process.once('SIGINT', close); process.once('SIGTERM', close);
   try { await app.listen({ port: Number(process.env.PORT || 8787), host: '0.0.0.0' }); }
   catch (error) { app.log.error(error); await app.close(); process.exitCode = 1; }
+  // Generate the fixed lines' audio one by one in the background, so the scam and 911 replies start without waiting
+  // for TTS (synthesize logs and returns null when the voice provider is down).
+  void (async () => { for (const line of FIXED_LINES) await synthesize(line); })();
 }

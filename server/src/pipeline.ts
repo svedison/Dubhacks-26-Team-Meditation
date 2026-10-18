@@ -35,6 +35,15 @@ const EMERGENCY_WARNING = "That sounds serious. I'm calling 911 in five seconds.
 const EMERGENCY_CALLING = 'Calling 911 now. Help is on the way; stay with me.';
 const EMERGENCY_STOPPED = "Okay, I won't call 911. I'm right here with you.";
 const EMERGENCY_ONGOING = 'Help is on the way. Stay with me.';
+const NOT_ON_SHELF = "I don't have that on my shelf yet. Let me find a trusted one for you; I'll have it ready by tomorrow.";
+const SCAM_WARNING = "That sounds like a scam; I'll let your daughter know, okay?";
+const WONT_ORDER = "Okay, I won't order it.";
+const ASK_WHAT_TO_ORDER = 'What would you like me to order?';
+const NOTE_SAVED = "Thank you; I've added your words to the message for your daughter.";
+const orderPlaced = (visa: boolean) => `Your order is placed;${visa ? ' Visa confirmed your card.' : ''} I'll let you know when it arrives.`;
+/** Fixed lines Milo says word for word: their audio is generated once at startup, so these replies start without waiting for TTS. */
+export const FIXED_LINES = [EMERGENCY_WARNING, EMERGENCY_CALLING, EMERGENCY_STOPPED, EMERGENCY_ONGOING, SCAM_WARNING, NOTE_SAVED, WONT_ORDER,
+  ASK_WHAT_TO_ORDER, NOT_ON_SHELF, orderPlaced(true), orderPlaced(false), FALLBACK_REPLY];
 // The red card is a draft until the outcome: only the call going out (the danger is real) sends it. If she says stop,
 // her wish wins and the family is not told.
 interface Emergency { text: string; alert: Alert; phase: 'warning' | 'countdown' | 'called' | 'stopped'; at: number; timer?: ReturnType<typeof setTimeout> }
@@ -324,11 +333,11 @@ export class ConversationPipeline {
   /** Something real she wants that the shelf does not carry yet: Milo takes on the sourcing; the family only gets a wish note. */
   private wish(text: string): ReplyPlan {
     createAlert('normal', null, 'A new wish', `She asked for something that is not on her shelf yet: "${text.trim()}". Milo is looking for a trusted option; you can also add one to her shelf.`);
-    return { text: "I don't have that on my shelf yet. Let me find a trusted one for you; I'll have it ready by tomorrow.", emotion: 'happy' };
+    return { text: NOT_ON_SHELF, emotion: 'happy' };
   }
   private scam(text: string): ReplyPlan {
     this.pending = null;
-    return { text: "That sounds like a scam; I'll let your daughter know, okay?", emotion: 'alert', scamText: text };
+    return { text: SCAM_WARNING, emotion: 'alert', scamText: text };
   }
   private offer(productId: string | null, text: string, quantity = 1): ReplyPlan {
     this.pending = null;
@@ -367,7 +376,7 @@ export class ConversationPipeline {
     const pending = this.pending!;
     const product = get('products', pending.productId);
     if (!product) { this.pending = null; return this.wish(text); }
-    if (/^(?:never ?mind|cancel|forget it|don t|do not|stop)\b/.test(normalized)) { this.pending = null; return { text: "Okay, I won't order it.", emotion: 'happy' }; }
+    if (/^(?:never ?mind|cancel|forget it|don t|do not|stop)\b/.test(normalized)) { this.pending = null; return { text: WONT_ORDER, emotion: 'happy' }; }
     if (/^(?:no|nope|not really|no reason|i don t know|i m not sure)\b/.test(normalized)) {
       // No particular reason: start with one and let the refill reminder do its job.
       this.pending = { productId: product.id, priceCents: product.price_cents, quantity: 1 };
@@ -391,7 +400,7 @@ export class ConversationPipeline {
     const pending = this.pending;
     this.pending = null; // Consume before awaiting payment; duplicate yes cannot charge twice.
     // A plain question, nothing went wrong: a friendly face, not a worried one.
-    if (!pending) return { text: 'What would you like me to order?', emotion: 'happy' };
+    if (!pending) return { text: ASK_WHAT_TO_ORDER, emotion: 'happy' };
     const product = get('products', pending.productId);
     const qty = pending.quantity;
     if (!product || !risk.check(product.id, '').ok) return this.offer(pending.productId, '', qty);
@@ -418,10 +427,10 @@ export class ConversationPipeline {
       createAlert('normal', null, 'A bigger order than usual', `Mom ordered ${quantityWords(qty)} packs of ${product.name} ($${(order.price_cents / 100).toFixed(2)}).${pending.reason ? ` She said: "${pending.reason}"` : ''}`);
     }
     // She never hears "simulated": the data keeps status simulated_paid and the guardian page says so once.
-    const visa = order.payment_check?.approved ? ' Visa confirmed your card.' : '';
+    const visa = order.payment_check?.approved === true;
     const text = qty > 1
-      ? `Your order is placed: ${quantityWords(qty)} packs of ${product.name}, $${(order.price_cents / 100).toFixed(2)}.${visa} I'll let you know when it arrives.`
-      : `Your order is placed;${visa} I'll let you know when it arrives.`;
+      ? `Your order is placed: ${quantityWords(qty)} packs of ${product.name}, $${(order.price_cents / 100).toFixed(2)}.${visa ? ' Visa confirmed your card.' : ''} I'll let you know when it arrives.`
+      : orderPlaced(visa);
     return { text, emotion: 'happy', order };
   }
   private async process(job: Job): Promise<UtteranceResult> {
@@ -481,7 +490,7 @@ export class ConversationPipeline {
         if (this.dead(job)) return this.silent();
         if (!['refill', 'new_request', 'risky_product', 'scam'].includes(decided.intent)) {
           saveGrandmaNote(alertId, text);
-          return this.respond({ text: "Thank you; I've added your words to the message for your daughter.", emotion: 'worried' }, job);
+          return this.respond({ text: NOTE_SAVED, emotion: 'worried' }, job);
         }
       }
     }
@@ -534,7 +543,7 @@ export class ConversationPipeline {
         if (/\b(if|unless|maybe|not|don't)\b/i.test(text)) plan = { text: 'Would you like me to place this order?', emotion: 'happy' };
         else { job.committed = true; plan = await this.confirm(job); }
         break;
-      case 'confirm_no': this.pending = null; plan = { text: "Okay, I won't order it.", emotion: 'happy' }; break;
+      case 'confirm_no': this.pending = null; plan = { text: WONT_ORDER, emotion: 'happy' }; break;
       case 'name_answer': {
         const name = this.awaitingName && decision.elder_name ? extractWakeName(decision.elder_name) : null;
         if (name) { saveSettings({ ...getSettings(), wake_name: name }); this.awaitingName = false; }
