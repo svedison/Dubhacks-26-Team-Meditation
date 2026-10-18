@@ -2,6 +2,7 @@ import { Check, Pill, X } from 'lucide-react'
 import type { Order, Product, RiskKind } from '../contracts'
 import { money, splitName } from '../format'
 import { productImage } from '../productImages'
+import VisaMark from './VisaMark'
 import './product-card.css'
 
 // 有风险时不显示价格（划掉的价格在购物界面里会被读成「打折」），换成一句很短的原因
@@ -14,12 +15,13 @@ const RISK_LINE: Record<RiskKind, string> = {
 type Props = {
   product: Product
   size?: 'elder' | 'compact'
-  orderStatus?: Order['status'] // 只有后端确认的订单状态才显示成功章
+  orderStatus?: Order['status'] // 只有后端确认下单成功（paid 或 simulated_paid）才盖章
   tag?: string // 并排时卡片顶部的小标签（Skip this / Try this）
+  cardLast4?: string | null // 下单成功后卡片底部那条 Visa 支付条显示的卡尾号
 }
 
 // 两端共用：老人端大卡、监护人端小卡是同一个组件
-export default function ProductCard({ product, size = 'elder', orderStatus, tag }: Props) {
+export default function ProductCard({ product, size = 'elder', orderStatus, tag, cardLast4 }: Props) {
   const done = orderStatus === 'paid' || orderStatus === 'simulated_paid'
   const img = productImage(product.id)
   const risk = product.risk
@@ -32,7 +34,7 @@ export default function ProductCard({ product, size = 'elder', orderStatus, tag 
         {done && (
           <div className="pcard__stamp" role="status">
             <Check aria-hidden strokeWidth={3.4} />
-            {orderStatus === 'simulated_paid' ? 'Simulated order' : 'Ordered'}
+            Ordered
           </div>
         )}
       </div>
@@ -59,6 +61,14 @@ export default function ProductCard({ product, size = 'elder', orderStatus, tag 
             </li>
           )}
         </ul>
+        {/* 后端确认下单以后，章盖下去，紧接着从卡片底部滑出这条：用哪张卡付的 */}
+        {done && cardLast4 && (
+          <div className="pcard__pay">
+            <VisaMark height={18} />
+            <span className="pcard__pay-num">•••• {cardLast4}</span>
+            <span className="pcard__pay-ok" aria-hidden><Check strokeWidth={3.4} /></span>
+          </div>
+        )}
       </div>
     </article>
   )

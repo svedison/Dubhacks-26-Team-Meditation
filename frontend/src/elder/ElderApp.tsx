@@ -108,6 +108,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
   const [photos, setPhotos] = useState<string[]>(SAMPLE_PHOTOS)
   const [wakeName, setWakeName] = useState<string | null>(null)
   const [elderName, setElderName] = useState('Grandma')
+  const [cardLast4, setCardLast4] = useState<string | null>(null)
   const lastFace = useRef<FaceState>('idle')
   const [emotion, setEmotion] = useState<FaceState | null>(null)
   const [fullHold, setFullHold] = useState(false)
@@ -213,6 +214,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
         if (s.photos.length) setPhotos(s.photos)
         setWakeName(s.wake_name)
         setElderName(s.elder_name)
+        setCardLast4(s.card_last4)
       })
       .catch((e: Error) => console.error('[elder] settings', e.message))
   }, [])
@@ -267,7 +269,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       )}
       {corner && (
         <div className={`cards ${layoutCls}`}>
-          <CardStage card={view.card} />
+          <CardStage card={view.card} cardLast4={cardLast4} />
         </div>
       )}
 

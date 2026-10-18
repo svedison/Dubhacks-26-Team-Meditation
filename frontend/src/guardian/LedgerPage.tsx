@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import ProductCard from '../shared/ui/ProductCard'
+import VisaMark from '../shared/ui/VisaMark'
 import { dayLabel, money, shortDay } from '../shared/format'
 import { useGuardian } from './store'
 
@@ -9,8 +10,8 @@ const LEVEL_TEXT = {
   open: 'She chose: every order.',
 } as const
 
-// simulated_paid 必须显示 Simulated（shared-contracts.md）
-const STATUS_TEXT = { paid: 'Paid', simulated_paid: 'Simulated', blocked: 'Blocked' } as const
+// 付成功的单（演示里是模拟支付）都写 Paid；被拦下的写 Blocked
+const STATUS_TEXT = { paid: 'Paid', simulated_paid: 'Paid', blocked: 'Blocked' } as const
 
 // 后端已按分享层级过滤，这里返回什么就显示什么
 export default function LedgerPage() {
@@ -46,6 +47,10 @@ export default function LedgerPage() {
               {products[o.product_id] && <ProductCard product={products[o.product_id]} size="compact" />}
               <div className="g-order__meta">
                 <span className={`g-pill g-pill--${o.status}`}>{STATUS_TEXT[o.status]}</span>
+                {/* 付成功的单写上用的哪张卡：Visa 标志加尾号 */}
+                {o.status !== 'blocked' && settings && (
+                  <span className="g-order__card"><VisaMark height={11} /> ••{settings.card_last4}</span>
+                )}
                 {/* 每一单前面写下单那天，两单同一个东西也分得清 */}
                 <span>{shortDay(o.created_at)} · {o.status === 'blocked' ? o.block_reason : o.received ? 'Received' : `Arrives ${dayLabel(o.deliver_on)}`}</span>
               </div>

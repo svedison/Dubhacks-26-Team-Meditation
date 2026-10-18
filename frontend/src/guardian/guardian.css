@@ -268,3 +268,14 @@
   .acard:not(.acard--red) .btn--ghost:hover { background: #f3ece2; }
   .btn--call:hover { transform: translateY(-1px); box-shadow: 0 4px 0 #d8c3a2; }
 }
+
+/* 订单行里的卡：Visa 标志加尾号 */
+.g-order__card { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 6px; background: #fff; box-shadow: inset 0 0 0 1px var(--g-line); font-weight: 800; color: var(--g-ink); font-variant-numeric: tabular-nums; }
+
+/* Settings 里的那张 Visa 卡 */
+.g-visa-card { position: relative; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto 1fr auto; gap: 6px; aspect-ratio: 1.586; max-width: 340px; padding: 18px 20px; border-radius: 18px; color: #fff; background: linear-gradient(135deg, #1a1f71 0%, #24318f 55%, #3346b0 100%); box-shadow: 0 14px 28px -16px rgba(26, 31, 113, 0.8); overflow: hidden; }
+.g-visa-card::after { content: ''; position: absolute; right: -40px; top: -60px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.16), transparent); pointer-events: none; }
+.g-visa-card svg { grid-column: 2; grid-row: 1; justify-self: end; }
+.g-visa-card__chip { grid-column: 1; grid-row: 1; width: 38px; height: 28px; border-radius: 6px; background: linear-gradient(135deg, #e9d48f, #c9a64a); }
+.g-visa-card__num { grid-column: 1 / -1; grid-row: 3; font-size: 22px; font-weight: 800; letter-spacing: 0.12em; font-variant-numeric: tabular-nums; }
+.g-visa-card__owner { grid-column: 2; grid-row: 3; align-self: end; font-size: 14px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.8; }
