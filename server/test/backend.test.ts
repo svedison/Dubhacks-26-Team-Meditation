@@ -31,8 +31,8 @@ test('seed, risk checks, payment adapter and monthly sharing rules', async () =>
   assert.equal(risk.check('glucosamine-usp', '').ok, true);
   assert.equal(risk.check('miracle-joint', '').alternative?.id, 'glucosamine-usp');
   assert.equal(risk.check('outside', '').reason, 'off_shelf');
-  for (const text of ['gift card', 'wire transfer', 'someone called', 'today']) assert.equal(risk.check('calcium-120', text).reason, 'scam');
-  assert.equal((await risk.pay(historicalOrder)).status, 'simulated_paid');
+  for (const text of ['gift card', 'wire transfer', 'someone called', 'must buy today']) assert.equal(risk.check('calcium-120', text).reason, 'scam');
+  assert.equal((await risk.pay({ ...historicalOrder, id: 'new', received: false })).status, 'simulated_paid');
   assert.equal(risk.ledger().month_total_cents, 0); // September history is not October spending.
   const blocked: Order = { ...historicalOrder, id: 'blocked', created_at: clock.now(), status: 'blocked', block_reason: 'recall' };
   db.put('orders', blocked.id, blocked);
