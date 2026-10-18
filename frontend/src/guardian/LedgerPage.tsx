@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import ProductCard from '../shared/ui/ProductCard'
 import { dayLabel, money } from '../shared/format'
 import { useGuardian } from './store'
@@ -13,7 +14,11 @@ const STATUS_TEXT = { paid: 'Paid', simulated_paid: 'Simulated', blocked: 'Block
 
 // 后端已按分享层级过滤，这里返回什么就显示什么
 export default function LedgerPage() {
-  const { ledger, products, settings } = useGuardian()
+  const { ledger, products, settings, loadLedger } = useGuardian()
+  // 「月度总额」档后端不推每一单，打开这一页时按当前数据重新拉，总额不会停在旧的数
+  useEffect(() => {
+    loadLedger().catch((e: Error) => console.error('[guardian] ledger', e.message))
+  }, [loadLedger])
   if (!ledger) return <section className="g-page"><h1 className="g-h1">Money</h1><p className="g-lede">Loading…</p></section>
   return (
     <section className="g-page g-ledger">
@@ -24,6 +29,12 @@ export default function LedgerPage() {
         <div className="g-total">
           <span className="g-total__label">This month</span>
           <span className="g-total__value">{money(ledger.month_total_cents)}</span>
+          {settings && (
+            // 这个月花了多少，对着她平常一个月的量：一眼看出是多还是少
+            <span className="g-total__bar" aria-hidden>
+              <i style={{ width: `${Math.min(100, (ledger.month_total_cents / Math.max(1, settings.monthly_baseline_cents)) * 100)}%` }} />
+            </span>
+          )}
           {settings && <span className="g-total__base">Usually about {money(settings.monthly_baseline_cents)}</span>}
         </div>
       )}

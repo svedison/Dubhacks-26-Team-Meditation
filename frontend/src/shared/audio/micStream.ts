@@ -61,6 +61,7 @@ export class MicStream {
   private ring: Float32Array[] = []
   private pending: Float32Array[] = []
   private speaking = false
+  private vadSpeech = false // VAD 判定的「有人在说」，静音期间也照常记
   private held = false
   private lvl = 0
   private seq = 0
@@ -157,6 +158,12 @@ export class MicStream {
 
   // 设备自己在说话时调用 hold(true)：这段时间不上传，避免把自己的声音当成奶奶的话
   hold(on: boolean) {
+    // 设备说完、解除静音时她已经在说话（抢着接话）：从这一刻开始上传这一句，不然整句都会丢
+    if (!on && this.held && this.vadSpeech && !this.speaking && this.opts.mode === 'speech') {
+      this.held = false
+      this.onSpeechStart()
+      return
+    }
     this.held = on
     if (on) {
       // 正在上传的那一句收个尾，让后端结束这一句
@@ -191,6 +198,7 @@ export class MicStream {
   }
 
   private onSpeechStart() {
+    this.vadSpeech = true
     if (this.held) return
     this.speaking = true
     if (this.opts.mode === 'speech') { this.pending.push(...this.ring); this.ring = [] }
@@ -199,6 +207,7 @@ export class MicStream {
   }
 
   private onSpeechEnd() {
+    this.vadSpeech = false
     if (!this.speaking) return
     if (this.opts.mode === 'speech') this.flush(true)
     this.speaking = false

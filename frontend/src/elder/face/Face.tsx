@@ -21,6 +21,7 @@ type Props = {
   talking: boolean // 正在播放语音：任何表情下都让嘴跟着声音动
   hear: () => number // 0..1，麦克风听到的音量：在听时眼睛跟着微微放大
   level: () => number // 0..1，嘴型跟着它动
+  gaze: boolean // 右边出了商品卡：眼睛整体往卡片那边看
 }
 
 type EyeRefs = {
@@ -32,7 +33,7 @@ type EyeRefs = {
   spark: SVGPathElement | null
 }
 
-export default function Face({ state, talking, level, hear }: Props) {
+export default function Face({ state, talking, level, hear, gaze }: Props) {
   const mv = useMemo(
     () => Object.fromEntries(PARAM_KEYS.map((k) => [k, motionValue(FACE_PARAMS.listening[k])])) as Record<ParamKey, MotionValue<number>>,
     [],
@@ -51,6 +52,11 @@ export default function Face({ state, talking, level, hear }: Props) {
   hearRef.current = hear
   const heard = useRef(0)
   const talk = useMemo(() => motionValue(0), [])
+  const look = useMemo(() => motionValue(0), [])
+  useEffect(() => {
+    const c = animate(look, gaze ? 1 : 0, { type: 'spring', stiffness: 120, damping: 18 })
+    return () => c.stop()
+  }, [gaze, look])
 
   useEffect(() => {
     const c = animate(talk, talking ? 1 : 0, { duration: 0.2 })
@@ -94,8 +100,9 @@ export default function Face({ state, talking, level, hear }: Props) {
       }
       const closed = Math.max(blinkAt(b.start), b.double ? blinkAt(b.start + 0.28) : 0)
 
-      // 叠加的循环小动作：思考时眯着眼左右慢慢扫视，开心时上下晃，其余时候极轻的漂移
-      const orbitX = p.orbit * 0.12 * E * Math.sin((2 * Math.PI * t) / 1.6)
+      // 叠加的循环小动作：思考时往右上方看、左右慢慢扫视，开心时上下晃，其余时候极轻的漂移；
+      // 商品卡出现时整双眼睛往卡片那边挪一点（「Milo 在看这个」）
+      const orbitX = p.orbit * (0.1 * E + 0.08 * E * Math.sin((2 * Math.PI * t) / 1.6)) + look.get() * 0.09 * E
       const orbitY = 0
       // 在听：眼睛跟着麦克风音量放大，最多 8%
       const h = Math.min(1, hearRef.current())

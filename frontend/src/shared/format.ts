@@ -24,12 +24,12 @@ export function recentLabel(at: string, now: string): string {
   return `${day} ${d.toFormat('h:mm a')}`
 }
 
-// 最近 7 天（含今天），按演示时钟算：给用药卡画一周的圆点
-export function lastSevenDays(now: string): { key: string; letter: string }[] {
+// 最近 7 天（含今天），按演示时钟算：给用药卡画一周的圆点，下面标几号（星期的首字母有两个 S、两个 T，分不清）
+export function lastSevenDays(now: string): { key: string; date: string }[] {
   const today = parse(now).startOf('day')
   return Array.from({ length: 7 }, (_, i) => {
     const d = today.minus({ days: 6 - i })
-    return { key: d.toISODate()!, letter: d.toFormat('ccccc') }
+    return { key: d.toISODate()!, date: d.toFormat('d') }
   })
 }
 

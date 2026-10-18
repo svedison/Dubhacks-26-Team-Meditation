@@ -82,16 +82,24 @@ export class Player {
     this.busy = true
     this.onBusy(true)
     const gen = this.generation
-    if (item.audio_url) await this.playUrl(item.audio_url)
-    else await this.speak(item.text)
+    try {
+      if (item.audio_url) await this.playUrl(item.audio_url, gen)
+      else await this.speak(item.text)
+    } catch (e) {
+      // 这一句的语音拿不到（下载失败、解码失败、8 秒没回应）：报错，这句的字幕已经在屏上，接着播下一句。
+      // 不能让播放器一直停在「在说」：那样麦克风一直静音，后面的话也都不播
+      console.error('[player] voice failed', e)
+    }
     if (gen === this.generation) this.onDone()
     void this.next()
   }
 
-  private async playUrl(url: string) {
-    const res = await fetch(url)
+  private async playUrl(url: string, gen: number) {
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) })
     if (!res.ok) throw new Error(`audio ${res.status}: ${url}`)
     const buffer = await this.ctx.decodeAudioData(await res.arrayBuffer())
+    // 下载、解码期间后端断开过（stop() 换了一代）：这句不再播
+    if (gen !== this.generation) return
     await new Promise<void>((resolve) => {
       const src = this.ctx.createBufferSource()
       src.buffer = buffer
