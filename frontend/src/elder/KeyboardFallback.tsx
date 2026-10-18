@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useRef, useState } from 'react'
 
 // 键盘兜底：连点左下角三次弹出输入框，发 utterance {source: "keyboard"}。奶奶看不到这个入口
-export default function KeyboardFallback({ onSend }: { onSend: (text: string) => void }) {
+export default function KeyboardFallback({ name, onSend }: { name: string; onSend: (text: string) => void }) {
   const [open, setOpen] = useState(false)
   const [text, setText] = useState('')
   const taps = useRef<number[]>([])
@@ -41,8 +41,8 @@ export default function KeyboardFallback({ onSend }: { onSend: (text: string) =>
               autoFocus
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="Type what Grandma says"
-              aria-label="Type what Grandma says"
+              placeholder={`Type what ${name} says`}
+              aria-label={`Type what ${name} says`}
               enterKeyHint="send"
             />
             <button type="submit">Send</button>

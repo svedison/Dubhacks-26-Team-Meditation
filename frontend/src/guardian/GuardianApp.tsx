@@ -34,11 +34,11 @@ function TopBar() {
     <header className="g-top">
       <div className="g-top__brand">
         <span className="g-top__eyes" aria-hidden><i /><i /></span>
-        <span>TrustTag</span>
+        <span>Milo</span>
       </div>
       <div className="g-top__right">
         {clock && <span className="g-top__clock">Demo · {clockLabel(clock)}</span>}
-        <span className={`g-live g-live--${status}`}>{status === 'open' ? 'Frame on' : 'Reconnecting…'}</span>
+        <span className={`g-live g-live--${status}`}>{status === 'open' ? 'Milo is on' : 'Reconnecting…'}</span>
       </div>
     </header>
   )
@@ -54,7 +54,7 @@ function HomePage() {
   return (
     <section className="g-page">
       <h1 className="g-h1">{red.length ? `Call ${name} today` : 'All good'}</h1>
-      <p className="g-lede">{red.length ? 'TrustTag stopped something.' : 'Nothing needs you now.'}</p>
+      <p className="g-lede">{red.length ? 'Milo noticed something.' : 'Nothing needs you right now.'}</p>
       <div className="g-stack">
         <AnimatePresence initial={false}>
           {[...red, ...rest].map((a) => (
@@ -64,7 +64,7 @@ function HomePage() {
         {open.length === 0 && (
           <div className="g-empty">
             <span className="g-empty__eyes" aria-hidden><i /><i /></span>
-            <p>New cards show up here.</p>
+            <p>If Milo needs you, it shows here.</p>
           </div>
         )}
       </div>

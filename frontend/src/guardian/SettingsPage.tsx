@@ -19,7 +19,6 @@ export default function SettingsPage() {
   }, [settings])
 
   if (!settings || !draft) return <section className="g-page"><h1 className="g-h1">Settings</h1><p className="g-lede">Loading…</p></section>
-  const name = settings.elder_name
 
   const saveCard = () => {
     void saveSettings(draft)
@@ -31,8 +30,8 @@ export default function SettingsPage() {
     <section className="g-page">
       <h1 className="g-h1">Settings</h1>
 
-      <h2 className="g-h2">What {name} shares</h2>
-      <p className="g-note">She decides.</p>
+      <h2 className="g-h2">What she shares</h2>
+      <p className="g-note">She picks this.</p>
       <div className="g-levels" role="radiogroup" aria-label="Share level">
         {LEVELS.map((l) => {
           const on = settings.share_level === l.id
@@ -71,7 +70,7 @@ export default function SettingsPage() {
           </div>
         </div>
         <label className="g-field">
-          <span>She spends about</span>
+          <span>Monthly spend</span>
           <div className="g-money">
             <span>$</span>
             <input inputMode="numeric" value={Math.round(draft.monthly_baseline_cents / 100)} onChange={(e) => setDraft({ ...draft, monthly_baseline_cents: Number(e.target.value.replace(/\D/g, '') || 0) * 100 })} />

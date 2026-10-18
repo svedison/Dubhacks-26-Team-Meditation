@@ -51,8 +51,8 @@ export default function ElderApp() {
         <img className="wake__bg" src={SAMPLE_PHOTOS[0]} alt="" draggable={false} />
         <button className={`wake${starting ? ' is-starting' : ''}`} onClick={start}>
           <span className="wake__eyes" aria-hidden><i /><i /></span>
-          <span className="wake__name">TrustTag</span>
-          <span className="wake__hint">{error ? `Microphone didn't start. ${error}` : starting ? 'Waking up…' : 'Tap to start'}</span>
+          <span className="wake__name">Milo</span>
+          <span className="wake__hint">{error ? "Mic didn't start. Tap to try again." : starting ? 'Waking up…' : 'Tap to start'}</span>
         </button>
       </Stage>
     )
@@ -65,6 +65,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
   const [playing, setPlaying] = useState(false)
   const [photos, setPhotos] = useState<string[]>(SAMPLE_PHOTOS)
   const [wakeName, setWakeName] = useState<string | null>(null)
+  const [elderName, setElderName] = useState('Grandma')
   const lastFace = useRef<FaceState>('idle')
   const [emotion, setEmotion] = useState<FaceState | null>(null)
   const [fullHold, setFullHold] = useState(false)
@@ -146,6 +147,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       .then((s) => {
         if (s.photos.length) setPhotos(s.photos)
         setWakeName(s.wake_name)
+        setElderName(s.elder_name)
       })
       .catch((e: Error) => console.error('[elder] settings', e.message))
   }, [])
@@ -214,7 +216,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
         )}
       </AnimatePresence>
       {status === 'down' && <div className="conn" title="Backend offline" />}
-      <KeyboardFallback onSend={(text) => send({ type: 'utterance', text, source: 'keyboard' })} />
+      <KeyboardFallback name={elderName} onSend={(text) => send({ type: 'utterance', text, source: 'keyboard' })} />
     </Stage>
   )
 }

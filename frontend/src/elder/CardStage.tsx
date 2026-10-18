@@ -19,7 +19,7 @@ export default function CardStage({ card }: { card: CardView | null }) {
           {card.alternative ? (
             <>
               <div className="card-stage__slot">
-                <span className="card-stage__label card-stage__label--risk">Not safe</span>
+                <span className="card-stage__label card-stage__label--risk">Skip this</span>
                 <ProductCard product={card.product} />
               </div>
               <motion.div

@@ -5,13 +5,12 @@ import { useGuardian } from './store'
 const ANSWER_TEXT = { taken: 'Taken', skipped: 'Skipped', later: 'Later', unconfirmed: 'No answer' } as const
 
 export default function MemoryPage() {
-  const { memories, products, settings, saveMemory } = useGuardian()
-  const name = settings?.elder_name ?? 'Mom'
+  const { memories, products, saveMemory } = useGuardian()
   return (
     <section className="g-page">
       <h1 className="g-h1">Pills</h1>
-      <p className="g-lede">The frame reminds {name} each day.</p>
-      {memories.length === 0 && <p className="g-note">None yet. One starts after a delivery.</p>}
+      <p className="g-lede">Milo reminds her each day.</p>
+      {memories.length === 0 && <p className="g-note">None yet. Starts after a delivery.</p>}
       <ul className="g-mems">
         {memories.map((m) => {
           const p = products[m.product_id]
@@ -35,7 +34,7 @@ export default function MemoryPage() {
               <dl className="g-mem__facts">
                 <div><dt>Since</dt><dd>{dayLabel(m.start_date)}</dd></div>
                 <div><dt>Left</dt><dd>{days} days</dd></div>
-                <div><dt>Today</dt><dd>{m.log.length ? ANSWER_TEXT[m.log.at(-1)!.answer] : 'Not yet'}</dd></div>
+                <div><dt>Last dose</dt><dd>{m.log.length ? ANSWER_TEXT[m.log.at(-1)!.answer] : 'Not yet'}</dd></div>
               </dl>
             </li>
           )

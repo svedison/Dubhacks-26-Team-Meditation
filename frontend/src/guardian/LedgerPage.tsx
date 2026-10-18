@@ -3,9 +3,9 @@ import { dayLabel, money } from '../shared/format'
 import { useGuardian } from './store'
 
 const LEVEL_TEXT = {
-  minimum: 'She shares warnings only.',
-  default: 'She shares the monthly total.',
-  open: 'She shares every order.',
+  minimum: 'She chose: warnings only.',
+  default: 'She chose: monthly total.',
+  open: 'She chose: every order.',
 } as const
 
 const STATUS_TEXT = { paid: 'Paid', simulated_paid: 'Paid', blocked: 'Blocked' } as const
@@ -14,7 +14,6 @@ const STATUS_TEXT = { paid: 'Paid', simulated_paid: 'Paid', blocked: 'Blocked' }
 export default function LedgerPage() {
   const { ledger, products, settings } = useGuardian()
   if (!ledger) return <section className="g-page"><h1 className="g-h1">Money</h1><p className="g-lede">Loading…</p></section>
-  const name = settings?.elder_name ?? 'Mom'
   return (
     <section className="g-page">
       <h1 className="g-h1">Money</h1>
@@ -22,7 +21,7 @@ export default function LedgerPage() {
       <div className="g-total">
         <span className="g-total__label">This month</span>
         <span className="g-total__value">{money(ledger.month_total_cents)}</span>
-        {settings && <span className="g-total__base">Usually {money(settings.monthly_baseline_cents)}</span>}
+        {settings && <span className="g-total__base">Usually about {money(settings.monthly_baseline_cents)}</span>}
       </div>
       {ledger.orders.length > 0 ? (
         <ul className="g-orders">
@@ -37,7 +36,7 @@ export default function LedgerPage() {
           ))}
         </ul>
       ) : (
-        <p className="g-note">Orders stay private to {name}.</p>
+        <p className="g-note">Details stay with her.</p>
       )}
     </section>
   )
