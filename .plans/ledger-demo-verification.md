@@ -13,7 +13,7 @@ Review focus: stale HTTP responses after privacy changes, request/timer cleanup,
 - [x] Add failing provider regressions for silent purchases, visibility/reconnect, stale privacy responses.
 - [x] Implement bounded ledger refresh, run tests and frontend build/lint.
 - [x] Exercise all four scenes through real HTTP/WS/pipeline with isolated storage; repair failures with regression tests.
-- [ ] Hosted four-scene run blocked by the existing conversation request hanging; see four-scenes-qa.md. Local browser run completed.
+- [ ] Hosted scenes 1–3 passed after B deployed recovery; scene 4 requires the demo clock token and is deferred at the user's request while A/B debug. Local browser run completed all four.
 - [x] Fresh review and final suites completed; commit/push status is recorded on the existing PR. Hosted deployment remains separate.
 
 ## Execution record
@@ -24,3 +24,5 @@ Review focus: stale HTTP responses after privacy changes, request/timer cleanup,
 - Additional bugs reproduced and fixed: rejected full-Memory PUT with false optimistic UI, success stamp before purchase consent, overlapping sharing saves temporarily revealing older details.
 - Decision: add an explicit elder `order` event to the shared contract rather than infer success from emotion or English reply text. Frontend/backend must deploy together for the success stamp; older clients ignore the extra event.
 - Final review: frontend 11/11 and backend 55/55 independently passed; no blocking findings remain. Minor deferred: direct timeout-recovery test coverage.
+- Integrated main d124f83 without dropping Visa failure handling or the new elder order event. Backend 64/64 and typecheck passed after conflict resolution; pushed merge 4c46447.
+- Hosted retry passed scenes 1–3 and MP3 asset checks. User requested avoiding duplicate A/B debugging; further clock/STT checks are deferred. Temporary wake name restored; simulated test orders retained.
