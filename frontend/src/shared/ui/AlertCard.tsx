@@ -40,7 +40,7 @@ export default function AlertCard({ alert, now, phone, fresh, onArchive, ref }: 
       initial={fresh ? { opacity: 0, y: -28, scale: 0.97 } : false}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       // 点 Got it 后卡片往上收走；「This week」里同时亮起新的一行，看得出它去了哪里
-      exit={{ opacity: 0, y: -16, scale: 0.96, transition: { duration: 0.22 } }}
+      exit={{ opacity: 0, height: 0, paddingTop: 0, paddingBottom: 0, marginBottom: -14, transition: { duration: 0.28, ease: [0.4, 0, 0.2, 1] } }}
       transition={{ type: 'spring', stiffness: 320, damping: 28 }}
     >
       <header className="acard__head">

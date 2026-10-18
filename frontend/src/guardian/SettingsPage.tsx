@@ -1,4 +1,5 @@
 import { Check } from 'lucide-react'
+import VisaMark from '../shared/ui/VisaMark'
 import { useEffect, useState } from 'react'
 import type { Settings, ShareLevel } from '../shared/contracts'
 import { useGuardian } from './store'
@@ -68,6 +69,13 @@ export default function SettingsPage() {
       <div className="g-settings__card">
       <h2 className="g-h2">Card</h2>
       <div className="g-form">
+        {/* 她付钱用的那张卡：Visa 蓝底、白色 Visa 标志、尾号，输入尾号时卡面跟着变 */}
+        <div className="g-visa-card" aria-label={`Visa card ending ${draft.card_last4}`}>
+          <VisaMark height={36} color="#ffffff" />
+          <span className="g-visa-card__chip" aria-hidden />
+          <span className="g-visa-card__num">•••• {draft.card_last4.padEnd(4, '·')}</span>
+          <span className="g-visa-card__owner">{draft.card_owner === 'elder' ? 'Hers' : 'Mine'}</span>
+        </div>
         <label className="g-field">
           <span>Last 4 digits</span>
           <input inputMode="numeric" maxLength={4} value={draft.card_last4} onChange={(e) => setDraft({ ...draft, card_last4: e.target.value.replace(/\D/g, '') })} />

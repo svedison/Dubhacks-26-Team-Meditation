@@ -23,14 +23,16 @@ test('a happy offer is not a completed order', () => {
   expect(view.card?.done).toBe(false)
 })
 
-test('only a successful matching order completes the card and retains simulated status', () => {
+test('only a successful matching order completes the card and stamps it Ordered with the Visa strip', () => {
   expect(elderReducer(offer(), { type: 'order', ...order, product_id: 'other' }).card?.done).toBe(false)
   expect(elderReducer(offer(), { type: 'order', ...order, status: 'blocked' }).card?.done).toBe(false)
   const view = elderReducer(offer(), { type: 'order', ...order })
   expect(view.card?.done).toBe(true)
   expect(view.card?.orderStatus).toBe('simulated_paid')
-  const html = renderToStaticMarkup(<ProductCard product={product} orderStatus={view.card?.orderStatus} />)
-  expect(html).toContain('Simulated order')
+  const html = renderToStaticMarkup(<ProductCard product={product} orderStatus={view.card?.orderStatus} cardLast4="4242" />)
+  expect(html).toContain('Ordered')
+  expect(html).toContain('aria-label="Visa"')
+  expect(html).toContain('•••• 4242')
 })
 
 test('confirmed alternative becomes the completed product, without stamping the rejected product', () => {

@@ -3,7 +3,7 @@ import ProductCard from '../shared/ui/ProductCard'
 import type { CardView } from './elderReducer'
 
 // 商品卡片：单张居中；有替代品时左边有风险的、右边替代品，并排
-export default function CardStage({ card }: { card: CardView | null }) {
+export default function CardStage({ card, cardLast4 }: { card: CardView | null; cardLast4: string | null }) {
   const key = card ? `${card.product.id}-${card.alternative?.id ?? ''}` : 'none'
   return (
     <AnimatePresence mode="wait">
@@ -28,12 +28,12 @@ export default function CardStage({ card }: { card: CardView | null }) {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.8, type: 'spring', stiffness: 200, damping: 24 }}
               >
-                <ProductCard product={card.alternative} orderStatus={card.orderStatus} tag="Try this" />
+                <ProductCard product={card.alternative} orderStatus={card.orderStatus} tag="Try this" cardLast4={cardLast4} />
               </motion.div>
             </>
           ) : (
             <div className="card-stage__slot">
-              <ProductCard product={card.product} orderStatus={card.orderStatus} />
+              <ProductCard product={card.product} orderStatus={card.orderStatus} cardLast4={cardLast4} />
             </div>
           )}
         </motion.div>

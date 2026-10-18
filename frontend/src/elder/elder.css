@@ -120,12 +120,13 @@
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
+/* 价格、日期这些要记住的词：琥珀色加粗，底下垫一条淡琥珀色（不用下划线，免得像能点的链接） */
 .chat__em {
-  font-weight: 700;
-  color: #f2b866;
-  text-decoration: underline;
-  text-decoration-thickness: 3px;
-  text-underline-offset: 6px;
+  font-weight: 900;
+  color: #f6c37a;
+  background: linear-gradient(transparent 72%, rgba(242, 184, 102, 0.28) 72%);
+  padding: 0 2px;
+  border-radius: 3px;
 }
 
 /* 商品卡片区：底边和字幕底边对齐 */
@@ -140,7 +141,8 @@
 /* 并排时卡窄：价格放到名字下面 */
 .card-stage--pair .pcard__head { flex-direction: column; gap: 8px; }
 .card-stage--pair .pcard__title { font-size: 25px; }
-.card-stage--pair .pcard__sub { font-size: 18px; }
+/* 两张卡并排时卡窄：只留名字、价格和判定，规格那一小行不放 */
+.card-stage--pair .pcard__sub { display: none; }
 .card-stage--pair .pcard__price { font-size: 46px; }
 .card-stage--pair .pcard__point-text strong { font-size: 20px; }
 .card-stage--pair .pcard__point-text span { font-size: 18px; }
@@ -154,22 +156,6 @@
 .card-stage--pair .pcard--risk .pcard__point.is-risk strong { color: #fbefe4; }
 .card-stage--pair .pcard--risk .pcard__point.is-risk span { color: #f6dccd; font-size: 18px; font-weight: 800; }
 
-/* 演示时钟 */
-.clock {
-  position: absolute;
-  top: 40px;
-  right: 56px;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 10px;
-  padding: 9px 16px 10px;
-  border-radius: 999px;
-  background: rgba(20, 17, 14, 0.55);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  color: #fff1dc;
-}
-.clock__time { font-size: 28px; font-weight: 900; font-variant-numeric: tabular-nums; }
 
 /* 后端断开：只给队员看的小点 */
 .conn { position: absolute; right: 14px; bottom: 14px; width: 10px; height: 10px; border-radius: 50%; background: #e0a43a; opacity: 0.7; }
@@ -217,7 +203,7 @@
 }
 
 /* 警报：深酒红，中间亮四周暗 */
-.alert-wash { background: radial-gradient(ellipse 75% 75% at 50% 42%, #82292a 0%, #5e1d1f 55%, #421416 100%); pointer-events: none; }
+.alert-wash { background: radial-gradient(ellipse 75% 75% at 50% 42%, #a8383a 0%, #7a2426 55%, #4e181a 100%); mix-blend-mode: multiply; pointer-events: none; }
 
 /* 屏幕内圈一道细衬纸线，像相框里的卡纸 */
 .mat { position: absolute; inset: 14px; border-radius: 22px; box-shadow: inset 0 0 0 1.5px rgba(255, 241, 220, 0.1); pointer-events: none; }
@@ -251,12 +237,14 @@
 .clock-jump__day { font-size: 44px; line-height: 1; font-weight: 900; }
 .clock-jump__time { font-size: 32px; font-weight: 800; color: #6a5a4c; font-variant-numeric: tabular-nums; }
 
-.clock--quiet { opacity: 0.72; transform: scale(0.86); transform-origin: top right; }
 
 /* 假药那幕下单以后：不要的那张缩小变淡，注意力回到买了的那张 */
 .card-stage--pair .card-stage__slot { transition: opacity 500ms ease, transform 500ms cubic-bezier(0.43, 0.195, 0.02, 1); }
 .card-stage--pair:has(.pcard--done) .card-stage__slot:first-child { opacity: 0.5; transform: scale(0.92); }
 
-/* 顶部时间条出来的那 2.6 秒里，右上角的小时钟先藏起来，同一个时间不出现两遍 */
-.stage:has(.clock-jump) .clock { opacity: 0; }
-.clock { transition: opacity 300ms ease, transform 300ms ease; }
+
+/* 待机提示条最前面那双闭着的眼睛 */
+.wake-strip__eyes { display: inline-flex; align-items: center; gap: 9px; padding: 12px 13px; border-radius: 16px; background: #1f1813; }
+.wake-strip__eyes i { width: 18px; height: 4px; border-radius: 999px; background: #fff1dc; animation: idle-breathe 4s ease-in-out infinite; }
+@keyframes idle-breathe { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .wake-strip__eyes i { animation: none; } }
