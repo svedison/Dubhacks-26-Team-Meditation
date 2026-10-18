@@ -5,8 +5,11 @@ export interface Product {
   units: number; units_per_dose: number;
   risk: {kind: 'fda_fraud' | 'recall' | 'unverified'; alternative_id: string} | null;
   brand: string; merchant: string; ingredients: string[];
-  certification_source: {status: 'demo_only' | 'not_verified'; url: string | null; note: string};
-  demo_only: true;
+  // demo_only fixtures are synthetic; real shelf rows (2026-10-18, tools/shelf/build-shelf.mts) say where the listing,
+  // label data or FDA finding came from.
+  certification_source: {status: 'demo_only' | 'not_verified' | 'store_listing' | 'typical_listing' | 'usp_verified_program' | 'fda_enforcement'; url: string | null; note: string};
+  demo_only: boolean;
+  price_source?: {kind: 'store' | 'typical'; store?: string; location_id?: string; fetched_at: string};
 }
 export interface Order {
   id: string; product_id: string; price_cents: number;

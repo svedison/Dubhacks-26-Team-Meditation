@@ -1,28 +1,2305 @@
 [
   {
+    "id": "oats",
+    "name": "Quaker Old Fashioned Oats",
+    "price_cents": 549,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "oats",
+      "oatmeal",
+      "the big oats box",
+      "porridge"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Quaker",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "bread",
+    "name": "Whole Wheat Bread Loaf",
+    "price_cents": 399,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "bread",
+      "a loaf of bread",
+      "toast"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "eggs",
+    "name": "Large Eggs Dozen",
+    "price_cents": 429,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "eggs",
+      "a dozen eggs"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "milk",
+    "name": "2% Milk Gallon",
+    "price_cents": 399,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "milk",
+      "a gallon of milk"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "bananas",
+    "name": "Bananas",
+    "price_cents": 149,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "bananas",
+      "a bunch of bananas",
+      "nanas"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "apples",
+    "name": "Gala Apples",
+    "price_cents": 399,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "apples"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "oranges",
+    "name": "Navel Oranges",
+    "price_cents": 449,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "oranges"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "yogurt",
+    "name": "Plain Yogurt 32 Oz",
+    "price_cents": 449,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "yogurt",
+      "yoghurt"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "butter",
+    "name": "Salted Butter",
+    "price_cents": 499,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "butter"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "jam",
+    "name": "Strawberry Jam",
+    "price_cents": 399,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "jam",
+      "jelly",
+      "preserves"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "peanut-butter",
+    "name": "Peanut Butter Creamy",
+    "price_cents": 449,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "peanut butter"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "honey",
+    "name": "Honey 12 Oz",
+    "price_cents": 599,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "honey"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "chicken-soup",
+    "name": "Chicken Noodle Soup Can",
+    "price_cents": 199,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "chicken soup",
+      "soup",
+      "chicken noodle"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "tomato-soup",
+    "name": "Tomato Soup Can",
+    "price_cents": 179,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "tomato soup"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "chicken-broth",
+    "name": "Chicken Broth Carton",
+    "price_cents": 299,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "broth",
+      "chicken broth",
+      "stock"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "rice",
+    "name": "Long Grain White Rice",
+    "price_cents": 449,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "rice",
+      "white rice"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "pasta",
+    "name": "Spaghetti Pasta",
+    "price_cents": 199,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "pasta",
+      "spaghetti",
+      "noodles"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "pasta-sauce",
+    "name": "Marinara Pasta Sauce",
+    "price_cents": 349,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "pasta sauce",
+      "tomato sauce",
+      "marinara"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "tuna",
+    "name": "Canned Tuna In Water",
+    "price_cents": 169,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "tuna",
+      "canned tuna"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "frozen-vegetables",
+    "name": "Frozen Mixed Vegetables",
+    "price_cents": 249,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "frozen vegetables",
+      "veggies",
+      "mixed vegetables"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "frozen-peas",
+    "name": "Frozen Peas",
+    "price_cents": 229,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "peas"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "potatoes",
+    "name": "Russet Potatoes Bag",
+    "price_cents": 499,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "potatoes"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "onions",
+    "name": "Yellow Onions",
+    "price_cents": 299,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "onions"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "carrots",
+    "name": "Carrots 2 Lb",
+    "price_cents": 249,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "carrots"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "crackers",
+    "name": "Saltine Crackers",
+    "price_cents": 349,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "crackers",
+      "saltines"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "cheese",
+    "name": "Sliced Cheddar Cheese",
+    "price_cents": 449,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "cheese",
+      "cheddar",
+      "sliced cheese"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "cookies",
+    "name": "Oatmeal Cookies",
+    "price_cents": 399,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "cookies",
+      "biscuits"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "applesauce",
+    "name": "Applesauce Cups Unsweetened",
+    "price_cents": 349,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "applesauce",
+      "apple sauce"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "prunes",
+    "name": "Pitted Prunes",
+    "price_cents": 549,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "prunes",
+      "dried plums"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "almonds",
+    "name": "Almonds Unsalted",
+    "price_cents": 699,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "almonds",
+      "nuts"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "chocolate",
+    "name": "Dark Chocolate Bar",
+    "price_cents": 349,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "chocolate",
+      "a chocolate bar",
+      "sweets"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "hard-candy",
+    "name": "Butterscotch Hard Candy",
+    "price_cents": 299,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "candy",
+      "candies",
+      "butterscotch"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "orange-juice",
+    "name": "Orange Juice No Pulp",
+    "price_cents": 449,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "orange juice",
+      "oj",
+      "juice"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "prune-juice",
+    "name": "Prune Juice",
+    "price_cents": 499,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "prune juice"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "water",
+    "name": "Bottled Water 24 Pack",
+    "price_cents": 499,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "water",
+      "bottled water"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "ensure",
+    "name": "Ensure Nutrition Shake Vanilla",
+    "price_cents": 1299,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "ensure",
+      "nutrition shake",
+      "protein shake",
+      "the vanilla drink"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Ensure",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "electrolyte",
+    "name": "Pedialyte Electrolyte Drink",
+    "price_cents": 599,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "electrolyte drink",
+      "pedialyte",
+      "gatorade"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Pedialyte",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "coffee",
+    "name": "Ground Coffee Medium Roast",
+    "price_cents": 899,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "coffee"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "tea",
+    "name": "Herbal tea, 20 bags",
+    "price_cents": 449,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "tea",
+      "chamomile",
+      "herbal tea"
+    ],
+    "label_dose": null,
+    "units": 20,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [
+      "rooibos"
+    ],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "sugar",
+    "name": "Granulated Sugar 4 Lb",
+    "price_cents": 399,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "sugar"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "salt",
+    "name": "Iodized Salt",
+    "price_cents": 129,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "salt"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "flour",
+    "name": "All Purpose Flour 5 Lb",
+    "price_cents": 349,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "flour"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "olive-oil",
+    "name": "Olive oil, 500 mL",
+    "price_cents": 999,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "olive oil",
+      "oil"
+    ],
+    "label_dose": null,
+    "units": 500,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [
+      "olive oil"
+    ],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "toothpaste",
+    "name": "Fluoride toothpaste, 1 tube",
+    "price_cents": 399,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "toothpaste"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Colgate",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [
+      "sodium fluoride"
+    ],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "toothbrush",
+    "name": "Soft Toothbrush",
+    "price_cents": 349,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "toothbrush"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "denture-cleanser",
+    "name": "Polident Denture Cleanser Tablets",
+    "price_cents": 799,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "denture tablets",
+      "denture cleaner",
+      "polident"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Polident",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "denture-adhesive",
+    "name": "Poligrip Denture Adhesive Cream",
+    "price_cents": 699,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "denture glue",
+      "denture cream",
+      "poligrip"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Poligrip",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "soap",
+    "name": "Unscented soap, 4 bars",
+    "price_cents": 649,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "soap",
+      "bar soap"
+    ],
+    "label_dose": null,
+    "units": 4,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Dove",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [
+      "soap base"
+    ],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "shampoo",
+    "name": "Gentle Shampoo",
+    "price_cents": 599,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "shampoo"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "lotion",
+    "name": "Cetaphil Moisturizing Lotion",
+    "price_cents": 1199,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "lotion",
+      "hand cream",
+      "moisturizer"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Cetaphil",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "lip-balm",
+    "name": "Lip Balm",
+    "price_cents": 299,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "lip balm",
+      "chapstick"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "incontinence-pads",
+    "name": "Poise Incontinence Pads",
+    "price_cents": 1499,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "pads",
+      "poise pads",
+      "bladder pads"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Poise",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "reading-glasses",
+    "name": "Reading Glasses 2.0",
+    "price_cents": 1299,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "reading glasses",
+      "glasses",
+      "readers"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "hearing-aid-batteries",
+    "name": "Hearing Aid Batteries Size 312",
+    "price_cents": 899,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "hearing aid batteries",
+      "batteries for my hearing aid"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "cotton-swabs",
+    "name": "Cotton Swabs",
+    "price_cents": 349,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "cotton swabs",
+      "q-tips"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "nail-clippers",
+    "name": "Nail Clippers",
+    "price_cents": 399,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "nail clippers"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "tissues",
+    "name": "Tissues, 6 boxes",
+    "price_cents": 699,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "tissues",
+      "kleenex"
+    ],
+    "label_dose": null,
+    "units": 6,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kleenex",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [
+      "paper"
+    ],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "toilet-paper",
+    "name": "Charmin Toilet Paper 12 Rolls",
+    "price_cents": 1399,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "toilet paper",
+      "tp",
+      "bathroom tissue"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Charmin",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "paper-towels",
+    "name": "Bounty Paper Towels 6 Rolls",
+    "price_cents": 1299,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "paper towels",
+      "kitchen towels"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Bounty",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "dish-soap",
+    "name": "Dawn Dish Soap",
+    "price_cents": 399,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "dish soap",
+      "dishwashing liquid",
+      "dawn"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Dawn",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "laundry-detergent",
+    "name": "Tide Laundry Detergent",
+    "price_cents": 1299,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "laundry detergent",
+      "laundry soap",
+      "tide"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Tide",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "trash-bags",
+    "name": "Kitchen Trash Bags 13 Gallon",
+    "price_cents": 999,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "trash bags",
+      "garbage bags"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "aa-batteries",
+    "name": "Energizer Aa Batteries 8 Pack",
+    "price_cents": 899,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "double a batteries",
+      "aa batteries",
+      "batteries"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Energizer",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "aaa-batteries",
+    "name": "Energizer Aaa Batteries 8 Pack",
+    "price_cents": 899,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "triple a batteries",
+      "aaa batteries",
+      "remote batteries"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Energizer",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "led-bulbs",
+    "name": "Led Light Bulbs 60 Watt Soft White",
+    "price_cents": 999,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "light bulbs",
+      "bulbs",
+      "a new bulb"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "LED",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "night-light",
+    "name": "Plug In Night Light",
+    "price_cents": 699,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "night light"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "sponges",
+    "name": "Kitchen Sponges",
+    "price_cents": 349,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "sponges"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "disinfecting-wipes",
+    "name": "Clorox Disinfecting Wipes",
+    "price_cents": 599,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "wipes",
+      "cleaning wipes",
+      "clorox wipes"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Clorox",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "food-storage-bags",
+    "name": "Ziploc Sandwich Bags",
+    "price_cents": 449,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "ziploc bags",
+      "sandwich bags",
+      "plastic bags"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Ziploc",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "aluminum-foil",
+    "name": "Aluminum Foil",
+    "price_cents": 449,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "foil",
+      "tin foil"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "acetaminophen",
+    "name": "Tylenol Extra Strength Acetaminophen",
+    "price_cents": 1099,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "tylenol",
+      "acetaminophen",
+      "pain reliever",
+      "headache pills"
+    ],
+    "label_dose": "Label: adults and children 12 years and over take 2 tablets every 6 hours while symptoms last do not take more than 6 tablets in 24 hours, unless directed by a doctor do not",
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Tylenol",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "ibuprofen",
+    "name": "Advil Ibuprofen 200 Mg",
+    "price_cents": 999,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "advil",
+      "ibuprofen"
+    ],
+    "label_dose": "Label: adults and children 12 years and over take 2 caplets every 8 hours while symptoms persist children under 12 years ask a doctor do not take more than 6 caplets in 24 h",
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Advil",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "antacid",
+    "name": "Tums Antacid Tablets",
+    "price_cents": 599,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "tums",
+      "antacid",
+      "heartburn tablets"
+    ],
+    "label_dose": "Label: adults and children 12 years of age and over: chew 2-4 tablets as symptoms occur, or as directed by a doctor",
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Tums",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "allergy",
+    "name": "Claritin Loratadine 10 Mg",
+    "price_cents": 1899,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "allergy pills",
+      "claritin",
+      "antihistamine"
+    ],
+    "label_dose": "Label: adults and children 6 years and over chew 2 tablets daily; not more than 2 chewable tablets in 24 hours children 2 to under 6 years of age chew 1 tablet daily; not mo",
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Claritin",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "eye-drops",
+    "name": "Artificial Tears Eye Drops",
+    "price_cents": 899,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "eye drops",
+      "artificial tears"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "cough-drops",
+    "name": "Halls Cough Drops",
+    "price_cents": 349,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "cough drops",
+      "throat drops",
+      "halls"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Halls",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "bandages",
+    "name": "Band-Aid Adhesive Bandages",
+    "price_cents": 549,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "band aids",
+      "bandages",
+      "plasters"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Band-Aid",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "antiseptic-wipes",
+    "name": "Alcohol Prep Pads",
+    "price_cents": 399,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "alcohol wipes",
+      "antiseptic wipes"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "hydrocortisone",
+    "name": "Hydrocortisone Cream 1%",
+    "price_cents": 599,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "itch cream",
+      "hydrocortisone",
+      "cortisone cream"
+    ],
+    "label_dose": "Label: Adults and children 2 years of age and older: Apply to affected area not more than 3 to 4 times daily",
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "thermometer",
+    "name": "Digital Thermometer",
+    "price_cents": 1299,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "thermometer"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
     "id": "calcium-120",
     "name": "Calcium 600mg, 120 tablets",
     "price_cents": 1800,
     "category": "supplement",
     "certification": "USP",
     "aliases": [
-      "the purple bottle"
+      "the purple bottle",
+      "calcium",
+      "calcium pills"
     ],
     "label_dose": "1 tablet daily with food",
     "units": 120,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "Nature Made",
+    "merchant": "Typical US grocery listing",
     "ingredients": [
-      "calcium"
+      "Vitamin D3",
+      "Calcium",
+      "Maltodextrin",
+      "Cellulose Gel",
+      "Croscarmellose Sodium",
+      "Hydroxypropyl Methylcellulose"
     ],
     "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Nature Made products carry the USP Verified Mark; check the mark on this bottle"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
   },
   {
     "id": "glucosamine-usp",
@@ -31,23 +2308,34 @@
     "category": "supplement",
     "certification": "USP",
     "aliases": [
-      "joint support"
+      "joint support",
+      "glucosamine",
+      "joint pills"
     ],
     "label_dose": "1 tablet daily",
     "units": 90,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "Kirkland Signature",
+    "merchant": "Typical US grocery listing",
     "ingredients": [
-      "glucosamine"
+      "Calories",
+      "Total Carbohydrates",
+      "Sodium",
+      "Glucosamine HCl",
+      "Chondroitin Sulfate Sodium",
+      "Glucosamine Hydrochloride"
     ],
     "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Kirkland products carry the USP Verified Mark; check the mark on this bottle"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
   },
   {
     "id": "vitamin-d3",
@@ -56,48 +2344,70 @@
     "category": "supplement",
     "certification": "USP",
     "aliases": [
-      "vitamin D"
+      "vitamin d",
+      "vitamin d3",
+      "the little yellow pills"
     ],
     "label_dose": "1 softgel daily with food",
     "units": 100,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "Nature Made",
+    "merchant": "Typical US grocery listing",
     "ingredients": [
-      "vitamin D3"
+      "Calories",
+      "Total Carbohydrate",
+      "Total Sugars",
+      "added Sugar",
+      "Vitamin D",
+      "Sodium"
     ],
     "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Nature Made products carry the USP Verified Mark; check the mark on this bottle"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
   },
   {
     "id": "fiber-capsules",
     "name": "Fiber, 120 capsules",
     "price_cents": 1600,
     "category": "supplement",
-    "certification": "USP",
+    "certification": null,
     "aliases": [
-      "fiber"
+      "fiber",
+      "fiber pills",
+      "metamucil"
     ],
     "label_dose": "2 capsules daily with water",
     "units": 120,
     "units_per_dose": 2,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "Metamucil",
+    "merchant": "Typical US grocery listing",
     "ingredients": [
-      "psyllium"
+      "Calories",
+      "Total Carbohydrates",
+      "Dietary Fiber",
+      "Soluble Fiber",
+      "Protein",
+      "Iron"
     ],
     "certification_source": {
-      "status": "demo_only",
+      "status": "typical_listing",
       "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
   },
   {
     "id": "multivitamin",
@@ -105,22 +2415,35 @@
     "price_cents": 1450,
     "category": "supplement",
     "certification": "USP",
-    "aliases": [],
+    "aliases": [
+      "multivitamin",
+      "my daily vitamin",
+      "centrum"
+    ],
     "label_dose": "1 tablet daily with food",
     "units": 60,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "Centrum Silver",
+    "merchant": "Typical US grocery listing",
     "ingredients": [
-      "vitamins and minerals"
+      "Vitamin A",
+      "Vitamin C",
+      "Vitamin D",
+      "Vitamin E",
+      "Vitamin K",
+      "Thiamine"
     ],
     "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Centrum Silver products carry the USP Verified Mark; check the mark on this bottle"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
   },
   {
     "id": "vitamin-c",
@@ -128,22 +2451,33 @@
     "price_cents": 900,
     "category": "supplement",
     "certification": "USP",
-    "aliases": [],
+    "aliases": [
+      "vitamin c"
+    ],
     "label_dose": "1 tablet daily",
     "units": 100,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "Nature Made VitaMelts",
+    "merchant": "Typical US grocery listing",
     "ingredients": [
-      "ascorbic acid"
+      "Vitamin C",
+      "Mannitol",
+      "Corn Starch",
+      "Cellulose Gel",
+      "Maltodextrin",
+      "Crospovidone"
     ],
     "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Nature Made products carry the USP Verified Mark; check the mark on this bottle"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
   },
   {
     "id": "b12",
@@ -151,22 +2485,35 @@
     "price_cents": 1100,
     "category": "supplement",
     "certification": "USP",
-    "aliases": [],
+    "aliases": [
+      "b12",
+      "vitamin b12",
+      "b twelve"
+    ],
     "label_dose": "1 tablet daily",
     "units": 90,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "Nature Made",
+    "merchant": "Typical US grocery listing",
     "ingredients": [
-      "cyanocobalamin"
+      "Vitamin B12",
+      "Calcium",
+      "Cellulose Gel",
+      "Hypromellose",
+      "Stearic Acid",
+      "Silicon Dioxide"
     ],
     "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Nature Made products carry the USP Verified Mark; check the mark on this bottle"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
   },
   {
     "id": "magnesium",
@@ -174,22 +2521,33 @@
     "price_cents": 1300,
     "category": "supplement",
     "certification": "USP",
-    "aliases": [],
+    "aliases": [
+      "magnesium"
+    ],
     "label_dose": "1 tablet daily with food",
     "units": 90,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "Nature Made",
+    "merchant": "Typical US grocery listing",
     "ingredients": [
-      "magnesium"
+      "Calories",
+      "Magnesium",
+      "Gelatin",
+      "Medium Chain Triglycerides",
+      "Glycerin",
+      "Water"
     ],
     "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Nature Made products carry the USP Verified Mark; check the mark on this bottle"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
   },
   {
     "id": "omega-3",
@@ -197,206 +2555,284 @@
     "price_cents": 1900,
     "category": "supplement",
     "certification": "USP",
-    "aliases": [],
+    "aliases": [
+      "fish oil",
+      "omega 3",
+      "omega three"
+    ],
     "label_dose": "1 softgel daily with food",
     "units": 60,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "Nature Made",
+    "merchant": "Typical US grocery listing",
     "ingredients": [
-      "fish oil"
+      "Calories",
+      "Total Fat",
+      "Saturated Fat",
+      "Polyunsaturated Fat",
+      "Monounsaturated Fat",
+      "Cholesterol"
     ],
     "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Nature Made products carry the USP Verified Mark; check the mark on this bottle"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
   },
   {
     "id": "lutein",
     "name": "Lutein, 60 softgels",
     "price_cents": 1700,
     "category": "supplement",
-    "certification": "USP",
-    "aliases": [],
+    "certification": null,
+    "aliases": [
+      "eye vitamins",
+      "lutein",
+      "preservision"
+    ],
     "label_dose": "1 softgel daily with food",
     "units": 60,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "PreserVision",
+    "merchant": "Typical US grocery listing",
     "ingredients": [
-      "lutein"
+      "Calories",
+      "Calories from Fat",
+      "Total Fat",
+      "Vitamin C",
+      "Vitamin E",
+      "Zinc"
     ],
     "certification_source": {
-      "status": "demo_only",
+      "status": "typical_listing",
       "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
   },
   {
-    "id": "oatmeal",
-    "name": "Plain oats, 20 portions",
-    "price_cents": 600,
-    "category": "food",
+    "id": "probiotic",
+    "name": "Align Probiotic, 28 capsules",
+    "price_cents": 2999,
+    "category": "supplement",
     "certification": null,
-    "aliases": [],
-    "label_dose": null,
-    "units": 20,
+    "aliases": [
+      "probiotic",
+      "probiotics",
+      "align"
+    ],
+    "label_dose": "Take as directed on the label",
+    "units": 28,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "Align",
+    "merchant": "Typical US grocery listing",
     "ingredients": [
-      "whole grain oats"
+      "Bifidobacterium infantis 35624",
+      "Microcrystalline Cellulose",
+      "Hypromellose",
+      "Sucrose",
+      "Magnesium Stearate",
+      "Sodium Caseinate"
     ],
     "certification_source": {
-      "status": "demo_only",
+      "status": "typical_listing",
       "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
   },
   {
-    "id": "tea",
-    "name": "Herbal tea, 20 bags",
-    "price_cents": 500,
-    "category": "food",
-    "certification": null,
-    "aliases": [],
-    "label_dose": null,
-    "units": 20,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "rooibos"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "brown-rice",
-    "name": "Brown rice, 10 portions",
-    "price_cents": 700,
-    "category": "food",
-    "certification": null,
-    "aliases": [],
-    "label_dose": null,
-    "units": 10,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "brown rice"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "olive-oil",
-    "name": "Olive oil, 500 mL",
+    "id": "iron",
+    "name": "Iron 65 mg, 240 tablets",
     "price_cents": 1000,
-    "category": "food",
-    "certification": null,
-    "aliases": [],
-    "label_dose": null,
-    "units": 500,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [
+      "iron pills",
+      "iron"
+    ],
+    "label_dose": "Take as directed on the label",
+    "units": 240,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "Nature Made",
+    "merchant": "Typical US grocery listing",
     "ingredients": [
-      "olive oil"
+      "Calcium",
+      "Iron",
+      "Cellulose Gel",
+      "Croscarmellose Sodium",
+      "Hypromellose",
+      "Color added"
     ],
     "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Nature Made products carry the USP Verified Mark; check the mark on this bottle"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
   },
   {
-    "id": "soap",
-    "name": "Unscented soap, 4 bars",
-    "price_cents": 650,
-    "category": "household",
+    "id": "cat-food",
+    "name": "Fancy Feast Cat Food Cans",
+    "price_cents": 1299,
+    "category": "pet",
     "certification": null,
-    "aliases": [],
-    "label_dose": null,
-    "units": 4,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "soap base"
+    "aliases": [
+      "cat food",
+      "food for the cat",
+      "food for whiskers"
     ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "tissues",
-    "name": "Tissues, 6 boxes",
-    "price_cents": 850,
-    "category": "household",
-    "certification": null,
-    "aliases": [],
-    "label_dose": null,
-    "units": 6,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "paper"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "toothpaste",
-    "name": "Fluoride toothpaste, 1 tube",
-    "price_cents": 450,
-    "category": "personal-care",
-    "certification": null,
-    "aliases": [],
     "label_dose": null,
     "units": 1,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "sodium fluoride"
-    ],
+    "brand": "Fancy Feast",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
     "certification_source": {
-      "status": "demo_only",
+      "status": "typical_listing",
       "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "dog-food",
+    "name": "Dry Dog Food Small Bag",
+    "price_cents": 1999,
+    "category": "pet",
+    "certification": null,
+    "aliases": [
+      "dog food",
+      "food for the dog"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "bird-seed",
+    "name": "Wild Bird Seed",
+    "price_cents": 1199,
+    "category": "pet",
+    "certification": null,
+    "aliases": [
+      "bird seed",
+      "food for the birds"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "stamps",
+    "name": "Postage Stamps Book",
+    "price_cents": 1460,
+    "category": "other",
+    "certification": null,
+    "aliases": [
+      "stamps",
+      "postage"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
+  },
+  {
+    "id": "puzzle-book",
+    "name": "Crossword Puzzle Book Large Print",
+    "price_cents": 899,
+    "category": "other",
+    "certification": null,
+    "aliases": [
+      "crossword",
+      "puzzle book",
+      "crosswords"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "Typical US grocery listing",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:00:24.516Z"
+    }
   },
   {
     "id": "miracle-joint",
