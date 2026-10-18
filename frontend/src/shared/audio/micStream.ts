@@ -1,0 +1,216 @@
+import { MicVAD } from '@ricky0123/vad-web'
+import { api } from '../config'
+
+// 麦克风常开：Silero VAD 自带的 AudioWorklet 取流并重采样到 16 kHz，
+// 这里把每帧（512 样本 = 32 ms）转成 PCM16，按 8 帧一块 POST 到 /api/audio。
+// uploadAll=false 时只在 VAD 判定有人说话时上传（带 320 ms 预录）；uploadAll=true 用于 30 分钟连续测试。
+
+const SAMPLE_RATE = 16000
+const FRAMES_PER_CHUNK = 8
+const PREROLL_FRAMES = 10
+
+export type MicStatus = {
+  phase: 'off' | 'starting' | 'on' | 'error'
+  error: string | null
+  startedAt: number | null
+  ctxState: string
+  trackState: string
+  wakeLock: string
+  speaking: boolean
+  speechProb: number
+  framesSeen: number
+  chunksSent: number
+  bytesSent: number
+  sendErrors: number
+  lastSendAt: number | null
+  events: string[]
+}
+
+type Options = {
+  uploadAll: boolean
+  onStatus: (s: MicStatus) => void
+  onSpeechStart?: () => void
+  onSpeechEnd?: () => void
+}
+
+function toPcm16(frames: Float32Array[]): ArrayBuffer {
+  const total = frames.reduce((n, f) => n + f.length, 0)
+  const out = new Int16Array(total)
+  let i = 0
+  for (const f of frames) {
+    for (let k = 0; k < f.length; k++) {
+      const s = Math.max(-1, Math.min(1, f[k]))
+      out[i++] = s < 0 ? s * 0x8000 : s * 0x7fff
+    }
+  }
+  return out.buffer
+}
+
+export class MicStream {
+  private opts: Options
+  private vad: MicVAD | null = null
+  ctx: AudioContext | null = null
+  private stream: MediaStream | null = null
+  private silence: HTMLAudioElement | null = null
+  private wakeLock: WakeLockSentinel | null = null
+  private ring: Float32Array[] = []
+  private pending: Float32Array[] = []
+  private speaking = false
+  private held = false
+  private seq = 0
+  private sendChain: Promise<void> = Promise.resolve()
+  status: MicStatus = {
+    phase: 'off', error: null, startedAt: null, ctxState: 'none', trackState: 'none', wakeLock: 'none',
+    speaking: false, speechProb: 0, framesSeen: 0, chunksSent: 0, bytesSent: 0, sendErrors: 0, lastSendAt: null, events: [],
+  }
+
+  constructor(opts: Options) {
+    this.opts = opts
+  }
+
+  private emit(patch: Partial<MicStatus>) {
+    this.status = { ...this.status, ...patch }
+    this.opts.onStatus(this.status)
+  }
+
+  private log(msg: string) {
+    const line = `${new Date().toLocaleTimeString()} ${msg}`
+    console.info('[mic]', line)
+    this.emit({ events: [line, ...this.status.events].slice(0, 30) })
+  }
+
+  // 必须在用户点击的回调里同步调用（Safari 只在手势里放行 AudioContext 和播放）
+  async start() {
+    this.emit({ phase: 'starting', error: null })
+    const ctx = new AudioContext()
+    this.ctx = ctx
+    const silence = new Audio('/sounds/silence.m4a')
+    silence.loop = true
+    this.silence = silence
+    const resumed = ctx.resume()
+    const played = silence.play()
+    const locked = this.requestWakeLock()
+    await Promise.all([resumed, played, locked])
+
+    ctx.onstatechange = () => {
+      this.emit({ ctxState: ctx.state })
+      this.log(`AudioContext -> ${ctx.state}`)
+      if (ctx.state !== 'running' && ctx.state !== 'closed') void ctx.resume()
+    }
+
+    this.stream = await navigator.mediaDevices.getUserMedia({
+      audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+    })
+    const track = this.stream.getAudioTracks()[0]
+    track.onended = () => { this.emit({ trackState: 'ended', phase: 'error', error: 'microphone track ended' }); this.log('track ended') }
+    track.onmute = () => { this.emit({ trackState: 'muted' }); this.log('track muted') }
+    track.onunmute = () => { this.emit({ trackState: 'live' }); this.log('track unmuted') }
+
+    const stream = this.stream
+    this.vad = await MicVAD.new({
+      model: 'v5',
+      audioContext: ctx,
+      baseAssetPath: '/vad/',
+      onnxWASMBasePath: '/vad/',
+      startOnLoad: false,
+      getStream: async () => stream,
+      pauseStream: async () => {},
+      resumeStream: async () => stream,
+      positiveSpeechThreshold: 0.5,
+      negativeSpeechThreshold: 0.35,
+      redemptionMs: 600,
+      minSpeechMs: 250,
+      onFrameProcessed: (probs, frame) => this.onFrame(probs.isSpeech, frame),
+      onSpeechStart: () => this.onSpeechStart(),
+      onSpeechEnd: () => this.onSpeechEnd(),
+      onVADMisfire: () => this.onSpeechEnd(),
+    })
+    await this.vad.start()
+    document.addEventListener('visibilitychange', this.onVisibility)
+
+    this.emit({ phase: 'on', startedAt: Date.now(), ctxState: ctx.state, trackState: track.readyState })
+    this.log(`mic on, ctx ${ctx.sampleRate} Hz, uploadAll=${this.opts.uploadAll}`)
+  }
+
+  private onVisibility = () => {
+    this.log(`visibility -> ${document.visibilityState}`)
+    if (document.visibilityState === 'visible') void this.requestWakeLock()
+  }
+
+  // 屏幕常亮锁只是辅助（真正防锁屏靠 iPad 设置里的自动锁定=永不 + 引导式访问），被拒时在状态里显示，不影响录音
+  private async requestWakeLock() {
+    if (!('wakeLock' in navigator)) { this.emit({ wakeLock: 'unsupported' }); return }
+    const res = await navigator.wakeLock.request('screen').catch((e: Error) => e)
+    if (res instanceof Error) { this.emit({ wakeLock: `denied (${res.message})` }); this.log(`wake lock denied: ${res.message}`); return }
+    this.wakeLock = res
+    this.emit({ wakeLock: 'held' })
+    res.addEventListener('release', () => { this.emit({ wakeLock: 'released' }); this.log('wake lock released') })
+  }
+
+  // 设备自己在说话时调用 hold(true)：这段时间不上传，避免把自己的声音当成奶奶的话
+  hold(on: boolean) {
+    this.held = on
+    if (on) { this.pending = []; this.ring = []; this.speaking = false }
+  }
+
+  private onFrame(prob: number, frame: Float32Array) {
+    const copy = new Float32Array(frame)
+    this.status.framesSeen++
+    this.status.speechProb = prob
+    if (this.held) return
+    if (this.opts.uploadAll || this.speaking) {
+      this.pending.push(copy)
+      if (this.pending.length >= FRAMES_PER_CHUNK) this.flush(false)
+    } else {
+      this.ring.push(copy)
+      if (this.ring.length > PREROLL_FRAMES) this.ring.shift()
+    }
+    if (this.status.framesSeen % 8 === 0) this.emit({})
+  }
+
+  private onSpeechStart() {
+    if (this.held) return
+    this.speaking = true
+    if (!this.opts.uploadAll) { this.pending.push(...this.ring); this.ring = [] }
+    this.emit({ speaking: true })
+    this.opts.onSpeechStart?.()
+  }
+
+  private onSpeechEnd() {
+    if (!this.speaking) return
+    this.speaking = false
+    if (!this.opts.uploadAll) this.flush(true)
+    this.emit({ speaking: false })
+    this.opts.onSpeechEnd?.()
+  }
+
+  private flush(end: boolean) {
+    if (this.pending.length === 0) return
+    const body = toPcm16(this.pending)
+    this.pending = []
+    const seq = this.seq++
+    const speech = this.speaking || end ? 1 : 0
+    const url = api(`/api/audio?seq=${seq}&sr=${SAMPLE_RATE}&speech=${speech}${end ? '&end=1' : ''}`)
+    this.sendChain = this.sendChain.then(async () => {
+      const res = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/octet-stream' }, body }).catch((e: Error) => e)
+      if (res instanceof Error || !res.ok) {
+        const why = res instanceof Error ? res.message : `HTTP ${res.status}`
+        console.error('[mic] upload failed', seq, why)
+        this.emit({ sendErrors: this.status.sendErrors + 1 })
+        if (this.status.sendErrors % 20 === 1) this.log(`upload failed: ${why}`)
+        return
+      }
+      this.emit({ chunksSent: this.status.chunksSent + 1, bytesSent: this.status.bytesSent + body.byteLength, lastSendAt: Date.now() })
+    })
+  }
+
+  async stop() {
+    document.removeEventListener('visibilitychange', this.onVisibility)
+    await this.vad?.destroy()
+    this.stream?.getTracks().forEach((t) => t.stop())
+    this.silence?.pause()
+    await this.wakeLock?.release()
+    await this.ctx?.close()
+    this.emit({ phase: 'off' })
+  }
+}

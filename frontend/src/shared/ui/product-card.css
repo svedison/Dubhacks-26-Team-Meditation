@@ -1,0 +1,114 @@
+.pcard {
+  --card-bg: #f7f0e6;
+  --card-ink: #231a14;
+  --card-sub: #6a5a4c;
+  --ok: #2e7d4f;
+  --risk: #9c2a24;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  color: var(--card-ink);
+  border-radius: var(--radius-l);
+  overflow: hidden;
+  font-family: var(--font-ui);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 18px 40px -18px rgba(0, 0, 0, 0.55);
+}
+.pcard__media {
+  aspect-ratio: 4 / 3;
+  background: #f3ece1;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.pcard__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.18);
+}
+.pcard__mono {
+  font-family: var(--font-display);
+  font-size: 72px;
+  color: var(--card-sub);
+}
+.pcard__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 22px 22px;
+}
+.pcard__badge {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 18px;
+  padding: 6px 12px 6px 9px;
+  border-radius: 999px;
+}
+.pcard__badge svg { width: 20px; height: 20px; }
+.pcard__badge--ok { background: #dcefe2; color: var(--ok); }
+.pcard__badge--risk { background: #fbe1dc; color: var(--risk); }
+.pcard__name {
+  margin: 4px 0 0;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+.pcard__price {
+  font-family: var(--font-display);
+  font-size: 52px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-top: 4px;
+  font-variant-numeric: lining-nums;
+}
+.pcard__meta {
+  margin: 4px 0 0;
+  font-size: 18px;
+  color: var(--card-sub);
+}
+
+/* 有风险的商品：图片褪色，价格划掉，整张卡压暗 */
+.pcard--risk { --card-bg: #efe4dc; }
+.pcard--risk .pcard__media img { filter: grayscale(0.85) contrast(0.9); opacity: 0.75; }
+.pcard--risk .pcard__price { text-decoration: line-through; text-decoration-thickness: 3px; color: var(--card-sub); }
+
+.pcard__stamp {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px 10px 12px;
+  border-radius: 999px;
+  background: var(--ok);
+  color: #fff;
+  font-weight: 700;
+  font-size: 22px;
+  animation: pcard-stamp 520ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.pcard__stamp svg { width: 24px; height: 24px; }
+@keyframes pcard-stamp {
+  from { transform: scale(1.6) rotate(-8deg); opacity: 0; }
+  to { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+/* 监护人端的小卡：横排 */
+.pcard--compact { flex-direction: row; border-radius: var(--radius-m); box-shadow: none; border: 1px solid #e8dfd3; }
+.pcard--compact .pcard__media { width: 84px; aspect-ratio: 1; flex: none; }
+.pcard--compact .pcard__body { padding: 12px 14px; gap: 2px; }
+.pcard--compact .pcard__badge { font-size: 13px; padding: 3px 8px 3px 6px; }
+.pcard--compact .pcard__badge svg { width: 14px; height: 14px; }
+.pcard--compact .pcard__name { font-size: 16px; margin: 0; }
+.pcard--compact .pcard__price { font-size: 22px; }
+.pcard--compact .pcard__meta { display: none; }
+.pcard--compact .pcard__stamp { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pcard__stamp { animation: none; }
+}

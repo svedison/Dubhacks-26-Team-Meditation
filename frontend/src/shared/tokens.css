@@ -1,0 +1,18 @@
+@import '@fontsource-variable/atkinson-hyperlegible-next';
+@import '@fontsource-variable/fraunces';
+
+/* 设计规范：老人端深色暖墨底 + 暖白眼睛；监护人端浅色暖纸底。两端共用字体和圆角等级 */
+:root {
+  --font-ui: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
+  --font-display: 'Fraunces Variable', Georgia, serif;
+
+  --elder-bg: #14110e;
+  --elder-bg-alert: #9c2a24;
+  --face-eye: #fff1dc;
+  --face-blush: #f68096;
+  --face-spark: #ffd27a;
+
+  --radius-s: 12px;
+  --radius-m: 20px;
+  --radius-l: 28px;
+}

@@ -1,0 +1,92 @@
+.acard {
+  --a-bg: #ffffff;
+  --a-ink: #1e1a16;
+  --a-sub: #6b6158;
+  --a-line: #e7ded3;
+  position: relative;
+  background: var(--a-bg);
+  color: var(--a-ink);
+  border: 1px solid var(--a-line);
+  border-radius: var(--radius-l);
+  padding: 18px 20px 20px;
+  font-family: var(--font-ui);
+}
+
+/* 红级：中性深石板色，和老人端诈骗的红色分开 */
+.acard--red {
+  --a-bg: #27303b;
+  --a-ink: #fbf5ec;
+  --a-sub: #c4c9d0;
+  --a-line: #27303b;
+  box-shadow: 0 22px 44px -22px rgba(30, 38, 48, 0.75);
+}
+/* 黄级：左边一条琥珀色 */
+.acard--yellow { box-shadow: inset 5px 0 0 #e2a23b; }
+
+.acard__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.acard__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #f4d9a6;
+}
+.acard__chip::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f4b860;
+  box-shadow: 0 0 0 4px rgba(244, 184, 96, 0.22);
+}
+.acard__chip--soft { color: #9a6514; }
+.acard__chip--soft::before { background: #e2a23b; box-shadow: 0 0 0 4px rgba(226, 162, 59, 0.18); }
+.acard__icon { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #eef4ee; color: #2e7d4f; }
+.acard__icon svg { width: 18px; height: 18px; }
+.acard__time { font-size: 14px; color: var(--a-sub); font-variant-numeric: tabular-nums; }
+
+.acard__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 27px; line-height: 1.15; letter-spacing: -0.01em; }
+.acard--normal .acard__title { font-size: 21px; }
+.acard__body { margin: 8px 0 0; font-size: 17px; line-height: 1.45; color: var(--a-sub); }
+.acard--red .acard__body { color: #e3e6ea; }
+
+.acard__note {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: var(--radius-s);
+  background: rgba(127, 127, 127, 0.1);
+  font-size: 16px;
+  line-height: 1.4;
+}
+.acard--red .acard__note { background: rgba(255, 255, 255, 0.08); }
+.acard__note--empty { font-style: italic; color: var(--a-sub); }
+
+.acard__actions { display: flex; gap: 10px; margin-top: 16px; }
+
+.btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 18px;
+  border-radius: 16px;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.btn svg { width: 20px; height: 20px; }
+.btn:active { transform: translateY(2px); }
+/* 能按下去的实体感（参照 Pomegranate、Ebb 的实色底影） */
+.btn--call { background: #fff3e0; color: #1e1a16; box-shadow: 0 3px 0 #d8c3a2; }
+.btn--call:active { box-shadow: 0 1px 0 #d8c3a2; }
+.btn--ghost { background: transparent; color: inherit; border: 2px solid currentColor; opacity: 0.92; }
+.acard:not(.acard--red) .btn--ghost { color: #1e1a16; border-color: #d9cfc3; }
