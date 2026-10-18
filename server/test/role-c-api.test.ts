@@ -121,7 +121,7 @@ test('four scenes over HTTP/WS: naming, refill/scam, alternative, delivery/dose/
     const miracle = text.includes('miracle');
     // The note after a scam warning is ordinary talk; the real model classifies it as chat, not a refill.
     const chat = text.includes('call me');
-    const decision = { intent: chat ? 'chat' : miracle ? 'risky_product' : 'refill', product_id: chat ? null : miracle ? 'miracle-joint' : 'calcium-120', reply: 'Please confirm.', elder_name: null };
+    const decision = { intent: chat ? 'chat' : miracle ? 'risky_product' : 'refill', product_id: chat ? null : miracle ? 'miracle-joint' : 'calcium-120', reply: 'Please confirm.', elder_name: null, quantity: null };
     const events = [
       { type: 'message_start', message: { id: 'msg_test', type: 'message', role: 'assistant', model: body.model, content: [], stop_reason: null, stop_sequence: null, usage: { input_tokens: 1, output_tokens: 0 } } },
       { type: 'content_block_start', index: 0, content_block: { type: 'text', text: '' } },

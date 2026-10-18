@@ -5,7 +5,7 @@ export type Line = { id: number; role: 'grandma' | 'ai'; text: string; ask?: boo
 
 // answered：卡片出来以后她开过口（用来判断换话题时该不该收卡）。盖章只认后端的 order 事件：报价、拒单（"Okay, I won't
 // order it"）都是开心脸，开心脸本身不代表下单成功；paid 和 simulated_paid 都盖 Ordered 章，下面滑出 Visa 支付条
-export type CardView = { product: Product; alternative?: Product; done: boolean; answered: boolean; orderStatus?: Order['status'] }
+export type CardView = { product: Product; alternative?: Product; done: boolean; answered: boolean; orderStatus?: Order['status']; quantity?: number }
 
 export type ElderView = {
   face: FaceState
@@ -70,7 +70,7 @@ export function elderReducer(v: ElderView, e: ElderEvent | { type: 'socket_down'
       // 设备主动开口是新话题：已经下过单的卡片收起来
       return addLine(v.card?.done ? { ...v, card: null, heardWhileIdle: null } : { ...v, heardWhileIdle: null }, 'ai', e.text, true)
     case 'card':
-      return { ...v, awake: true, conversing: true, cardThisTurn: true, card: { product: e.product, alternative: e.alternative, done: false, answered: false } }
+      return { ...v, awake: true, conversing: true, cardThisTurn: true, card: { product: e.product, alternative: e.alternative, done: false, answered: false, quantity: e.quantity } }
     case 'order': {
       // 后端只在明确确认且下单成功后发 order：这才是盖章的依据
       if (!v.card || (e.status !== 'paid' && e.status !== 'simulated_paid')) return v

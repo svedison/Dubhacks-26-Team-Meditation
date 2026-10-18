@@ -19,6 +19,7 @@ export const orderSchema = z.object({
   status: z.enum(['paid', 'simulated_paid', 'blocked']), block_reason: z.string().nullable(),
   created_at: z.string().datetime({ offset: true }), deliver_on: z.string().date(), received: z.boolean(),
   payment_check: paymentCheckSchema.nullable().optional(),
+  quantity: z.number().int().positive().max(99).optional(), // packs; absent means one. price_cents is the total.
 });
 export const memorySchema = z.object({
   id: z.string(), product_id: z.string(), dose_text: z.string(),
@@ -44,7 +45,7 @@ export interface Alert {
 export type State = 'idle' | 'listening' | 'thinking' | 'speaking' | 'happy' | 'worried' | 'alert';
 export type Emotion = Extract<State, 'happy' | 'worried' | 'alert'>;
 export type Source = 'voice' | 'keyboard';
-export interface Card { product: Product; alternative?: Product }
+export interface Card { product: Product; alternative?: Product; quantity?: number }
 export interface UtteranceResult { reply_text: string; audio_url: string | null; state: State; card?: Card; order?: Order }
 export type ServerEvent =
   | { type: 'state'; state: State }

@@ -109,11 +109,12 @@ export class MemoryService {
     order.received = true; this.state.receivedOrders.push(id);
     this.state.prompts = this.state.prompts.filter(p => !(p.ref === id && p.kind === 'received'));
     const memory = this.state.memories.find(m => m.product_id === order.product_id);
+    const packs = Number.isInteger(order.quantity) && (order.quantity as number) > 0 ? (order.quantity as number) : 1;
     if (memory) {
-      memory.stock_units += product.units; delete this.state.refills[memory.id];
+      memory.stock_units += product.units * packs; delete this.state.refills[memory.id];
       this.publish('guardian', {type: 'memory', ...memory});
     } else {
-      this.state.inventory[product.id] = (this.state.inventory[product.id] ?? 0) + product.units;
+      this.state.inventory[product.id] = (this.state.inventory[product.id] ?? 0) + product.units * packs;
       // A historical receipt (e.g. the purple calcium bottle) is replenishment,
       // even when its existing regimen has not been imported as a Memory.
       if (!isRefill && product.label_dose && !product.risk) this.queue({kind: 'dose_confirm', ref: id, readyAt: this.now()});

@@ -18,10 +18,11 @@ type Props = {
   orderStatus?: Order['status'] // 只有后端确认下单成功（paid 或 simulated_paid）才盖章
   tag?: string // 并排时卡片顶部的小标签（Skip this / Try this）
   cardLast4?: string | null // 下单成功后卡片底部那条 Visa 支付条显示的卡尾号
+  quantity?: number // 她要的包数，大于 1 时价格行显示总价和单价
 }
 
 // 两端共用：老人端大卡、监护人端小卡是同一个组件
-export default function ProductCard({ product, size = 'elder', orderStatus, tag, cardLast4 }: Props) {
+export default function ProductCard({ product, size = 'elder', orderStatus, tag, cardLast4, quantity }: Props) {
   const done = orderStatus === 'paid' || orderStatus === 'simulated_paid'
   const img = product.image_url ?? productImage(product.id)
   const risk = product.risk
@@ -44,7 +45,13 @@ export default function ProductCard({ product, size = 'elder', orderStatus, tag,
             <span className="pcard__title">{title}</span>
             {sub && <span className="pcard__sub">{sub}</span>}
           </h3>
-          {!risk && <div className="pcard__price">{money(product.price_cents)}</div>}
+          {!risk && (
+            <div className="pcard__price">
+              {quantity && quantity > 1
+                ? <>{money(product.price_cents * quantity)}<small className="pcard__qty">{quantity} × {money(product.price_cents)}</small></>
+                : money(product.price_cents)}
+            </div>
+          )}
         </div>
         <ul className="pcard__points">
           <li className={`pcard__point ${risk ? 'is-risk' : 'is-ok'}`}>

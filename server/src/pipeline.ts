@@ -6,6 +6,7 @@ import { toElder } from './bus.js';
 import { state } from './state.js';
 import { extractWakeName, isOnlyWakeName, matchesWakeName, normalize } from './wake.js';
 import { shelfMatches, shortlist } from './shelf.js';
+import { parseQuantity, quantityLimits, quantityWords } from './quantity.js';
 import { decide, fallbackDecision, FALLBACK_REPLY, type Context, type Decision, type RecentOrder } from './llm.js';
 import { synthesize } from './tts.js';
 import * as risk from './modules/risk.js';
@@ -57,7 +58,8 @@ export interface PipelineStatus {
 }
 
 export class ConversationPipeline {
-  private pending: { productId: string; priceCents: number } | null = null;
+  // priceCents is the unit price; quantity the packs; awaitingReason while Milo waits to hear why she wants so many.
+  private pending: { productId: string; priceCents: number; quantity: number; awaitingReason?: boolean; reason?: string } | null = null;
   private awaitingName = false;
   private noteFor: string | null = null;
   private lastScam: { id: string; at: number } | null = null;
@@ -201,7 +203,7 @@ export class ConversationPipeline {
   /** The last few orders, named, so the model can answer "what did I buy today?" from facts. */
   private recentOrders(shelf: { id: string; name: string }[]): RecentOrder[] {
     return all('orders').slice(-6).map(order => ({
-      product: shelf.find(p => p.id === order.product_id)?.name ?? order.product_id, price_cents: order.price_cents,
+      product: `${order.quantity && order.quantity > 1 ? `${order.quantity} × ` : ''}${shelf.find(p => p.id === order.product_id)?.name ?? order.product_id}`, price_cents: order.price_cents,
       ordered_on: order.created_at.slice(0, 10), deliver_on: order.deliver_on, status: order.status, received: order.received,
     }));
   }
@@ -309,15 +311,16 @@ export class ConversationPipeline {
     this.pending = null;
     return { text: "That sounds like a scam; I'll let your daughter know, okay?", emotion: 'alert', scamText: text };
   }
-  private offer(productId: string | null, text: string): ReplyPlan {
+  private offer(productId: string | null, text: string, quantity = 1): ReplyPlan {
     this.pending = null;
     const result = risk.check(productId, text);
     if (result.reason === 'scam') return this.scam(text);
     const product = productId ? get('products', productId) : undefined;
     if (!product) return this.wish(text);
+    const qty = Math.min(99, Math.max(1, Math.floor(quantity) || 1));
     if (!result.ok) {
       if (result.alternative) {
-        this.pending = { productId: result.alternative.id, priceCents: result.alternative.price_cents };
+        this.pending = { productId: result.alternative.id, priceCents: result.alternative.price_cents, quantity: 1 };
         return {
           text: `I can't order that item; would you like ${result.alternative.name} for $${(result.alternative.price_cents / 100).toFixed(2)} instead?`,
           emotion: 'alert', card: { product, alternative: result.alternative },
@@ -325,21 +328,61 @@ export class ConversationPipeline {
       }
       return { text: "I can't order that item because it did not pass our safety check.", emotion: 'alert', card: { product } };
     }
-    this.pending = { productId: product.id, priceCents: product.price_cents };
-    return { text: `${product.name} is $${(product.price_cents / 100).toFixed(2)}; would you like me to order it?`, emotion: 'happy', card: { product } };
+    // Quantity rules: her number is honoured; above the ordinary amount Milo asks why before anything else, and never
+    // orders more than the category's cap at once (3 for supplements and medicines, 12 for everyday goods).
+    const { ask } = quantityLimits(product.category);
+    if (qty > ask) {
+      this.pending = { productId: product.id, priceCents: product.price_cents, quantity: qty, awaitingReason: true };
+      return { text: `${capital(quantityWords(qty))} packs of ${product.name} is more than usual. Is there a reason you need that many?`, emotion: 'worried', card: { product, quantity: qty } };
+    }
+    this.pending = { productId: product.id, priceCents: product.price_cents, quantity: qty };
+    return { text: this.offerLine(product.name, product.price_cents, qty), emotion: 'happy', card: { product, quantity: qty } };
+  }
+  private offerLine(name: string, unitCents: number, qty: number): string {
+    return qty === 1
+      ? `${name} is $${(unitCents / 100).toFixed(2)}; would you like me to order it?`
+      : `${capital(quantityWords(qty))} packs of ${name} come to $${(unitCents * qty / 100).toFixed(2)}; would you like me to order them?`;
+  }
+  /** Her answer to "is there a reason you need that many?" */
+  private reasonGiven(text: string, normalized: string): ReplyPlan {
+    const pending = this.pending!;
+    const product = get('products', pending.productId);
+    if (!product) { this.pending = null; return this.wish(text); }
+    if (/^(?:never ?mind|cancel|forget it|don t|do not|stop)\b/.test(normalized)) { this.pending = null; return { text: "Okay, I won't order it.", emotion: 'happy' }; }
+    if (/^(?:no|nope|not really|no reason|i don t know|i m not sure)\b/.test(normalized)) {
+      // No particular reason: start with one and let the refill reminder do its job.
+      this.pending = { productId: product.id, priceCents: product.price_cents, quantity: 1 };
+      return { text: `Then let's start with one. ${product.name} is $${(product.price_cents / 100).toFixed(2)}; I'll remind you when it runs low. Shall I order it?`, emotion: 'happy', card: { product, quantity: 1 } };
+    }
+    if (/^(?:yes|yeah|yep|sure|okay|ok)\b/.test(normalized) && normalized.split(' ').length <= 2) {
+      return { text: 'Could you tell me why you need that many?', emotion: 'worried', card: { product, quantity: pending.quantity } };
+    }
+    const changed = parseQuantity(text);
+    if (changed && changed !== pending.quantity) return this.offer(product.id, text, changed);
+    const { max } = quantityLimits(product.category);
+    const qty = Math.min(pending.quantity, max);
+    this.pending = { productId: product.id, priceCents: product.price_cents, quantity: qty, reason: text.trim() };
+    const total = (product.price_cents * qty / 100).toFixed(2);
+    const line = qty < pending.quantity
+      ? `Thank you. I can order up to ${quantityWords(max)} at a time, so let's make it ${quantityWords(qty)}: $${total}. Shall I order them?`
+      : `Thank you. ${capital(quantityWords(qty))} packs of ${product.name} come to $${total}; shall I order them?`;
+    return { text: line, emotion: 'happy', card: { product, quantity: qty } };
   }
   private async confirm(job: Job): Promise<ReplyPlan> {
     const pending = this.pending;
     this.pending = null; // Consume before awaiting payment; duplicate yes cannot charge twice.
     if (!pending) return { text: 'What would you like me to order?', emotion: 'worried' };
     const product = get('products', pending.productId);
-    if (!product || !risk.check(product.id, '').ok) return this.offer(pending.productId, '');
-    if (product.price_cents !== pending.priceCents) return this.offer(product.id, '');
+    const qty = pending.quantity;
+    if (!product || !risk.check(product.id, '').ok) return this.offer(pending.productId, '', qty);
+    if (product.price_cents !== pending.priceCents) return this.offer(product.id, '', qty);
+    if (pending.awaitingReason) { this.pending = pending; return { text: 'Could you tell me why you need that many?', emotion: 'worried', card: { product, quantity: qty } }; }
     const created_at = now();
     const delivery = new Date(created_at);
     delivery.setUTCDate(delivery.getUTCDate() + 5);
-    const draft: Order = { id: `ord_${randomUUID()}`, product_id: product.id, price_cents: product.price_cents,
-      status: 'simulated_paid', block_reason: null, created_at, deliver_on: delivery.toISOString().slice(0, 10), received: false };
+    const draft: Order = { id: `ord_${randomUUID()}`, product_id: product.id, price_cents: product.price_cents * qty,
+      status: 'simulated_paid', block_reason: null, created_at, deliver_on: delivery.toISOString().slice(0, 10), received: false,
+      ...(qty > 1 ? { quantity: qty } : {}) };
     let order: Order | null;
     try { order = await placeOrder(draft, () => !this.dead(job)); }
     catch (error) {
@@ -350,10 +393,15 @@ export class ConversationPipeline {
     }
     if (!order) return { text: '', emotion: 'worried' };
     registerOrder(order); // D schedules the delivery question and, once received, the dose reminders.
+    // More than the ordinary amount: she decided, the family is told (information, not approval).
+    if (qty > quantityLimits(product.category).ask || pending.reason) {
+      createAlert('normal', null, 'A bigger order than usual', `Mom ordered ${quantityWords(qty)} packs of ${product.name} ($${(order.price_cents / 100).toFixed(2)}).${pending.reason ? ` She said: "${pending.reason}"` : ''}`);
+    }
     // She never hears "simulated": the data keeps status simulated_paid and the guardian page says so once.
-    const text = order.payment_check?.approved
-      ? "Your order is placed; Visa confirmed your card. I'll let you know when it arrives."
-      : "Your order is placed; I'll let you know when it arrives.";
+    const visa = order.payment_check?.approved ? ' Visa confirmed your card.' : '';
+    const text = qty > 1
+      ? `Your order is placed: ${quantityWords(qty)} packs of ${product.name}, $${(order.price_cents / 100).toFixed(2)}.${visa} I'll let you know when it arrives.`
+      : `Your order is placed;${visa} I'll let you know when it arrives.`;
     return { text, emotion: 'happy', order };
   }
   private async process(job: Job): Promise<UtteranceResult> {
@@ -426,6 +474,8 @@ export class ConversationPipeline {
     }
     // Local safety rules still work when Claude is unavailable.
     if (risk.isScam(text)) { job.committed = true; return this.respond(this.scam(text), job); }
+    // She was asked why she wants so many: this sentence is the answer, not a new request.
+    if (this.pending?.awaitingReason) return this.respond(this.reasonGiven(text, normalized), job);
     if (!settings.wake_name && !this.awaitingName) {
       this.awaitingName = true;
       return this.respond({ text: "I'm your AI shopping helper; what would you like to call me?", emotion: 'happy' }, job);
@@ -459,7 +509,7 @@ export class ConversationPipeline {
         break;
       }
       case 'refill': case 'new_request': case 'risky_product':
-        this.chatRounds = 0; plan = this.offer(decision.product_id, text); break;
+        this.chatRounds = 0; plan = this.offer(decision.product_id, text, decision.quantity ?? parseQuantity(text) ?? 1); break;
       case 'confirm_yes':
         if (/\b(if|unless|maybe|not|don't)\b/i.test(text)) plan = { text: 'Would you like me to place this order?', emotion: 'worried' };
         else { job.committed = true; plan = await this.confirm(job); }
@@ -482,7 +532,7 @@ export class ConversationPipeline {
         if (refill) {
           const product = get('products', refill.productId);
           if (product && risk.check(product.id, '').ok) {
-            this.pending = { productId: product.id, priceCents: product.price_cents };
+            this.pending = { productId: product.id, priceCents: product.price_cents, quantity: 1 };
             plan = { text: `${plan.text} ${refill.text}`, emotion: 'happy', card: { product } };
           }
         }
@@ -491,5 +541,6 @@ export class ConversationPipeline {
     return this.respond(plan, job);
   }
 }
+const capital = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 export const pipeline = new ConversationPipeline();
 export const handleUtterance = (text: string, source: Source): Promise<UtteranceResult> => pipeline.handleUtterance(text, source);

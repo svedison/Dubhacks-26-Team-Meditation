@@ -16,6 +16,8 @@ export interface Order {
   id: string; product_id: string; price_cents: number;
   status: 'paid' | 'simulated_paid' | 'blocked'; block_reason: string | null;
   created_at: string; deliver_on: string; received: boolean;
+  quantity?: number; // packs in this order (absent = 1); price_cents is the total. Receipt credits units × quantity.
+  payment_check?: unknown; // B's sanitised Visa check, carried through untouched
 }
 export interface Memory {
   id: string; product_id: string; dose_text: string; times: string[];

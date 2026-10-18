@@ -33,7 +33,7 @@ export default function CardStage({ card, cardLast4 }: { card: CardView | null; 
             </>
           ) : (
             <div className="card-stage__slot">
-              <ProductCard product={card.product} orderStatus={card.orderStatus} cardLast4={cardLast4} />
+              <ProductCard product={card.product} orderStatus={card.orderStatus} cardLast4={cardLast4} quantity={card.quantity} />
             </div>
           )}
         </motion.div>
