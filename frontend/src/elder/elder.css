@@ -1,0 +1,226 @@
+/* 老人端：iPad mini 横屏 1133×744 设计尺寸，Stage 负责等比缩放 */
+
+.stage-shell {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  transition: background-color 400ms ease;
+  font-family: var(--font-ui);
+  color: var(--face-eye);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center;
+  overflow: hidden;
+}
+.layer { position: absolute; inset: 0; }
+
+/* 开机：一次点击启动麦克风 */
+.wake {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  border: 0;
+  background: transparent;
+  color: var(--face-eye);
+  font: inherit;
+  cursor: pointer;
+}
+.wake__eyes { display: flex; gap: 34px; margin-bottom: 18px; }
+.wake__eyes i {
+  width: 64px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--face-eye);
+  box-shadow: 0 0 18px rgba(255, 241, 220, 0.4);
+  animation: wake-breathe 3.2s ease-in-out infinite;
+}
+.wake__name { font-family: var(--font-display); font-size: 68px; font-weight: 900; letter-spacing: -0.01em; }
+.wake__hint { font-size: 36px; font-weight: 700; opacity: 0.8; max-width: 720px; text-align: center; }
+/* 点了以后：两条线慢慢睁成眼睛 */
+.wake.is-starting .wake__eyes i { animation: wake-open 1.6s cubic-bezier(0.43, 0.195, 0.02, 1) forwards; }
+@keyframes wake-open {
+  from { height: 10px; opacity: 0.6; }
+  to { height: 58px; width: 46px; opacity: 1; }
+}
+@keyframes wake-breathe {
+  0%, 100% { opacity: 0.55; transform: scaleX(1); }
+  50% { opacity: 1; transform: scaleX(1.08); }
+}
+
+/* 待机照片 */
+.photo-frame { position: absolute; inset: 0; overflow: hidden; background: #000; }
+.photo-frame__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* 脸：全屏 ↔ 左上角 */
+.face-box { position: absolute; }
+.face-box--full { left: 0; top: 0; width: 100%; height: 100%; }
+.face-box--corner { left: -50px; top: -38px; width: 400px; height: 264px; } /* 眼睛左缘对齐 56px 外边距 */
+
+/* 字幕区：全屏统一 56px 外边距 */
+.talk { position: absolute; top: 210px; bottom: 56px; left: 56px; }
+.talk.is-solo { right: 56px; }
+.talk.is-single { width: 540px; }
+.talk.is-pair { width: 470px; }
+
+.chat {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 14px;
+  overflow: hidden;
+}
+.chat__row { display: flex; }
+.chat__row--ai { justify-content: flex-start; }
+.chat__row--grandma { justify-content: flex-end; }
+.chat__bubble { overflow-wrap: anywhere; }
+.talk.is-solo .chat__bubble { max-width: 860px; }
+.chat__row--ai .chat__bubble {
+  font-size: 40px;
+  line-height: 1.22;
+  font-weight: 700;
+  color: #fff6ea;
+  background: rgba(255, 241, 220, 0.07);
+  border-radius: 38px 38px 38px 14px;
+  padding: 18px 30px 20px;
+}
+.chat__bubble--l { font-size: 52px !important; }
+.chat__bubble--m { font-size: 46px !important; }
+.chat__bubble--s { font-size: 40px !important; }
+.chat__row--grandma .chat__bubble {
+  max-width: 82%;
+  font-size: 32px;
+  line-height: 1.25;
+  font-weight: 700;
+  color: #e9dfd2;
+  background: rgba(255, 241, 220, 0.1);
+  border-radius: 30px 30px 10px 30px;
+  padding: 12px 22px 14px;
+}
+.chat__em {
+  font-weight: 700;
+  color: #f2b866;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 6px;
+}
+
+/* 商品卡片区：底边和字幕底边对齐 */
+.cards { position: absolute; top: 96px; bottom: 56px; right: 56px; display: flex; align-items: flex-end; justify-content: center; }
+.cards.is-solo { width: 0; }
+.cards.is-single { width: 441px; }
+.cards.is-pair { width: 511px; }
+.card-stage { display: flex; gap: 20px; align-items: stretch; width: 100%; justify-content: center; }
+.card-stage__slot > .pcard { flex: 1; }
+.card-stage__slot { display: flex; flex-direction: column; gap: 10px; width: 380px; }
+.card-stage--pair .card-stage__slot { width: 245px; }
+.card-stage__label { font-size: 28px; font-weight: 900; padding-left: 8px; }
+.card-stage__label--risk { color: #ffd9d2; }
+.card-stage__label--ok { color: #bfe7cb; }
+.card-stage--pair .pcard__price { font-size: 52px; }
+.card-stage--pair .pcard__name { font-size: 22px; }
+.card-stage--pair .pcard__seal-text strong { font-size: 23px; }
+.card-stage--pair .pcard__seal-text span { font-size: 17px; }
+.card-stage--pair .pcard__body { padding: 14px 16px 18px; }
+
+/* 演示时钟 */
+.clock {
+  position: absolute;
+  top: 40px;
+  right: 56px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 9px 16px 10px;
+  border-radius: 999px;
+  background: rgba(20, 17, 14, 0.55);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #fff1dc;
+}
+.clock__label { font-size: 17px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.7; }
+.clock__time { font-size: 28px; font-weight: 900; font-variant-numeric: tabular-nums; }
+
+/* 后端断开：只给队员看的小点 */
+.conn { position: absolute; right: 14px; bottom: 14px; width: 10px; height: 10px; border-radius: 50%; background: #e0a43a; opacity: 0.7; }
+
+/* 键盘兜底 */
+.kb-hotspot { position: absolute; left: 0; bottom: 0; width: 110px; height: 110px; }
+.kb-sheet {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--radius-l);
+  background: #2a231d;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.6);
+}
+.kb-sheet input {
+  flex: 1;
+  font: inherit;
+  font-size: 26px;
+  padding: 14px 18px;
+  border-radius: var(--radius-m);
+  border: 2px solid #4a3f35;
+  background: #14110e;
+  color: #fff6ea;
+  outline: none;
+}
+.kb-sheet input:focus { border-color: #f6c177; }
+.kb-sheet button {
+  font: inherit;
+  font-size: 22px;
+  font-weight: 700;
+  padding: 0 26px;
+  border: 0;
+  border-radius: var(--radius-m);
+  background: #f6c177;
+  color: #231a14;
+}
+.kb-sheet .kb-sheet__close { background: transparent; color: #c9bcae; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wake__eyes i { animation: none; }
+}
+
+/* 警报：深酒红，中间亮四周暗 */
+.alert-wash { background: radial-gradient(ellipse 75% 75% at 50% 42%, #82292a 0%, #5e1d1f 55%, #421416 100%); pointer-events: none; }
+
+/* 屏幕内圈一道细衬纸线，像相框里的卡纸 */
+.mat { position: absolute; inset: 14px; border-radius: 22px; box-shadow: inset 0 0 0 1.5px rgba(255, 241, 220, 0.1); pointer-events: none; }
+
+/* 待机底部提示条：告诉人喊什么名字 */
+.wake-strip {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  translate: -50% 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  background: rgba(246, 236, 220, 0.94);
+  color: #2a1f17;
+  white-space: nowrap;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.25);
+}
+.wake-strip__say { font-size: 36px; font-weight: 900; }
+.wake-strip__clock { font-size: 22px; font-weight: 800; color: #6a5a4c; font-variant-numeric: tabular-nums; }
+.wake-strip__say + .wake-strip__clock { padding-left: 18px; border-left: 2px solid rgba(42, 31, 23, 0.15); }
+
+/* 开机页：家庭照片虚化在后面 */
+.wake__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(28px) brightness(0.35); transform: scale(1.1); }
