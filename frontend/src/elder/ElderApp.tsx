@@ -6,6 +6,7 @@ import type { ElderEvent, ElderOutgoing, FaceState, Settings } from '../shared/c
 import { clockLabel } from '../shared/format'
 import { useSocket } from '../shared/useSocket'
 import CardStage from './CardStage'
+import ClockJump from './ClockJump'
 import Chat from './Chat'
 import { playCue } from './cues'
 import { elderReducer, initialView } from './elderReducer'
@@ -184,13 +185,13 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       <motion.div
         className="layer"
         initial={false}
-        animate={{ opacity: showFace ? 0.16 : 1, filter: showFace ? 'blur(36px)' : 'blur(0px)' }}
+        animate={{ opacity: showFace ? 0.4 : 1, filter: showFace ? 'blur(24px) brightness(0.5) saturate(0.85)' : 'blur(0px) brightness(1) saturate(1)' }}
         transition={{ duration: showFace ? 0.5 : 0.8 }}
       >
         <PhotoFrame photos={photos} />
       </motion.div>
-      {/* 警报：深酒红，中间亮四周暗；进出都慢慢来，不闪 */}
-      <motion.div className="layer alert-wash" initial={false} animate={{ opacity: face === 'alert' ? 1 : 0 }} transition={{ duration: 1.1, ease: [0.43, 0.195, 0.02, 1] }} />
+      {/* 警报：深酒红，中间亮四周暗。整屏红只留给诈骗；有替代品的假药只把风险卡压红 */}
+      <motion.div className="layer alert-wash" initial={false} animate={{ opacity: face === 'alert' && !pair ? 1 : 0 }} transition={{ duration: 0.8, ease: [0.43, 0.195, 0.02, 1] }} />
       <div className="mat" aria-hidden />
 
       <AnimatePresence>
@@ -204,14 +205,15 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
             exit={{ opacity: 0 }}
             transition={{ layout: MOVE, opacity: { duration: 0.4 } }}
           >
-            <Face state={face} talking={playing} level={() => player.level()} />
+            <Face state={face} talking={playing} level={() => player.level()} hear={() => mic.level()} />
           </motion.div>
         )}
       </AnimatePresence>
 
       {corner && (
         <motion.div layout="position" className={`talk ${layoutCls}`} transition={{ layout: MOVE }} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <Chat lines={view.lines} />
+          {/* 字幕区高 = 744 − 上沿 240 − 下边距 56；宽度和 elder.css 里 .talk 一致 */}
+          <Chat lines={view.lines} width={pair ? 470 : 540} height={448} />
         </motion.div>
       )}
       {corner && (
@@ -220,12 +222,14 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
         </div>
       )}
 
-      {view.clock && showFace && (
+      {/* 醒着但还没开始聊（全屏眼睛）时角上留着时钟；聊起来就收起，免得抢字幕 */}
+      {view.clock && showFace && !corner && (
         <div className="clock" aria-label="Demo clock">
           <span className="clock__label">Demo clock</span>
           <span className="clock__time">{clockLabel(view.clock)}</span>
         </div>
       )}
+      <ClockJump clock={view.clock} />
       <AnimatePresence>
         {!showFace && (
           <motion.div key="strip" className="wake-strip" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }} transition={{ duration: 0.5 }}>

@@ -41,11 +41,18 @@ function emphasize(text: string, counter: { word: number }): ReactNode[] {
   })
 }
 
-// 句子越长字越小，保证一屏放得下：短句 52px，中等 46px，长句 40px
-function sizeClass(text: string) {
-  if (text.length <= 64) return 'chat__bubble--l'
-  if (text.length <= 120) return 'chat__bubble--m'
-  return 'chat__bubble--s'
+// 按一句一行的排法估算高度，从 52px 往下试，选放得进字幕区的最大字号（Nunito 粗体平均字宽约 0.52 字号）
+const SIZES = [52, 46, 40, 34]
+function fitSize(text: string, width: number, height: number): number {
+  const inner = width - 60
+  for (const size of SIZES) {
+    const perLine = Math.floor(inner / (size * 0.52))
+    const sents = sentences(text)
+    const lines = sents.reduce((n, s) => n + Math.ceil(s.length / perLine), 0)
+    const h = lines * size * 1.22 + (sents.length - 1) * size * 0.35 + 38
+    if (h <= height) return size
+  }
+  return SIZES[SIZES.length - 1]
 }
 
 // 屏幕上只留两句：最新一句，以及它前面紧挨着的另一方的一句；AI 这句太长时只留它自己
@@ -57,21 +64,29 @@ function visible(lines: Line[]): Line[] {
   return prev && prev.role !== last.role ? [prev, last] : [last]
 }
 
-export default function Chat({ lines }: { lines: Line[] }) {
+type Props = { lines: Line[]; width: number; height: number }
+
+export default function Chat({ lines, width, height }: Props) {
+  const shown = visible(lines)
+  // 上面还有奶奶那一句时，给它留出约两行的高度
+  const room = shown.length > 1 ? height - 110 : height
   return (
     <div className="chat">
       <AnimatePresence initial={false} mode="popLayout">
-        {visible(lines).map((l) => (
+        {shown.map((l) => (
           <motion.div
             key={l.id}
             layout="position"
             className={`chat__row chat__row--${l.role}`}
-            initial={{ opacity: 0, y: 28 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, transition: { duration: 0.15 } }}
-            transition={{ duration: 0.6, delay: 0.12, ease: [0.43, 0.195, 0.02, 1] }}
+            // 奶奶那句先出；AI 那句等它站稳再进来，两句不会同时动
+            transition={{ duration: 0.45, delay: l.role === 'ai' ? 0.3 : 0.1, ease: [0.43, 0.195, 0.02, 1] }}
           >
-            <div className={`chat__bubble ${l.role === 'ai' ? sizeClass(l.text) : ''}`}>{l.role === 'ai' ? speak(l.text) : l.text}</div>
+            <div className="chat__bubble" style={l.role === 'ai' ? { fontSize: fitSize(l.text, width, room) } : undefined}>
+              {l.role === 'ai' ? speak(l.text) : l.text}
+            </div>
           </motion.div>
         ))}
       </AnimatePresence>

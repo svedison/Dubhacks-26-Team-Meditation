@@ -18,7 +18,8 @@ export type FaceParams = {
   mouthW: number
   mouthH: number
   mouthTalk: number // 嘴随音量张合的幅度
-  orbit: number // 思考时转圈
+  orbit: number // 思考时左右扫视
+  hear: number // 在听时眼睛跟着音量放大
   bounce: number // 开心时上下晃
   drift: number // 待机微动
   blinkMin: number // 眨眼间隔（秒）
@@ -29,16 +30,16 @@ export type ParamKey = keyof FaceParams
 
 const base: FaceParams = {
   rx: 0.5, ry: 0.5, dy: 0, lidY: -1, lidA: 0, bot: 0.7, brow: 0, browA: 0, browGap: 0.3, blush: 0,
-  mouth: 0, mouthW: 0.45, mouthH: 0.06, mouthTalk: 0, orbit: 0, bounce: 0, drift: 1, blinkMin: 3, blinkMax: 6,
+  mouth: 0, mouthW: 0.45, mouthH: 0.06, mouthTalk: 0, orbit: 0, hear: 0, bounce: 0, drift: 1, blinkMin: 3, blinkMax: 6,
 }
 
 export const FACE_PARAMS: Record<FaceState, FaceParams> = {
   // 待机时整张脸不显示（轮播照片），这里给一个合眼的形状，供醒来时从一条线睁开
   idle: { ...base, ry: 0.03, drift: 0, blinkMin: 99, blinkMax: 99 },
-  // 在听：拉成竖胶囊（借小智月球车的竖胶囊眼），微动降到最小，眨眼间隔拉长
-  listening: { ...base, rx: 0.5, ry: 0.6, drift: 0.4, blinkMin: 4, blinkMax: 8 },
-  // 在想：眼睛略扁、往上看，绕小椭圆转圈
-  thinking: { ...base, rx: 0.5, ry: 0.45, dy: -0.15, orbit: 1, drift: 0 },
+  // 在听：拉成竖胶囊（借小智月球车的竖胶囊眼），跟着声音微微放大，眨眼间隔拉长
+  listening: { ...base, rx: 0.5, ry: 0.6, drift: 0.4, hear: 1, blinkMin: 4, blinkMax: 8 },
+  // 在想：眯成两道缝、稍往上看，左右慢慢扫视（和「在听」的竖胶囊一眼分开）
+  thinking: { ...base, rx: 0.5, ry: 0.24, dy: -0.08, orbit: 1, drift: 0 },
   // 在说：眼睛略扁，嘴跟声音动
   speaking: { ...base, rx: 0.5, ry: 0.47, mouth: 1, mouthTalk: 1 },
   // 开心：下半部分咬成弯月，上下晃，腮红滑进来，外上角两颗小星点

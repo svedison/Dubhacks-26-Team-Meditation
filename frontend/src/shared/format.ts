@@ -29,3 +29,13 @@ export function timeAgo(iso: string, now: string | null): string {
   if (min < 60 * 24) return `${Math.round(min / 60)} h ago`
   return t.toFormat('LLL d')
 }
+
+export function dayAndTime(now: string): { day: string; time: string } {
+  const d = parse(now)
+  return { day: d.toFormat('cccc'), time: d.toFormat('h:mm a') }
+}
+
+// 两个时间点之间相差多少小时（后一个减前一个）
+export function hoursBetween(from: string, to: string): number {
+  return parse(to).diff(parse(from), 'hours').hours
+}

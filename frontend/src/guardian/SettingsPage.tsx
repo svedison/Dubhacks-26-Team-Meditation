@@ -35,7 +35,7 @@ export default function SettingsPage() {
       <h1 className="g-h1">Settings</h1>
 
       <h2 className="g-h2">What she shares</h2>
-      <p className="g-note">She picks this.</p>
+      <p className="g-note">Choose this with her.</p>
       <div className="g-levels" role="radiogroup" aria-label="Share level">
         {LEVELS.map((l) => {
           const on = settings.share_level === l.id
