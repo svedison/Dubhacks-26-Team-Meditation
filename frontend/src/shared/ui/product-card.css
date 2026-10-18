@@ -131,7 +131,9 @@
 /* 下单以后这张卡的重点变成「用哪张卡付的」：用法那一行先收起来，卡片不变高、不顶到右上角的时间 */
 .pcard--done .pcard__point.is-dose { display: none; }
 .pcard__pay { display: flex; align-items: center; gap: 14px; margin-top: 10px; padding: 12px 16px; border-radius: 12px; background: #fff; box-shadow: inset 0 0 0 1.5px #e3dacd; animation: pcard-pay-in 420ms cubic-bezier(0.34, 1.4, 0.64, 1) 520ms both; }
-.pcard__pay-num { flex: 1; font-size: 24px; font-weight: 900; letter-spacing: 0.04em; color: var(--card-ink); font-variant-numeric: tabular-nums; }
+.pcard__pay-text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pcard__pay-note { font-size: 15px; font-weight: 800; line-height: 1.2; white-space: nowrap; color: #1a1f71; }
+.pcard__pay-num { font-size: 24px; font-weight: 900; letter-spacing: 0.04em; color: var(--card-ink); font-variant-numeric: tabular-nums; }
 .pcard__pay-ok { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--ok); color: #fff; animation: pcard-pay-ok 360ms cubic-bezier(0.34, 1.56, 0.64, 1) 860ms both; }
 .pcard__pay-ok svg { width: 20px; height: 20px; }
 @keyframes pcard-pay-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }

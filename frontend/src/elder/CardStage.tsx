@@ -28,12 +28,12 @@ export default function CardStage({ card, cardLast4 }: { card: CardView | null; 
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.8, type: 'spring', stiffness: 200, damping: 24 }}
               >
-                <ProductCard product={card.alternative} orderStatus={card.orderStatus} tag="Try this" cardLast4={cardLast4} />
+                <ProductCard product={card.alternative} orderStatus={card.orderStatus} tag="Try this" cardLast4={cardLast4} visaChecked={card.visaChecked} />
               </motion.div>
             </>
           ) : (
             <div className="card-stage__slot">
-              <ProductCard product={card.product} orderStatus={card.orderStatus} cardLast4={cardLast4} />
+              <ProductCard product={card.product} orderStatus={card.orderStatus} cardLast4={cardLast4} visaChecked={card.visaChecked} />
             </div>
           )}
         </motion.div>

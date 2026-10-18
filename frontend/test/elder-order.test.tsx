@@ -33,6 +33,17 @@ test('only a successful matching order completes the card and stamps it Ordered 
   expect(html).toContain('Ordered')
   expect(html).toContain('aria-label="Visa"')
   expect(html).toContain('•••• 4242')
+  expect(html).not.toContain('Card checked with Visa')
+})
+
+test('a Visa sandbox check that passed adds its line to the strip', () => {
+  const payment_check = { provider: 'visa_pav' as const, environment: 'sandbox' as const, approved: true, action_code: '85', checked_at: '2026-10-17T18:00:00Z', note: null }
+  const view = elderReducer(offer(), { type: 'order', ...order, payment_check })
+  expect(view.card?.visaChecked).toBe(true)
+  const html = renderToStaticMarkup(<ProductCard product={product} orderStatus={view.card?.orderStatus} cardLast4="4242" visaChecked={view.card?.visaChecked} />)
+  expect(html).toContain('Card checked with Visa')
+  const failed = elderReducer(offer(), { type: 'order', ...order, payment_check: { ...payment_check, approved: false, action_code: null, note: 'timeout' } })
+  expect(failed.card?.visaChecked).toBe(false)
 })
 
 test('confirmed alternative becomes the completed product, without stamping the rejected product', () => {

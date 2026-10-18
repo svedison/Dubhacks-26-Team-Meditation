@@ -60,7 +60,8 @@
 .g-order { display: flex; flex-direction: column; border-radius: var(--radius-l); background: #fff; border: 1px solid var(--g-line); overflow: hidden; }
 .g-order .pcard { border: 0; border-radius: 0; box-shadow: none; }
 /* 状态那一行收在同一张卡里，不再像掉到下一张卡上 */
-.g-order__meta { display: flex; align-items: center; gap: 10px; padding: 10px 16px 12px; border-top: 1px solid var(--g-line); font-size: 16px; font-weight: 700; color: var(--g-sub); }
+.g-order__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 10px 16px 12px; border-top: 1px solid var(--g-line); font-size: 16px; font-weight: 700; color: var(--g-sub); }
+.g-order__meta > * { white-space: nowrap; }
 .g-pill { font-weight: 900; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: #dcefe2; color: var(--g-ok); }
 .g-pill--blocked { background: #f3e1dc; color: #8a2e24; }
 
@@ -212,7 +213,9 @@
   .g-tab { min-height: 48px; flex-direction: row; gap: 8px; }
   .g-tab svg { width: 20px; height: 20px; }
   .g-ledger { display: grid; grid-template-columns: 400px minmax(0, 1fr); column-gap: 48px; align-items: start; }
-  .g-ledger .g-orders { margin-top: 14px; }
+  .g-ledger .g-orders { margin-top: 14px; grid-column: 2; grid-row: 1 / span 2; }
+  /* 沙盒说明跟在左栏总额下面，不被右栏的长订单列表挤到页面最底 */
+  .g-ledger > .g-ledger__demo { grid-column: 1; grid-row: 2; align-self: start; }
   /* 只有总额、没有每一单时，那句说明留在总额卡下面，不跑到右上角 */
   .g-ledger > .g-note { grid-column: 1; margin-top: 0; }
   .g-pills .g-mems { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -270,6 +273,10 @@
 }
 
 /* 订单行里的卡：Visa 标志加尾号 */
+.g-order__checked { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; color: #1a1f71; }
+.g-order__checked svg { width: 15px; height: 15px; color: var(--g-ok); }
+.g-ledger__demo { display: flex; align-items: center; gap: 8px; margin: 20px 0 0; font-size: 15px; font-weight: 600; line-height: 1.4; color: var(--g-sub); }
+.g-ledger__demo svg { flex: none; }
 .g-order__card { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 6px; background: #fff; box-shadow: inset 0 0 0 1px var(--g-line); font-weight: 800; color: var(--g-ink); font-variant-numeric: tabular-nums; }
 
 /* Settings 里的那张 Visa 卡 */

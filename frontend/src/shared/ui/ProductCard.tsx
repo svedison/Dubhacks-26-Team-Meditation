@@ -18,10 +18,11 @@ type Props = {
   orderStatus?: Order['status'] // 只有后端确认下单成功（paid 或 simulated_paid）才盖章
   tag?: string // 并排时卡片顶部的小标签（Skip this / Try this）
   cardLast4?: string | null // 下单成功后卡片底部那条 Visa 支付条显示的卡尾号
+  visaChecked?: boolean // 下单前 Visa 沙盒校验过这张卡：支付条里多一行说明
 }
 
 // 两端共用：老人端大卡、监护人端小卡是同一个组件
-export default function ProductCard({ product, size = 'elder', orderStatus, tag, cardLast4 }: Props) {
+export default function ProductCard({ product, size = 'elder', orderStatus, tag, cardLast4, visaChecked }: Props) {
   const done = orderStatus === 'paid' || orderStatus === 'simulated_paid'
   const img = product.image_url ?? productImage(product.id)
   const risk = product.risk
@@ -65,7 +66,10 @@ export default function ProductCard({ product, size = 'elder', orderStatus, tag,
         {done && cardLast4 && (
           <div className="pcard__pay">
             <VisaMark height={30} />
-            <span className="pcard__pay-num">•••• {cardLast4}</span>
+            <span className="pcard__pay-text">
+              <span className="pcard__pay-num">•••• {cardLast4}</span>
+              {visaChecked && <span className="pcard__pay-note">Card checked with Visa</span>}
+            </span>
             <span className="pcard__pay-ok" aria-hidden><Check strokeWidth={3.4} /></span>
           </div>
         )}
