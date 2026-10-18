@@ -18,11 +18,15 @@ export default function MemoryPage() {
           return (
             <li key={m.id} className={`g-mem${m.paused ? ' is-paused' : ''}`}>
               <div className="g-mem__top">
-                <div>
-                  <h2 className="g-mem__name">{p?.name ?? m.product_id}</h2>
-                  <p className="g-mem__dose">{m.dose_text} · {m.times.join(', ')}</p>
-                </div>
-                <button
+                <h2 className="g-mem__name">{p?.name ?? m.product_id}</h2>
+                <p className="g-mem__dose">{m.dose_text} · {m.times.join(', ')}</p>
+              </div>
+              <dl className="g-mem__facts">
+                <div><dt>Since</dt><dd>{dayLabel(m.start_date)}</dd></div>
+                <div><dt>Left</dt><dd>{days} days</dd></div>
+                <div><dt>Last dose</dt><dd>{m.log.length ? ANSWER_TEXT[m.log.at(-1)!.answer] : 'Not yet'}</dd></div>
+              </dl>
+              <button
                   className="g-icon-btn"
                   aria-label={m.paused ? 'Resume reminder' : 'Pause reminder'}
                   onClick={() => void saveMemory({ ...m, paused: !m.paused }).catch((e: Error) => console.error(e))}
@@ -30,12 +34,6 @@ export default function MemoryPage() {
                   {m.paused ? <Play strokeWidth={2.4} /> : <Pause strokeWidth={2.4} />}
                   <span>{m.paused ? 'Resume' : 'Pause'}</span>
                 </button>
-              </div>
-              <dl className="g-mem__facts">
-                <div><dt>Since</dt><dd>{dayLabel(m.start_date)}</dd></div>
-                <div><dt>Left</dt><dd>{days} days</dd></div>
-                <div><dt>Last dose</dt><dd>{m.log.length ? ANSWER_TEXT[m.log.at(-1)!.answer] : 'Not yet'}</dd></div>
-              </dl>
             </li>
           )
         })}

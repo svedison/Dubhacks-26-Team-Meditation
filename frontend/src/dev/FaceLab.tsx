@@ -19,21 +19,21 @@ export default function FaceLab() {
   if (params.get('solo')) {
     return (
       <div style={{ position: 'fixed', inset: 0, background: big === 'alert' ? 'var(--elder-bg-alert)' : 'var(--elder-bg)' }}>
-        <Face state={big} talking={big === 'speaking'} level={talk} />
+        <Face state={big} talking={big === 'speaking'} level={talk} hear={talk} />
       </div>
     )
   }
   return (
     <div style={{ background: 'var(--elder-bg)', minHeight: '100dvh', color: '#fff1dc', fontFamily: 'var(--font-ui)', padding: 24 }}>
       <div style={{ height: 420, borderRadius: 28, background: big === 'alert' ? 'var(--elder-bg-alert)' : '#0d0b09', transition: 'background 300ms' }}>
-        <Face state={big} talking={big === 'speaking'} level={talk} />
+        <Face state={big} talking={big === 'speaking'} level={talk} hear={talk} />
       </div>
       <p style={{ fontSize: 28, margin: '12px 0 20px' }}>{big}</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 12 }}>
         {STATES.map((s) => (
           <figure key={s} style={{ margin: 0 }}>
             <div style={{ aspectRatio: '1000 / 660', borderRadius: 16, background: s === 'alert' ? 'var(--elder-bg-alert)' : '#0d0b09' }}>
-              <Face state={s} talking={s === 'speaking'} level={talk} />
+              <Face state={s} talking={s === 'speaking'} level={talk} hear={talk} />
             </div>
             <figcaption style={{ fontSize: 18, marginTop: 6 }}>{s}</figcaption>
           </figure>

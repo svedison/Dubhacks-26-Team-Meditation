@@ -13,11 +13,13 @@ const H = 660
 const CY = H * 0.5 // 没有嘴时两只眼睛正好在画面正中
 const GAP = 1.35 * E // 两眼中心距
 const MOUTH_Y = CY + 0.95 * E
+const ATTACHMENTS = new Set<ParamKey>(['brow', 'blush', 'mouth', 'bounce', 'orbit'])
 const SPRING = { type: 'spring' as const, stiffness: 240, damping: 24, mass: 1 }
 
 type Props = {
   state: FaceState
   talking: boolean // 正在播放语音：任何表情下都让嘴跟着声音动
+  hear: () => number // 0..1，麦克风听到的音量：在听时眼睛跟着微微放大
   level: () => number // 0..1，嘴型跟着它动
 }
 
@@ -30,7 +32,7 @@ type EyeRefs = {
   spark: SVGPathElement | null
 }
 
-export default function Face({ state, talking, level }: Props) {
+export default function Face({ state, talking, level, hear }: Props) {
   const mv = useMemo(
     () => Object.fromEntries(PARAM_KEYS.map((k) => [k, motionValue(FACE_PARAMS.listening[k])])) as Record<ParamKey, MotionValue<number>>,
     [],
@@ -45,6 +47,9 @@ export default function Face({ state, talking, level }: Props) {
   const mouthOpen = useRef(0)
   const levelRef = useRef(level)
   levelRef.current = level
+  const hearRef = useRef(hear)
+  hearRef.current = hear
+  const heard = useRef(0)
   const talk = useMemo(() => motionValue(0), [])
 
   useEffect(() => {
@@ -58,7 +63,12 @@ export default function Face({ state, talking, level }: Props) {
     const viaBlink = state === 'worried' || state === 'alert'
     const delay = viaBlink ? 0.07 : 0
     if (viaBlink) blink.current.start = performance.now() / 1000
-    const controls = PARAM_KEYS.map((k) => animate(mv[k], target[k], { ...SPRING, delay }))
+    // 眉毛、腮红、嘴这类附件：要收起的先快速收掉，要出现的稍后再出来，换表情时不会叠在一起
+    const controls = PARAM_KEYS.map((k) => {
+      if (ATTACHMENTS.has(k) && target[k] < mv[k].get()) return animate(mv[k], target[k], { duration: 0.15 })
+      if (ATTACHMENTS.has(k)) return animate(mv[k], target[k], { ...SPRING, delay: delay + 0.15 })
+      return animate(mv[k], target[k], { ...SPRING, delay })
+    })
     return () => controls.forEach((c) => c.stop())
   }, [state, mv])
 
@@ -84,9 +94,13 @@ export default function Face({ state, talking, level }: Props) {
       }
       const closed = Math.max(blinkAt(b.start), b.double ? blinkAt(b.start + 0.28) : 0)
 
-      // 叠加的循环小动作：思考时绕小椭圆转圈，开心时上下晃，其余时候极轻的漂移
-      const orbitX = p.orbit * 0.08 * E * Math.cos((2 * Math.PI * t) / 2.4)
-      const orbitY = p.orbit * 0.04 * E * Math.sin((2 * Math.PI * t) / 2.4)
+      // 叠加的循环小动作：思考时眯着眼左右慢慢扫视，开心时上下晃，其余时候极轻的漂移
+      const orbitX = p.orbit * 0.12 * E * Math.sin((2 * Math.PI * t) / 1.6)
+      const orbitY = 0
+      // 在听：眼睛跟着麦克风音量放大，最多 8%
+      const h = Math.min(1, hearRef.current())
+      heard.current += (h - heard.current) * (h > heard.current ? 0.35 : 0.08)
+      const hearScale = 1 + 0.08 * p.hear * heard.current
       const bounce = p.bounce * 0.06 * E * Math.sin((2 * Math.PI * t) / 1.6)
       const drift = p.drift * 0.012 * E
       const driftX = drift * Math.sin(t * 0.53) + drift * 0.5 * Math.sin(t * 1.7)
@@ -111,8 +125,8 @@ export default function Face({ state, talking, level }: Props) {
         const dir = side === 0 ? -1 : 1 // 左眼在左
         const cx = W / 2 + (dir * GAP) / 2 + orbitX + driftX
         const cy = CY + lift + p.dy * E + orbitY + bounce + driftY
-        const rx = p.rx * E
-        const ry = Math.max(0.025 * E, p.ry * E * (1 - 0.96 * closed))
+        const rx = p.rx * E * hearScale
+        const ry = Math.max(0.025 * E, p.ry * E * hearScale * (1 - 0.96 * closed))
         r.eye?.setAttribute('cx', `${cx}`)
         r.eye?.setAttribute('cy', `${cy}`)
         r.eye?.setAttribute('rx', `${rx}`)

@@ -62,6 +62,7 @@ export class MicStream {
   private pending: Float32Array[] = []
   private speaking = false
   private held = false
+  private lvl = 0
   private seq = 0
   private queue: { pcm: ArrayBuffer; speech: boolean; end: boolean }[] = []
   private inflight = false
@@ -165,8 +166,16 @@ export class MicStream {
     }
   }
 
+  // 0..1 的当前音量（只算有人说话时），给脸在听时用
+  level(): number {
+    return this.lvl
+  }
+
   private onFrame(prob: number, frame: Float32Array) {
     const copy = new Float32Array(frame)
+    let sum = 0
+    for (let i = 0; i < frame.length; i++) sum += frame[i] * frame[i]
+    this.lvl = this.held ? 0 : Math.min(1, Math.sqrt(sum / frame.length) * 8) * prob
     this.status.framesSeen++
     this.status.speechProb = prob
     if (this.held) return

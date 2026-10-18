@@ -1,6 +1,6 @@
 import { Home, Pill, ReceiptText, Settings as SettingsIcon } from 'lucide-react'
-import { AnimatePresence } from 'motion/react'
-import { NavLink, Route, Routes } from 'react-router-dom'
+import { AnimatePresence, motion } from 'motion/react'
+import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import AlertCard from '../shared/ui/AlertCard'
 import { clockLabel } from '../shared/format'
 import LedgerPage from './LedgerPage'
@@ -15,16 +15,34 @@ export default function GuardianApp() {
       <div className="g-app">
         <TopBar />
         <main className="g-main">
-          <Routes>
-            <Route index element={<HomePage />} />
-            <Route path="ledger" element={<LedgerPage />} />
-            <Route path="memory" element={<MemoryPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-          </Routes>
+          <Pages />
         </main>
         <TabBar />
       </div>
     </GuardianProvider>
+  )
+}
+
+// 切标签时内容淡入加轻微上移，不再硬切
+function Pages() {
+  const location = useLocation()
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, transition: { duration: 0.1 } }}
+        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+      >
+        <Routes location={location}>
+          <Route index element={<HomePage />} />
+          <Route path="ledger" element={<LedgerPage />} />
+          <Route path="memory" element={<MemoryPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
   )
 }
 
@@ -83,8 +101,14 @@ function TabBar() {
     <nav className="g-tabs" aria-label="Sections">
       {tabs.map(({ to, label, icon: Icon, end }) => (
         <NavLink key={to} to={to} end={end} className={({ isActive }) => `g-tab${isActive ? ' is-active' : ''}`}>
-          <Icon aria-hidden strokeWidth={2.2} />
-          <span>{label}</span>
+          {({ isActive }) => (
+            <>
+              {/* 选中的底色在标签之间滑过去 */}
+              {isActive && <motion.span layoutId="g-tab-pill" className="g-tab__pill" transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }} />}
+              <Icon aria-hidden strokeWidth={2.2} />
+              <span>{label}</span>
+            </>
+          )}
         </NavLink>
       ))}
     </nav>
