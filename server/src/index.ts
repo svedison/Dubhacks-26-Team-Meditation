@@ -17,7 +17,7 @@ import { handleUtterance, pipeline } from './pipeline.js';
 import { state } from './state.js';
 import { createLiveTranscriber, transcribeAudio, type LiveTranscriber } from './stt.js';
 import { ledger, publishOrder } from './modules/risk.js';
-import { markReceived, registerMemoryTicks } from './modules/memory.js';
+import { deleteMemory, receiveOrder, registerMemoryTicks, resetMemoryModule, updateMemory } from './modules/memory.js';
 import { FALLBACK_REPLY } from './llm.js';
 
 const utteranceSchema = z.object({ text: z.string().trim().min(1).max(8_000), source: z.enum(['voice', 'keyboard']).default('keyboard') });
@@ -118,7 +118,7 @@ export async function buildServer() {
     const existing = get('orders', id);
     if (!existing) return reply.code(404).send({ error: 'Order not found' });
     if (existing.status === 'blocked') return reply.code(409).send({ error: 'Blocked order cannot be received' });
-    const order = markReceived(id)!;
+    const order = receiveOrder(id)!;
     if (!existing.received) publishOrder(order);
     return order;
   });
@@ -129,15 +129,12 @@ export async function buildServer() {
   });
   app.put('/api/memories/:id', async (request, reply) => {
     const { id } = idSchema.parse(request.params);
-    const existing = get('memories', id);
-    if (!existing) return reply.code(404).send({ error: 'Memory not found' });
+    if (!get('memories', id)) return reply.code(404).send({ error: 'Memory not found' });
     // The shared contract has no deletion event. PUT null deletes; GET refreshes the list.
-    if (request.body === null) { remove('memories', id); return { ok: true }; }
-    const patch = memorySchema.omit({ id: true }).partial().strict().parse(request.body);
-    const memory = memorySchema.parse({ ...existing, ...patch, id });
-    if (!get('products', memory.product_id)) return reply.code(400).send({ error: 'Product not on shelf' });
-    put('memories', id, memory); toGuardian({ type: 'memory', ...memory });
-    return memory;
+    if (request.body === null) { deleteMemory(id); return { ok: true }; }
+    const patch = memorySchema.omit({ id: true, product_id: true, log: true }).partial().strict().parse(request.body);
+    try { return updateMemory(id, patch); } // D validates the schedule, cancels stale prompts and pushes the memory event
+    catch (error) { return reply.code(400).send({ error: error instanceof Error ? error.message : 'Invalid memory' }); }
   });
   app.get('/api/alerts', async () => all('alerts'));
   app.post('/api/alerts/:id/archive', async (request, reply) => {
@@ -157,7 +154,7 @@ export async function buildServer() {
     audioGeneration++; dropPcmSession();
     for (const live of liveConnections) live.close();
     liveConnections.clear();
-    pipeline.reset(); resetDatabase(); resetClock();
+    pipeline.reset(); resetDatabase(); resetClock(); resetMemoryModule();
     return { ok: true };
   });
   if (existsSync(resolve(frontendDist, 'index.html'))) {

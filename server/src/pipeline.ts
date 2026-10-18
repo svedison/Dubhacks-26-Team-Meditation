@@ -8,7 +8,7 @@ import { decide, FALLBACK_REPLY, type Context, type Decision } from './llm.js';
 import { synthesize } from './tts.js';
 import * as risk from './modules/risk.js';
 import { placeOrder } from './modules/orders.js';
-import { createAlert, saveGrandmaNote } from './modules/memory.js';
+import { createAlert, saveGrandmaNote, handleAnswer as memoryAnswer, registerOrder, setSpeaker, takeRefillSuggestion, type ProactiveSpeech } from './modules/memory.js';
 import type { Card, Emotion, Order, Source, UtteranceResult } from './contracts.js';
 
 interface ReplyPlan { text: string; emotion: Emotion; card?: Card; order?: Order; scamText?: string }
@@ -21,7 +21,26 @@ export class ConversationPipeline {
   private history: Context['history'] = [];
   private generation = 0;
   private queue: Promise<unknown> = Promise.resolve();
-  constructor(private dependencies: PipelineDependencies = { decide, synthesize }) {}
+  constructor(private dependencies: PipelineDependencies = { decide, synthesize }) {
+    // D's Memory module speaks on its own (delivery / dose / reminder prompts); serialise it with normal replies.
+    setSpeaker(event => this.enqueue(() => this.proactive(event)));
+  }
+  /** Run `job` after the utterance currently being handled (if any). */
+  enqueue(job: () => Promise<unknown>): void {
+    const version = this.generation;
+    this.queue = this.queue.then(() => (version === this.generation ? job() : undefined)).catch(() => {});
+  }
+  private async proactive(event: ProactiveSpeech): Promise<void> {
+    await state.waitForSpeech();
+    let audio_url: string | null = null;
+    try { audio_url = await this.dependencies.synthesize(event.text); } catch { /* Browser fallback. */ }
+    if (state.current === 'idle') state.wake(); // the device starts the conversation, no wake word needed for the answer
+    state.speak('happy');
+    toElder({ type: 'transcript', role: 'ai', text: event.text });
+    toElder(event.type === 'ask' ? { type: 'ask', kind: event.kind ?? 'reminder', text: event.text, audio_url } : { type: 'speak', text: event.text, audio_url });
+    this.history.push({ role: 'assistant', content: event.text });
+    this.history = this.history.slice(-8);
+  }
 
   reset(): void {
     this.generation++;
@@ -53,7 +72,7 @@ export class ConversationPipeline {
     toElder({ type: 'transcript', role: 'ai', text: plan.text });
     toElder({ type: 'speak', text: plan.text, audio_url });
     if (plan.scamText) {
-      const alert = createAlert('red', 7, 'Check on Mom', `TrustTag blocked a possible scam request: ${plan.scamText}`);
+      const alert = createAlert('red', 7, 'Check on Mom', `Milo blocked a possible scam request: ${plan.scamText}`);
       this.noteFor = alert.id;
     }
     this.history.push({ role: 'assistant', content: plan.text });
@@ -122,6 +141,12 @@ export class ConversationPipeline {
       saveGrandmaNote(this.noteFor, text); this.noteFor = null;
       return this.respond({ text: "Thank you; I've added your words to the message for your daughter.", emotion: 'worried' }, version);
     }
+    // Answers to D's prompts (got the parcel? start reminders? taken it?) never go to the shopping router.
+    const memoryReply = memoryAnswer(text);
+    if (memoryReply !== null) {
+      if (!memoryReply) state.listen(); // D recorded it silently; keep the window open
+      return { reply_text: memoryReply, audio_url: null, state: state.current };
+    }
     // Local safety rules still work when Claude is unavailable.
     if (risk.isScam(text)) return this.respond(this.scam(text), version);
     if (!settings.wake_name && !this.awaitingName) {
@@ -161,10 +186,20 @@ export class ConversationPipeline {
         plan = { text: name ? `You can call me ${name}; how can I help you shop?` : 'What would you like to call me?', emotion: 'happy' };
         break;
       }
-      default:
+      default: {
         this.pending = null;
         if (decision.reply !== FALLBACK_REPLY) this.chatRounds++;
         plan = { text: decision.reply === FALLBACK_REPLY ? FALLBACK_REPLY : this.chatRounds > 2 ? 'What would you like to find on our shopping shelf?' : decision.reply, emotion: decision.reply === FALLBACK_REPLY ? 'worried' : 'happy' };
+        // Refill note from D: ask once, in passing, and let a plain "yes" order it.
+        const refill = decision.reply === FALLBACK_REPLY ? null : takeRefillSuggestion();
+        if (refill) {
+          const product = get('products', refill.productId);
+          if (product && risk.check(product.id, '').ok) {
+            this.pending = { productId: product.id, priceCents: product.price_cents };
+            plan = { text: `${plan.text} ${refill.text}`, emotion: 'happy', card: { product } };
+          }
+        }
+      }
     }
     return this.respond(plan, version);
   }

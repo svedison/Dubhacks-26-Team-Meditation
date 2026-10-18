@@ -32,12 +32,35 @@ Claude 每轮最多一次 `messages.stream()` + `finalMessage()`，结构化输�
 
 TTS 首选 MiniMax：fetch `https://api.minimax.io/v1/t2a_v2`，`speech-02-turbo`、声音 `Arrogant_Miss`、speed 0.9、`language_boost: English`、非流式 hex 返回后解码成 MP3。没有 MiniMax key 时退到 OpenAI `gpt-4o-mini-tts`（voice `sage`）。按提供商、模型、声音、速度和文本哈希缓存到 `audio/`，通过 `/audio/<hash>.mp3` 提供。注意：MiniMax 把 Arrogant_Miss 列在普通话声音下，英文由 `language_boost` 带动，演示前请用一句英文实测听感。
 
+## 和 D 的 Memory 模块对接（已接好）
+
+`src/modules/memory.ts` 直接 `import` `modules/role-d/src`（tsx 能跑 D 的 `.ts` 源码），D 负责到货询问、吃法确认、每日提醒、余量和补货备注，B 只做三件事：把演示时钟同步给 D（每秒 tick，`/debug/clock` 跳表）、把 D 的 `ask`/`speak` 接到 TTS 和状态机上（和普通回答排同一条队，先发表情再发事件）、把 D 推出的 memory / alert / order 镜像进 B 的表，REST 照旧。D 的状态快照存在 `trusttag.role-d.db`，`/debug/reset` 一起清。货架也改成读 D 的 `data/products.json`（20 个商品，字段裁成契约里的那几个）。
+
+第四幕在真后端上的跑法（和 D README 一致）：
+
+```bash
+curl -X POST localhost:8787/debug/reset
+# 先用第二幕下一单（或直接 PUT 一条 deliver_on 为明天的订单），然后：
+curl -X POST localhost:8787/debug/clock -H 'content-type: application/json' -d '{"now":"2026-10-22T09:00:00Z"}'
+#   -> 设备问 ask/received "Did you get it?"
+curl -X POST localhost:8787/api/utterance -H 'content-type: application/json' -d '{"text":"Yes, got it.","source":"keyboard"}'
+#   -> ask/dose_confirm
+curl -X POST localhost:8787/api/utterance -H 'content-type: application/json' -d '{"text":"Okay.","source":"keyboard"}'
+#   -> 手机收到 memory 普通卡
+curl -X POST localhost:8787/debug/clock -H 'content-type: application/json' -d '{"now":"2026-10-23T08:00:00Z"}'
+#   -> ask/reminder
+curl -X POST localhost:8787/api/utterance -H 'content-type: application/json' -d '{"text":"Took it.","source":"keyboard"}'
+#   -> "Recorded. Your supply is estimated to last 119 days."
+```
+
 ## 和 A 的前端对接（已接好）
 
 - **托管前端**：`cd frontend && npm install && npm run build` 生成 `frontend/dist/`，后端启动时发现它就直接托管：`/elder`、`/guardian/*` 回落到 `index.html`，`/api`、`/ws`、`/debug`、`/audio` 不受影响。这样 iPad 只需要一个 HTTPS 地址（ngrok 指向 8787），不用设 `VITE_BACKEND_URL`。
 - **麦克风上传**：A 的 iPad 把 16 kHz 单声道 16 位 PCM 按块 `POST /api/audio?seq=N&sr=16000&speech=1[&end=1]`，一句话结束的块带 `end=1`。后端把这些块喂给同一条 Deepgram live 连接（`encoding=linear16`），`end=1` 时发 `Finalize` 让 Deepgram 立刻出最终文本，文本再进对话流水线；每个请求立刻返回 `202 {ok, seq, stt}`，不等 Claude。`stt: false` 表示没有 Deepgram key。90 秒没有新块自动断开 Deepgram。
 - 不带 `seq` 的整段音频仍走原来的整段转写路径。
 - **唤醒名**默认改成 `Milo`（A 的界面文案叫 Milo），mock、contracts、seed 一致。
+- **表情顺序**（A 10/18 的要求）：现在是 thinking → happy/worried/alert → `speak`/`ask` → 老人端 `spoke` → listening。说话期间脸就是那个表情，不再先发 `speaking`。
+- 后端不发 `connected` 事件；A 看到的那个来自别的后端（D 的独立 harness 或代理），契约里已写明只发表里列的事件。
 
 ## iPad / HTTPS
 

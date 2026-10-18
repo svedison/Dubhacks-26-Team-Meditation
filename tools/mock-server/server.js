@@ -79,7 +79,7 @@ async function sceneScam() {
   toElder({ type: "state", state: "alert" });
   await say("That sounds like a scam. Nobody official asks for gift cards. Please hang up. I'll let your daughter know, okay?");
   const alert = { id: "al_" + Date.now(), level: "red", rule: 7, title: "Check on Mom",
-    body: "Someone asked her to buy a $500 gift card today. TrustTag blocked it.", grandma_note: null,
+    body: "Someone asked her to buy a $500 gift card today. Milo blocked it.", grandma_note: null,
     created_at: state.now, archived: false };
   state.alerts.push(alert); toGuardian({ type: "alert", ...alert });
   toElder({ type: "state", state: "listening" });

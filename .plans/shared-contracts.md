@@ -87,4 +87,8 @@
 
 ## 状态机（后端维护，老人端只渲染）
 
-idle → 听到唤醒名 → listening（20 秒窗口）→ 收到完整一句 → thinking → speaking → 按结果 happy / worried / alert → 回 listening；20 秒无声 → idle。
+idle → 听到唤醒名 → listening（20 秒窗口）→ 收到完整一句 → thinking → 按结果 happy / worried / alert（**说话时就是这个表情**，`speak` 事件紧随其后）→ 老人端播完发 `spoke` → listening；20 秒无声 → idle。
+
+- 2026-10-18 改：表情在 `speak` 之前发，不再先发 `speaking` 再切表情（A 的要求：奶奶听到「这像诈骗」时脸已经是红的）。`speaking` 仍保留在枚举里，老人端可按音量做嘴型，后端目前不再单独发它。
+- Memory 主动开口（`ask`）走同一条路：先 `state`（happy）再 `ask`；`spoke` 回来进 listening，奶奶的回答不需要唤醒名。
+- 后端只发上表列出的事件，没有 `connected` 之类的额外事件；要加必须先写进这里。
