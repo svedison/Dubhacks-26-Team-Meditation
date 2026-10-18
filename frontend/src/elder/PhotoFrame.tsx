@@ -17,7 +17,7 @@ export default function PhotoFrame({ photos, paused, day }: { photos: string[]; 
   }, [photos.length, paused])
   const src = photos[i % photos.length]
   return (
-    <div className="photo-frame">
+    <div className={`photo-frame${paused ? ' is-paused' : ''}`}>
       <AnimatePresence initial={false}>
         <motion.img
           key={src}
@@ -25,10 +25,11 @@ export default function PhotoFrame({ photos, paused, day }: { photos: string[]; 
           alt=""
           draggable={false}
           className="photo-frame__img"
-          initial={{ opacity: 0, scale: 1.04 }}
-          animate={{ opacity: 1, scale: 1.12 }}
+          // 慢慢推近由 CSS 动画做（elder.css 的 photo-push），醒着时能停住；这里只管交叉淡入
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ opacity: { duration: 1.2, ease: 'easeInOut' }, scale: { duration: 6.5, ease: 'linear' } }}
+          transition={{ duration: 1.2, ease: 'easeInOut' }}
         />
       </AnimatePresence>
     </div>

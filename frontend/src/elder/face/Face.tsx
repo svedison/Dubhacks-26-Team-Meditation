@@ -15,6 +15,9 @@ const GAP = 1.35 * E // 两眼中心距
 const MOUTH_Y = CY + 0.95 * E
 const ATTACHMENTS = new Set<ParamKey>(['brow', 'blush', 'mouth', 'bounce', 'orbit'])
 const SPRING = { type: 'spring' as const, stiffness: 240, damping: 24, mass: 1 }
+// 眼睛外圈柔光的宽度。用一圈渐变椭圆画，不用 SVG 模糊滤镜：眼睛每帧都在动，Safari 每帧都要重算模糊，iPad 上会卡
+const HALO = 0.12 * E
+const clamp01 = (x: number) => Math.min(1, Math.max(0, x))
 
 type Props = {
   state: FaceState
@@ -26,6 +29,7 @@ type Props = {
 
 type EyeRefs = {
   eye: SVGEllipseElement | null
+  halo: SVGEllipseElement | null
   lid: SVGPolygonElement | null
   bot: SVGEllipseElement | null
   brow: SVGRectElement | null
@@ -39,8 +43,8 @@ export default function Face({ state, talking, level, hear, gaze }: Props) {
     [],
   )
   const refs = useRef<[EyeRefs, EyeRefs]>([
-    { eye: null, lid: null, bot: null, brow: null, blush: null, spark: null },
-    { eye: null, lid: null, bot: null, brow: null, blush: null, spark: null },
+    { eye: null, halo: null, lid: null, bot: null, brow: null, blush: null, spark: null },
+    { eye: null, halo: null, lid: null, bot: null, brow: null, blush: null, spark: null },
   ])
   const mouth = useRef<SVGRectElement | null>(null)
   const uid = useId().replace(/:/g, '')
@@ -138,6 +142,12 @@ export default function Face({ state, talking, level, hear, gaze }: Props) {
         r.eye?.setAttribute('cy', `${cy}`)
         r.eye?.setAttribute('rx', `${rx}`)
         r.eye?.setAttribute('ry', `${ry}`)
+        r.halo?.setAttribute('cx', `${cx}`)
+        r.halo?.setAttribute('cy', `${cy}`)
+        r.halo?.setAttribute('rx', `${rx + HALO}`)
+        r.halo?.setAttribute('ry', `${ry + HALO}`)
+        // 柔光跟着眼睛一起被眼皮和弯月切口裁掉，切口处会是一条硬边：眼睛切得越多柔光越淡，开心和担心时完全不画
+        r.halo?.setAttribute('opacity', `${Math.min(clamp01((p.bot - 0.1) / 0.5), clamp01((-p.lidY - 0.25) / 0.35))}`)
 
         // 上眼皮：一条穿过 (cx, cy + lidY·E) 的斜线，以上全遮掉。lidA > 0 表示内侧高、外侧低
         const ly = cy + p.lidY * E
@@ -198,15 +208,12 @@ export default function Face({ state, talking, level, hear, gaze }: Props) {
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%" preserveAspectRatio="xMidYMid meet" aria-hidden>
       <defs>
-        {/* 眼睛外圈的柔光（借 VoCat 渲染图） */}
-        <filter id={`eye-glow-${uid}`} x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation={0.05 * E} result="blur" />
-          <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.45 0" result="glow" />
-          <feMerge>
-            <feMergeNode in="glow" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
+        {/* 眼睛外圈的柔光（借 VoCat 渲染图）：从眼睛边缘的半透明暖白淡到全透明 */}
+        <radialGradient id={`eye-glow-${uid}`}>
+          {/* 颜色写在 style 里：CSS 变量放在 stop-color 属性上不生效，会退成黑色 */}
+          <stop offset="0.72" style={{ stopColor: EYE_FILL, stopOpacity: 0.45 }} />
+          <stop offset="1" style={{ stopColor: EYE_FILL, stopOpacity: 0 }} />
+        </radialGradient>
         {[0, 1].map((side) => (
           <mask id={`eye-mask-${uid}-${side}`} key={side} maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
             <rect x="0" y="0" width={W} height={H} fill="white" />
@@ -218,10 +225,9 @@ export default function Face({ state, talking, level, hear, gaze }: Props) {
       {[0, 1].map((side) => (
         <g key={side}>
           <rect ref={(el) => { refs.current[side as 0 | 1].blush = el }} width={0.65 * E} height={0.25 * E} rx={0.125 * E} fill="var(--face-blush)" opacity="0" />
-          <g filter={`url(#eye-glow-${uid})`}>
-            <g mask={`url(#eye-mask-${uid}-${side})`}>
-              <ellipse ref={(el) => { refs.current[side as 0 | 1].eye = el }} fill={EYE_FILL} />
-            </g>
+          <g mask={`url(#eye-mask-${uid}-${side})`}>
+            <ellipse ref={(el) => { refs.current[side as 0 | 1].halo = el }} fill={`url(#eye-glow-${uid})`} />
+            <ellipse ref={(el) => { refs.current[side as 0 | 1].eye = el }} fill={EYE_FILL} />
           </g>
           <path ref={(el) => { refs.current[side as 0 | 1].spark = el }} d="M0,-1 C0.12,-0.12 0.12,-0.12 1,0 C0.12,0.12 0.12,0.12 0,1 C-0.12,0.12 -0.12,0.12 -1,0 C-0.12,-0.12 -0.12,-0.12 0,-1 Z" fill="var(--face-spark)" opacity="0" />
           <rect ref={(el) => { refs.current[side as 0 | 1].brow = el }} width={0.9 * E} height={0.1 * E} rx={0.05 * E} fill={EYE_FILL} opacity="0" />

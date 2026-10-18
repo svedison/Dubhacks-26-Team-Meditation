@@ -59,7 +59,10 @@
 
 /* 待机照片 */
 .photo-frame { position: absolute; inset: 0; overflow: hidden; background: #000; }
-.photo-frame__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.photo-frame__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: photo-push 6.5s linear forwards; }
+/* 醒着说话时照片层是虚化的：推近停住，画面不动，虚化就不用每帧重算 */
+.photo-frame.is-paused .photo-frame__img { animation-play-state: paused; }
+@keyframes photo-push { from { transform: scale(1.04); } to { transform: scale(1.12); } }
 
 /* 脸：全屏 ↔ 左上角 */
 .face-box { position: absolute; }
@@ -97,10 +100,8 @@
   line-height: 1.22;
   font-weight: 700;
   color: #fff6ea;
-  /* 照片现在认得出人，字幕底要压暗才读得清 */
-  background: rgba(26, 19, 15, 0.62);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  /* 照片现在认得出人，字幕底要压暗才读得清。不用毛玻璃：背后照片已经虚化，毛玻璃看不出差别，iPad 上却每帧都要重算 */
+  background: rgba(26, 19, 15, 0.72);
   border-radius: 38px 38px 38px 14px;
   padding: 18px 30px 20px;
 }
@@ -116,9 +117,7 @@
   padding: 8px 18px 9px 20px;
   border-left: 4px solid rgba(255, 241, 220, 0.4);
   border-radius: 4px 18px 18px 4px;
-  background: rgba(26, 19, 15, 0.5);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  background: rgba(26, 19, 15, 0.6);
 }
 /* 她说了一长段、下面还有 Milo 的回答时：她那句最多三行，位置留给回答 */
 .chat__row--grandma:not(:last-child) .chat__bubble { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }

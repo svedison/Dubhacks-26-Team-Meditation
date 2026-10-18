@@ -241,7 +241,13 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
         <PhotoFrame photos={photos} paused={showFace} day={view.clock ? dayKey(view.clock) : null} />
       </motion.div>
       {/* 警报：深酒红，中间亮四周暗。整屏红只留给诈骗；有替代品的假药只把风险卡压红 */}
-      <motion.div className="layer alert-wash" initial={false} animate={{ opacity: face === 'alert' && !pair ? 1 : 0 }} transition={{ duration: 0.8, ease: [0.43, 0.195, 0.02, 1] }} />
+      {/* 不是警报时淡出后彻底隐藏：正片叠底的罩层只要还在，整屏照片每帧都要跟它混合一次 */}
+      <motion.div
+        className="layer alert-wash"
+        initial={false}
+        animate={face === 'alert' && !pair ? { opacity: 1, visibility: 'visible' } : { opacity: 0, transitionEnd: { visibility: 'hidden' } }}
+        transition={{ duration: 0.8, ease: [0.43, 0.195, 0.02, 1] }}
+      />
       <div className="mat" aria-hidden />
 
       <AnimatePresence>
