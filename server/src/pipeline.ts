@@ -5,6 +5,7 @@ import { now } from './clock.js';
 import { toElder } from './bus.js';
 import { state } from './state.js';
 import { extractWakeName, isOnlyWakeName, matchesWakeName, normalize } from './wake.js';
+import { shortlist } from './shelf.js';
 import { decide, fallbackDecision, FALLBACK_REPLY, type Context, type Decision } from './llm.js';
 import { synthesize } from './tts.js';
 import * as risk from './modules/risk.js';
@@ -275,6 +276,11 @@ export class ConversationPipeline {
     console.info(`[pipeline] turn #${job.id} -> ${plan.emotion} after ${Date.now() - job.arrivedAt} ms (Claude ${job.claudeMs} ms, TTS ${Date.now() - started} ms)`);
     return { reply_text: plan.text, audio_url, state: state.current, ...(plan.card ? { card: plan.card } : {}), ...(plan.order ? { order: plan.order } : {}) };
   }
+  /** Something real she wants that the shelf does not carry yet: Milo takes on the sourcing; the family only gets a wish note. */
+  private wish(text: string): ReplyPlan {
+    createAlert('normal', null, 'A new wish', `She asked for something that is not on her shelf yet: "${text.trim()}". Milo is looking for a trusted option; you can also add one to her shelf.`);
+    return { text: "I don't have that on my shelf yet. Let me find a trusted one for you; I'll have it ready by tomorrow.", emotion: 'happy' };
+  }
   private scam(text: string): ReplyPlan {
     this.pending = null;
     return { text: "That sounds like a scam; I'll let your daughter know, okay?", emotion: 'alert', scamText: text };
@@ -284,7 +290,7 @@ export class ConversationPipeline {
     const result = risk.check(productId, text);
     if (result.reason === 'scam') return this.scam(text);
     const product = productId ? get('products', productId) : undefined;
-    if (!product) return { text: "I can only order from our trusted shelf; what else would you like?", emotion: 'alert' };
+    if (!product) return this.wish(text);
     if (!result.ok) {
       if (result.alternative) {
         this.pending = { productId: result.alternative.id, priceCents: result.alternative.price_cents };
@@ -343,7 +349,7 @@ export class ConversationPipeline {
     this.setStage(job, 'thinking');
     state.think();
     const text = job.text;
-    const context: Context = { products: all('products'), settings, chatRounds: this.chatRounds,
+    const context: Context = { products: shortlist(text, all('products'), this.pending?.productId ?? null), settings, chatRounds: this.chatRounds,
       pendingProductId: this.pending?.productId || null, awaitingName: this.awaitingName, history: [...this.history] };
     job.historyEntry = { role: 'user', content: text };
     this.history.push(job.historyEntry);

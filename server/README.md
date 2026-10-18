@@ -95,6 +95,11 @@ curl -X POST localhost:8787/api/utterance -H 'content-type: application/json' -d
 - **等她说完**：`/api/audio` 的 `speech=1` 块每 0.25 秒一来就说明奶奶还在说话。第一段文本到了但麦克风还在送 `speech=1`，先不问 Claude（状态留在 listening），等 `end=1` 和 Deepgram 的下一段文本到了再合并；Claude 已经答了但她在这期间又开口，同样等她说完让后半句接管。最多等 6 秒。她没在说话时这一步零延迟。
 - 单元测试在 `test/recovery.test.ts`；本地用 `ANTHROPIC_API_KEY=` 置空也能跑。
 
+## 货架之外的东西：Milo 去找，不让她去问女儿（2026-10-18）
+
+- 以前货架上没有的东西一律红脸说 "I can only order from our trusted shelf"。现在是 happy 脸说 *"I don't have that on my shelf yet. Let me find a trusted one for you; I'll have it ready by tomorrow."*，女儿手机上多一张普通卡（标题 "A new wish"，正文带她的原话），是心愿记录不是审批。原则：自由是默认，家人只在风险（诈骗、召回、异常花费）时介入，"没见过"不是风险。
+- **货架可以扩到几百个商品**：`src/shelf.ts` 先按别名、品名、类目词把这句话可能指的商品挑出来（最多 12 个，待确认的商品一定在内；什么都没对上就每类给一个常见品），只把这些给 Claude，提示词不随货架变大。货架不超过 24 个时原样全给，所以 20 个的演示数据行为不变。扩货架只要改 `modules/role-d/data/products.json`，给每个商品配三到五个奶奶会怎么说的 `aliases`。
+
 ## 奶奶说身体不舒服：紧急就打 911，一般不舒服就陪着（2026-10-18）
 
 以前 "I'm not feeling well" 得到的是 "As an AI I can't give medical advice, please contact your doctor"，第三轮还会被转去购物。现在分两种：
