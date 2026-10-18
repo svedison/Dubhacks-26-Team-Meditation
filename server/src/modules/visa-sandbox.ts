@@ -1,6 +1,7 @@
 import '../config.js';
 import { createPrivateKey, X509Certificate, type KeyObject } from 'node:crypto';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { isAbsolute, join } from 'node:path';
 import https from 'node:https';
 import { CompactEncrypt, compactDecrypt } from 'jose';
@@ -63,11 +64,35 @@ export function parseSandboxAuth(data: unknown): { username: string; password: s
 }
 export const CREDENTIAL_FILES = ['auth.json', 'client-cert.pem', 'client-key.pem', 'mle-key.pem', 'mle-client-cert.pem', 'mle-key-id.txt', 'mle-server-cert.pem', 'pav-fixture.json'] as const;
 const RENDER_SECRET_FILES = '/etc/secrets'; // where Render mounts Secret Files uploaded in the dashboard
-/** VISA_SANDBOX_DIR, or Render's Secret Files folder when the eight files were uploaded there. */
+const BUNDLE_NAME = 'visa-bundle.json'; // one Secret File holding all eight: {"files": {"auth.json": "<contents>", ...}}
+let unpacked: string | null | undefined;
+/** A single uploaded bundle is unpacked once into a private temp folder (0700, files 0600). */
+function unpackBundle(): string | null {
+  if (unpacked !== undefined) return unpacked;
+  unpacked = null;
+  const candidates = [process.env.VISA_SANDBOX_BUNDLE, join(RENDER_SECRET_FILES, BUNDLE_NAME)].filter((v): v is string => Boolean(v));
+  for (const path of candidates) {
+    if (!existsSync(path)) continue;
+    try {
+      const bundle = z.object({ files: z.record(z.string(), z.string()) }).parse(JSON.parse(readFileSync(path, 'utf8')));
+      const dir = mkdtempSync(join(tmpdir(), 'visa-sandbox-'));
+      for (const name of CREDENTIAL_FILES) {
+        if (!bundle.files[name]) throw new Error(`bundle lacks ${name}`);
+        writeFileSync(join(dir, name), bundle.files[name], { mode: 0o600 });
+      }
+      unpacked = dir;
+      console.info(`Visa sandbox credentials unpacked from ${path}`);
+      break;
+    } catch (error) { console.warn(`Visa bundle at ${path} unusable: ${error instanceof Error ? error.message : 'error'}`); }
+  }
+  return unpacked;
+}
+/** VISA_SANDBOX_DIR, or Render's Secret Files folder when the eight files were uploaded there, or an unpacked single bundle. */
 export function credentialDir(): string | undefined {
   const configured = process.env.VISA_SANDBOX_DIR;
   if (configured) return configured;
-  return existsSync(join(RENDER_SECRET_FILES, 'auth.json')) ? RENDER_SECRET_FILES : undefined;
+  if (existsSync(join(RENDER_SECRET_FILES, 'auth.json'))) return RENDER_SECRET_FILES;
+  return unpackBundle() ?? undefined;
 }
 /** Which of the eight files are in place (names only, never contents): for /debug/visa. */
 export function credentialStatus(): { dir: string | null; present: string[]; missing: string[] } {

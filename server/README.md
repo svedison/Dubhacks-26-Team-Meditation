@@ -204,7 +204,7 @@ curl -s -X POST localhost:8799/api/audio -H 'content-type: audio/webm' --data-bi
 
 `VISA_SANDBOX_PREFLIGHT` 三个值：`0`（默认）不调用、订单没有 `payment_check`；`1` 严格，校验失败不下单（luyichen 的原设计）；`soft` 演示用，3 秒内没结果照常模拟下单并带 `approved: false, note: 原因码`，Milo 只说 "Your order is placed"。
 
-**部署到 Render**：Dashboard → milo → Environment → Secret Files，把下面 8 个文件按原名各加一个（Render 挂在 `/etc/secrets/`）。后端启动时发现 `/etc/secrets/auth.json` 就自动把它当 `VISA_SANDBOX_DIR`，并在没有显式设置 `VISA_SANDBOX_PREFLIGHT` 时用 `soft`，所以不加环境变量也能生效；要严格模式再设 `VISA_SANDBOX_PREFLIGHT=1`。验证：`GET /debug/visa`（带口令）列出 8 个文件哪些在、当前模式、Hello World 是否通；再下一单，`GET /api/orders` 里应能看到 `payment_check.approved: true`。
+**部署到 Render**：最省事的办法是只传一个文件：本机 `npx tsx tools/visa/make-bundle.mts <凭据目录> ~/Downloads/visa-bundle.json` 把 8 个文件打成一个 JSON，然后 Dashboard → milo → Environment → Secret Files → Add Secret File，文件名填 `visa-bundle.json`，把那个文件的内容整段粘进去。后端启动时发现 `/etc/secrets/visa-bundle.json` 会解包到进程私有的临时目录（0700/0600）。也可以把 8 个文件按原名各加一个 Secret File（Render 挂在 `/etc/secrets/`）。后端启动时发现 `/etc/secrets/auth.json` 就自动把它当 `VISA_SANDBOX_DIR`，并在没有显式设置 `VISA_SANDBOX_PREFLIGHT` 时用 `soft`，所以不加环境变量也能生效；要严格模式再设 `VISA_SANDBOX_PREFLIGHT=1`。验证：`GET /debug/visa`（带口令）列出 8 个文件哪些在、当前模式、Hello World 是否通；再下一单，`GET /api/orders` 里应能看到 `payment_check.approved: true`。
 
 把以下文件保存在 Git 仓库外的私有目录（目录权限 700，文件 600）：
 

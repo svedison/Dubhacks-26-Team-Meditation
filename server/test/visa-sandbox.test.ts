@@ -108,3 +108,25 @@ test('auth validation accepts real values and independently rejects placeholder/
   }
   assert.throws(() => parseSandboxAuth({ username: 'invalid:user', password: 'test-secret' }), /configuration_error/);
 });
+test('a single uploaded bundle is unpacked into a private folder and found without VISA_SANDBOX_DIR', async () => {
+  const { mkdtempSync, writeFileSync, statSync, readFileSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const { CREDENTIAL_FILES, credentialDir, credentialStatus } = await import('../src/modules/visa-sandbox.js');
+  const dir = mkdtempSync(join(tmpdir(), 'visa-bundle-test-'));
+  const bundle = join(dir, 'visa-bundle.json');
+  writeFileSync(bundle, JSON.stringify({ files: Object.fromEntries(CREDENTIAL_FILES.map(name => [name, `dummy ${name}`])) }));
+  const saved = { dir: process.env.VISA_SANDBOX_DIR, bundle: process.env.VISA_SANDBOX_BUNDLE };
+  delete process.env.VISA_SANDBOX_DIR; process.env.VISA_SANDBOX_BUNDLE = bundle;
+  try {
+    const found = credentialDir();
+    assert.ok(found && found !== dir, 'unpacked into its own folder');
+    assert.deepEqual(credentialStatus().missing, []);
+    assert.equal(readFileSync(join(found!, 'auth.json'), 'utf8'), 'dummy auth.json');
+    assert.equal(statSync(join(found!, 'client-key.pem')).mode & 0o777, 0o600);
+    assert.equal(credentialDir(), found); // unpacked once, reused
+  } finally {
+    if (saved.dir === undefined) delete process.env.VISA_SANDBOX_DIR; else process.env.VISA_SANDBOX_DIR = saved.dir;
+    if (saved.bundle === undefined) delete process.env.VISA_SANDBOX_BUNDLE; else process.env.VISA_SANDBOX_BUNDLE = saved.bundle;
+  }
+});

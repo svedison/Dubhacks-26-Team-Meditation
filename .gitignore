@@ -1,0 +1,7 @@
+# Visa sandbox credentials live outside Git: a local folder a teammate dropped in, never committed
+visa-sandbox/
+visa-bundle.json
+*.pem
+auth.json
+pav-fixture.json
+mle-key-id.txt
