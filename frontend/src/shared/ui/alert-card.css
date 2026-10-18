@@ -1,0 +1,87 @@
+.acard {
+  --a-bg: #ffffff;
+  --a-ink: #1e1a16;
+  --a-sub: #6b6158;
+  --a-line: #e7ded3;
+  position: relative;
+  background: var(--a-bg);
+  color: var(--a-ink);
+  border: 1px solid var(--a-line);
+  border-radius: var(--radius-l);
+  padding: 20px 22px 22px;
+  font-family: var(--font-ui);
+}
+
+/* 红级：暖深棕的中性色，和老人端诈骗的红色分开 */
+.acard--red {
+  --a-bg: #2b221c;
+  --a-ink: #fbf5ec;
+  --a-sub: #cfc3b6;
+  --a-line: #2b221c;
+  box-shadow: 0 6px 0 #120d0a;
+}
+/* 黄级：左边一条琥珀色 */
+.acard--yellow { box-shadow: inset 5px 0 0 #e2a23b; }
+
+.acard__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.acard__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #f4d9a6;
+}
+.acard__chip::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f4b860;
+  box-shadow: 0 0 0 4px rgba(244, 184, 96, 0.22);
+}
+.acard__chip--soft { color: #9a6514; }
+.acard__chip--soft::before { background: #e2a23b; box-shadow: 0 0 0 4px rgba(226, 162, 59, 0.18); }
+.acard__icon { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #eef4ee; color: #2e7d4f; }
+.acard__icon svg { width: 18px; height: 18px; }
+.acard__time { font-size: 15px; font-weight: 700; color: var(--a-sub); font-variant-numeric: tabular-nums; }
+
+.acard__title { margin: 0; font-family: var(--font-display); font-weight: 900; font-size: 34px; line-height: 1.1; letter-spacing: -0.01em; }
+.acard--normal .acard__title { font-size: 27px; }
+.acard__body { margin: 8px 0 0; font-size: 21px; font-weight: 600; line-height: 1.4; color: var(--a-sub); }
+.acard--red .acard__body { color: #e9dfd2; }
+
+/* 奶奶的话：小标签加一条竖线的引语 */
+.acard__note { margin: 16px 0 0; padding: 0 0 0 14px; border-left: 2px solid #f4b860; }
+.acard__note-label { display: block; font-size: 13px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; color: var(--a-sub); margin-bottom: 3px; }
+.acard__note p { margin: 0; font-size: 21px; font-weight: 700; line-height: 1.35; color: var(--a-ink); }
+.acard__note--empty p { color: var(--a-sub); }
+
+.acard__actions { display: flex; gap: 10px; margin-top: 16px; }
+
+.btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 60px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 23px;
+  font-weight: 900;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.btn svg { width: 22px; height: 22px; }
+.btn:active { transform: translateY(2px); }
+/* 能按下去的实体感（参照 Pomegranate、Ebb 的实色底影） */
+.btn--call { background: #fff3e0; color: #1e1a16; box-shadow: 0 3px 0 #d8c3a2; }
+.btn--call:active { box-shadow: 0 1px 0 #d8c3a2; }
+.btn--ghost { background: transparent; color: inherit; border: 2px solid currentColor; opacity: 0.92; }
+.acard:not(.acard--red) .btn--ghost { color: #1e1a16; border-color: #d9cfc3; }
