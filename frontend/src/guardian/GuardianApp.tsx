@@ -98,7 +98,7 @@ function HomePage() {
         {/* 收走的卡片高度慢慢收起，下面的内容跟着平滑上移，不叠字也不跳 */}
         <AnimatePresence initial={false}>
           {[...red, ...rest].map((a) => (
-            <AlertCard key={a.id} alert={a} now={clock} phone={settings?.phone ?? null} fresh={freshIds.has(a.id)} onArchive={(id) => void archive(id).catch((e: Error) => console.error(e))} />
+            <AlertCard key={a.id} alert={a} now={clock} phone={settings?.phone ?? null} fresh={freshIds.has(a.id)} onArchive={archive} />
           ))}
         </AnimatePresence>
       </div>

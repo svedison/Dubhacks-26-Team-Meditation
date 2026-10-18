@@ -1,5 +1,5 @@
 import { Check, Pill, X } from 'lucide-react'
-import type { Product, RiskKind } from '../contracts'
+import type { Order, Product, RiskKind } from '../contracts'
 import { money, splitName } from '../format'
 import { productImage } from '../productImages'
 import './product-card.css'
@@ -14,12 +14,13 @@ const RISK_LINE: Record<RiskKind, string> = {
 type Props = {
   product: Product
   size?: 'elder' | 'compact'
-  done?: boolean // 开心脸出现时盖「Ordered」章
+  orderStatus?: Order['status'] // 只有后端确认的订单状态才显示成功章
   tag?: string // 并排时卡片顶部的小标签（Skip this / Try this）
 }
 
 // 两端共用：老人端大卡、监护人端小卡是同一个组件
-export default function ProductCard({ product, size = 'elder', done = false, tag }: Props) {
+export default function ProductCard({ product, size = 'elder', orderStatus, tag }: Props) {
+  const done = orderStatus === 'paid' || orderStatus === 'simulated_paid'
   const img = productImage(product.id)
   const risk = product.risk
   const [title, sub] = splitName(product.name)
@@ -31,7 +32,7 @@ export default function ProductCard({ product, size = 'elder', done = false, tag
         {done && (
           <div className="pcard__stamp" role="status">
             <Check aria-hidden strokeWidth={3.4} />
-            Ordered
+            {orderStatus === 'simulated_paid' ? 'Simulated order' : 'Ordered'}
           </div>
         )}
       </div>

@@ -155,7 +155,8 @@ test('catalog has 20 entries and three risk products with safe paired alternativ
   const risks = products.filter(p => p.risk);
   assert.equal(risks.length, 3);
   assert.deepEqual(risks.map(p => p.name), ['Miracle Joint Pills', 'Instant Memory Miracle', 'Seven-day Detox Cure']);
-  assert.ok(risks.every(p => p.demo_only === true));
+  // Risk rows are either synthetic demo fixtures or real FDA enforcement records; never an invented claim about a real product.
+  assert.ok(risks.every(p => p.demo_only === true || p.certification_source.status === 'fda_enforcement'));
   for (const product of risks) assert.equal(products.find(p => p.id === product.risk!.alternative_id)?.risk, null);
   assert.equal(products.find(p => p.aliases.includes('miracle joint pills'))?.risk?.alternative_id, 'glucosamine-usp');
   assert.ok(products.find(p => p.id === app.snapshot().orders[0].product_id)?.aliases.includes('the purple bottle'));

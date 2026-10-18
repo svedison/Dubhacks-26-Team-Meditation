@@ -95,6 +95,30 @@ curl -X POST localhost:8787/api/utterance -H 'content-type: application/json' -d
 - **等她说完**：`/api/audio` 的 `speech=1` 块每 0.25 秒一来就说明奶奶还在说话。第一段文本到了但麦克风还在送 `speech=1`，先不问 Claude（状态留在 listening），等 `end=1` 和 Deepgram 的下一段文本到了再合并；Claude 已经答了但她在这期间又开口，同样等她说完让后半句接管。最多等 6 秒。她没在说话时这一步零延迟。
 - 单元测试在 `test/recovery.test.ts`；本地用 `ANTHROPIC_API_KEY=` 置空也能跑。
 
+## 货架之外的东西：Milo 去找，不让她去问女儿（2026-10-18）
+
+- 以前货架上没有的东西一律红脸说 "I can only order from our trusted shelf"。现在是 happy 脸说 *"I don't have that on my shelf yet. Let me find a trusted one for you; I'll have it ready by tomorrow."*，女儿手机上多一张普通卡（标题 "A new wish"，正文带她的原话），是心愿记录不是审批。原则：自由是默认，家人只在风险（诈骗、召回、异常花费）时介入，"没见过"不是风险。
+- **货架可以扩到几百个商品**：`src/shelf.ts` 先按别名、品名、类目词把这句话可能指的商品挑出来（最多 12 个，待确认的商品一定在内；什么都没对上就每类给一个常见品），只把这些给 Claude，提示词不随货架变大。货架不超过 24 个时原样全给，所以 20 个的演示数据行为不变。扩货架只要改 `modules/role-d/data/products.json`，给每个商品配三到五个奶奶会怎么说的 `aliases`。
+
+## 货架数据：一百个真实日用品，从哪来、怎么更新（2026-10-18）
+
+`modules/role-d/data/products.json` 现在是 100 个商品：97 个按独居老人一周的生活挑的日用消耗品（早餐杂货、饮品营养、零食、个护、日用、非处方药、保健品、宠物）加 3 个演示用的风险样本。清单在 `tools/shelf/catalogue.json`，每个商品带门店搜索词和三到五个奶奶会怎么说的 `aliases`；生成脚本是 `tools/shelf/build-shelf.mts`：
+
+```bash
+cd server
+# 只用不需要 key 的来源：NIH 补剂标签库（规格、成分，按品牌匹配）、openFDA（非处方药标签用法）；价格是典型价并在 price_source 里标明
+npx tsx ../tools/shelf/build-shelf.mts --write
+# 有 Kroger 开发者账号时：按一家 QFC 的实时门店价和真实品名生成（默认西雅图 98105 附近，可用 KROGER_ZIP / KROGER_CHAIN 改）
+KROGER_CLIENT_ID=... KROGER_CLIENT_SECRET=... npx tsx ../tools/shelf/build-shelf.mts --write
+# 可选：加两条 FDA 正在进行的保健品召回作为风险样本（会让 D 的"正好三个风险品"测试需要同步改）
+npx tsx ../tools/shelf/build-shelf.mts --write --recalls
+```
+
+- 2026-10-18 03:30 起数据来自 **QFC University Village（2746 NE 45th St，UW 旁边）** 的实时门店价和品名，97 个日用品里 90 个拿到了门店数据，其余 7 个（鸡蛋、狗粮、小夜灯、邮票、填字书等）用典型价并在 `price_source` 标明。
+- 演示脚本依赖的五条记录钉在 `tools/shelf/demo-records.json`，脚本永远以它为准：calcium-120 仍是 120 片 18 美元、别名 "the purple bottle"（门店实价 23.99 写在 `certification_source.note` 里），glucosamine-usp 24 美元，三个风险品不变，所以第二幕和第四幕（"estimated to last 119 days"）不受影响。
+- 新商品的图片：老人端按 id 找本地图，找不到显示首字母，A 有空可以给常用的几个补图。
+- 服务端进 Claude 的只是 `src/shelf.ts` 挑出的最多 12 个候选，货架再扩也不拖慢。
+
 ## 奶奶说身体不舒服：紧急就打 911，一般不舒服就陪着（2026-10-18）
 
 以前 "I'm not feeling well" 得到的是 "As an AI I can't give medical advice, please contact your doctor"，第三轮还会被转去购物。现在分两种：
@@ -158,13 +182,39 @@ curl -s -X POST localhost:8799/api/audio -H 'content-type: audio/webm' --data-bi
 
 没有 elder 客户端发送 spoke 时，连续两句之间可能等待最多 8 秒；这不是模型延迟。smoke 脚本会重置演示数据，验证三件商品、回答字段和 debug 接口，并打印耗时。
 
+## Visa Sandbox（已接入测试账户验证）
+
+`pay()` 可先调用 **Payment Account Validation**，通过后继续模拟下单。验证的是 Visa 门户提供的固定测试卡，不是 Settings 的卡尾号，也不是老人真实的卡；**不是购买授权或扣款**。Order 仍为 `simulated_paid`，前端必须保留 Simulated。没有接入 Intelligent Commerce 或 Token Service。
+
+把以下文件保存在 Git 仓库外的私有目录（目录权限 700，文件 600）：
+
+- `auth.json`：`{"username":"沙盒 API 用户名","password":"沙盒 API Password"}`，不是网页登录密码。
+- `client-cert.pem` / `client-key.pem`：Two-Way SSL 证书及匹配私钥。
+- `mle-key-id.txt`、`mle-server-cert.pem`、`mle-client-cert.pem`、`mle-key.pem`：同一个 MLE Key ID 的证书及客户端私钥。
+- `pav-fixture.json`：仅使用该项目 Test Data 的成功用例。字段为 `primaryAccountNumber`、`cardExpiryDate`（YYYY-MM）、`cardCvv2Value`、`acquiringBin`、`acquirerCountryCode`、`addressVerificationResults`（street/postalCode）、`cardAcceptor`（idCode/terminalId/name/address，address 包含 state/city/zipCode/country）。不要填真实银行卡。选择预期 actionCode 00 或 85、AVS Y、CVV M 的用例。
+
+先运行独立诊断（输出已脱敏）：
+
+```bash
+export VISA_SANDBOX_DIR="$HOME/.config/milo/visa-sandbox"
+npm run visa:check
+```
+
+诊断依次检查 Hello World 和加密 PAV 响应；任一失败返回非零退出码。它不会写订单或扣款。要让本机后端每次确认购买时先运行测试账户验证，在 `server/.env` 设置 `VISA_SANDBOX_PREFLIGHT=1` 和 `VISA_SANDBOX_DIR` 的绝对路径，然后重启后端。默认 0 不调用 Visa。配置错误、超时、HTTP 错误、明文/损坏响应、拒绝或 AVS/CVV 不匹配均中止下单，不写成功订单；失败后需重新发起购买并确认。
+
+请求固定发往 `sandbox.api.visa.com`，使用 mTLS、Basic Auth 和 RSA-OAEP-256/A128GCM MLE。单次网络请求最多 10 秒、响应最多 1 MiB，无自动重试；MLE 时间戳使用真实时间。凭据和测试卡不进入 Order、WS 消息、日志或 Git。`npm test` 强制关闭外部 Visa 调用，失败/重复/重置场景用可控的外部边界替身验证。
+
+凭据只存在这台电脑；部署或队友电脑需要各自安全配置。此改动不会自动启用线上服务。公开演示后端没有用户认证，勿接入真实卡或真实资金。
+
+官方依据：[PAV](https://developer.visa.com/docs/pav)、[MLE](https://developer.visa.com/docs/message-level-encryption)。
+
 ## C / D 接入点
 
 - `src/contracts.ts`：共享对象的 TS 类型和输入校验；不在响应中增加支付 ref 等字段。
 - `src/db.ts`：六张表均为 `(id TEXT PRIMARY KEY, data TEXT JSON)`。`get(table,id)` / `all(table)` / `put(table,id,value)` / `remove(table,id)`；`transaction(fn)` 只用于同步、非嵌套操作。Settings 存在 `settings/default`，自由 KV 存状态或去重标记。`sqlite` 也可直接访问。
 - C：`modules/risk.ts` 提供 `check(product_id,text)`、`pay(order)`、`ledger()` 和 `publishOrder()`；`modules/orders.ts` 的 `placeOrder(draft,isCurrent?)` 是成功订单的唯一写入点。当前支付始终 simulated_paid，Order 和私有 `kv/payment:<order id>` 在同一事务写入，随后按分享层级推送；同一 ID 同一支付意图的重试复用结果，不同意图拒绝。check 无副作用，可在确认前后重复执行；规则 7 的创建仍在 pipeline 调 D 的 createAlert，避免双重告警。普通 `today` 不触发，礼品卡、转账、来电及「今天必须」类紧迫话术才触发。付款前校验商品、价格、订单格式和资格。
 - D：`modules/memory.ts` 导出 `createAlert(level,rule,title,body)`、`saveGrandmaNote()`、`markReceived()`、`registerMemoryTicks()` 和 `shelfSeed`。红立即推，普通立即推，黄色暂只存库。库存只更新已有 Memory，不擅自建立吃法。`src/seed.ts` 集中放种子，D 可扩展货架。
-- D：在已注册的 tick 占位回调中实现到货/提醒；`onTick((prevNow,now)=>...)` 返回注销函数。用 `kv` 持久化已触发日期，处理前跳和回拨，避免重复提醒。交互通过 `bus.toElder({type:'ask',...})`、`state`、`awaitSpoke()`；在 `pipeline.ts` 模型判断前接入待回答的 received/dose/reminder 流程。**当前没有实现自动到货、提醒、八条异常规则和 Visa 沙盒，这些仍归 C/D。**
+- D：在已注册的 tick 占位回调中实现到货/提醒；`onTick((prevNow,now)=>...)` 返回注销函数。用 `kv` 持久化已触发日期，处理前跳和回拨，避免重复提醒。交互通过 `bus.toElder({type:'ask',...})`、`state`、`awaitSpoke()`；在 `pipeline.ts` 模型判断前接入待回答的 received/dose/reminder 流程。Visa 沙盒账户验证见上节；D 的能力以当前 Memory 模块实现为准。
 
 所有演示业务时间使用 `clock.now()`；20 秒交互窗口、播放超时、API 超时使用真实计时器。此版本为单个奶奶的共享对话，同一进程串行处理输入，不是多租户系统。
 

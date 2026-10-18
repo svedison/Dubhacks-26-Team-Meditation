@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { api } from '../shared/config'
 import type { Alert, GuardianEvent, Memory, Order, Product, Settings, ShareLevel } from '../shared/contracts'
 import { useDemoNow } from '../shared/useDemoNow'
@@ -19,20 +19,24 @@ type Store = {
   freshIds: Set<string> // 刚从 WebSocket 推来的卡片，用来做进场动画
   archive: (id: string) => Promise<void>
   saveSettings: (patch: Partial<Settings>) => Promise<void>
-  saveMemory: (id: string, patch: Partial<Pick<Memory, 'paused'>>) => Promise<void>
+  saveMemory: (id: string, patch: Partial<Omit<Memory, 'id' | 'product_id' | 'log'>>) => Promise<void>
   loadLedger: () => Promise<void>
 }
 
 const Ctx = createContext<Store | null>(null)
 
-async function getJson<T>(path: string): Promise<T> {
-  const r = await fetch(api(path))
+async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
+  const r = await fetch(api(path), { signal })
   if (!r.ok) throw new Error(`${path} HTTP ${r.status}`)
   return (await r.json()) as T
 }
 
 async function send(path: string, method: 'POST' | 'PUT', body?: unknown) {
-  const r = await fetch(api(path), { method, headers: { 'content-type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) })
+  const r = await fetch(api(path), {
+    method,
+    // Fastify rejects an empty body labelled as JSON (e.g. archive POST).
+    ...(body === undefined ? {} : { headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }),
+  })
   if (!r.ok) throw new Error(`${method} ${path} HTTP ${r.status}`)
   return r.json() as Promise<unknown>
 }
@@ -56,7 +60,33 @@ export function GuardianProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Record<string, Product>>({})
   const [freshIds, setFreshIds] = useState<Set<string>>(new Set())
 
-  const loadLedger = useCallback(() => getJson<Ledger>('/api/orders').then(setLedger), [])
+  const ledgerRequest = useRef<AbortController | null>(null)
+  const changingSharing = useRef(0)
+  const settingsQueue = useRef(Promise.resolve())
+  const cancelLedger = useCallback(() => {
+    ledgerRequest.current?.abort()
+    ledgerRequest.current = null
+  }, [])
+  const loadLedger = useCallback(async (replace = true) => {
+    if (changingSharing.current || (!replace && ledgerRequest.current)) return
+    cancelLedger()
+    const request = new AbortController()
+    ledgerRequest.current = request
+    // A stalled request must not block later refreshes indefinitely.
+    const timeout = window.setTimeout(() => {
+      request.abort()
+      if (ledgerRequest.current === request) ledgerRequest.current = null
+    }, 10000)
+    try {
+      const next = await getJson<Ledger>('/api/orders', request.signal)
+      if (!request.signal.aborted && ledgerRequest.current === request) setLedger(next)
+    } catch (error) {
+      if (!request.signal.aborted) throw error
+    } finally {
+      window.clearTimeout(timeout)
+      if (ledgerRequest.current === request) ledgerRequest.current = null
+    }
+  }, [cancelLedger])
   const loadMemories = useCallback(() => getJson<Memory[]>('/api/memories').then(setMemories), [])
 
   const loadAll = useCallback(() => {
@@ -87,8 +117,25 @@ export function GuardianProvider({ children }: { children: ReactNode }) {
   })
 
   useEffect(() => {
-    if (status === 'open') loadAll()
-  }, [status, loadAll])
+    if (status !== 'open') return
+    loadAll()
+    // Default sharing deliberately has no ordinary-order WS event. Refresh the
+    // filtered REST ledger without changing what the family is allowed to see.
+    const refresh = () => {
+      if (document.visibilityState === 'visible') {
+        void loadLedger(false).catch((e: Error) => console.error('[guardian] ledger', e.message))
+      }
+    }
+    const interval = window.setInterval(refresh, 5000)
+    document.addEventListener('visibilitychange', refresh)
+    window.addEventListener('focus', refresh)
+    return () => {
+      window.clearInterval(interval)
+      document.removeEventListener('visibilitychange', refresh)
+      window.removeEventListener('focus', refresh)
+      cancelLedger()
+    }
+  }, [status, loadAll, loadLedger, cancelLedger])
 
   // 先等后端确认再改画面：后端没存上时，卡片留在原处，不会出现「看起来收走了、其实没收」
   const archive = async (id: string) => {
@@ -97,15 +144,33 @@ export function GuardianProvider({ children }: { children: ReactNode }) {
   }
 
   const saveSettings = async (patch: Partial<Settings>) => {
-    const next = (await send('/api/settings', 'PUT', patch)) as Settings
-    setSettings(next)
-    // 分享层级一改，账本立刻按新层级重新拉
-    if ('share_level' in patch) await loadLedger()
+    const changesSharing = 'share_level' in patch
+    if (changesSharing) {
+      changingSharing.current++
+      cancelLedger()
+      setLedger(null)
+    }
+    // Keep writes in click order, and keep the ledger hidden while any newer
+    // sharing choice is queued. An earlier save must not reopen its details.
+    const saved = settingsQueue.current.then(async () => {
+      try {
+        const next = (await send('/api/settings', 'PUT', patch)) as Settings
+        setSettings(next)
+      } finally {
+        if (changesSharing) {
+          changingSharing.current--
+          // Also recover the existing permitted ledger if saving failed.
+          if (!changingSharing.current) await loadLedger()
+        }
+      }
+    })
+    settingsQueue.current = saved.catch(() => {})
+    await saved
   }
 
-  // 同上：只发改了的字段（后端只收可改的字段，带上 id、product_id、log 会被拒），用后端存好后返回的那一份更新画面
-  const saveMemory = async (id: string, patch: Partial<Pick<Memory, 'paused'>>) => {
-    const saved = (await send(`/api/memories/${encodeURIComponent(id)}`, 'PUT', patch)) as Memory
+  // 只发改了的字段（后端只收可改的字段，带上 id、product_id、log 会被拒），用后端存好后返回的那一份更新画面
+  const saveMemory: Store['saveMemory'] = async (id, patch) => {
+    const saved = await send(`/api/memories/${encodeURIComponent(id)}`, 'PUT', patch) as Memory
     setMemories((list) => upsert(list, saved))
   }
 

@@ -1,10 +1,11 @@
-import type { ElderEvent, FaceState, Product } from '../shared/contracts'
+import type { ElderEvent, FaceState, Order, Product } from '../shared/contracts'
 
 // ask：这句是设备主动提的问题（后端 ask 事件），她回答时问题要留在屏上
 export type Line = { id: number; role: 'grandma' | 'ai'; text: string; ask?: boolean }
 
-// answered：卡片出来以后她开过口。后端报价时也会发 happy，只有她回答过之后的 happy 才算下单成功、盖章
-export type CardView = { product: Product; alternative?: Product; done: boolean; answered: boolean }
+// answered：卡片出来以后她开过口（用来判断换话题时该不该收卡）。盖章只认后端的 order 事件：报价、拒单（"Okay, I won't
+// order it"）都是开心脸，开心脸本身不代表下单成功；orderStatus 为 simulated_paid 时卡片标 Simulated order
+export type CardView = { product: Product; alternative?: Product; done: boolean; answered: boolean; orderStatus?: Order['status'] }
 
 export type ElderView = {
   face: FaceState
@@ -59,7 +60,6 @@ export function elderReducer(v: ElderView, e: ElderEvent | { type: 'socket_down'
         face: e.state,
         awake: true,
         heardWhileIdle: null,
-        card: e.state === 'happy' && woke.card?.answered ? { ...woke.card, done: true } : woke.card,
       }
     }
     case 'transcript':
@@ -71,6 +71,13 @@ export function elderReducer(v: ElderView, e: ElderEvent | { type: 'socket_down'
       return addLine(v.card?.done ? { ...v, card: null, heardWhileIdle: null } : { ...v, heardWhileIdle: null }, 'ai', e.text, true)
     case 'card':
       return { ...v, awake: true, conversing: true, cardThisTurn: true, card: { product: e.product, alternative: e.alternative, done: false, answered: false } }
+    case 'order': {
+      // 后端只在明确确认且下单成功后发 order：这才是盖章的依据
+      if (!v.card || (e.status !== 'paid' && e.status !== 'simulated_paid')) return v
+      const product = v.card.alternative?.id === e.product_id ? v.card.alternative
+        : v.card.product.id === e.product_id ? v.card.product : null
+      return product ? { ...v, card: { product, done: true, answered: true, orderStatus: e.status } } : v
+    }
     case 'clock':
       return { ...v, clock: e.now }
     case 'speak':

@@ -1,28 +1,2451 @@
 [
   {
+    "id": "oats",
+    "name": "Quaker Old Fashioned Oats, 18 oz",
+    "price_cents": 549,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "oats",
+      "oatmeal",
+      "the big oats box",
+      "porridge"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Quaker",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "bread",
+    "name": "Sara Lee 100% Whole Wheat Bread, 12 oz",
+    "price_cents": 279,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "bread",
+      "a loaf of bread",
+      "toast"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Sara Lee",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "eggs",
+    "name": "Large Eggs Dozen",
+    "price_cents": 429,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "eggs",
+      "a dozen eggs"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "milk",
+    "name": "Simple Truth Organic 2% Reduced Fat Milk Gallon, 1 gal",
+    "price_cents": 799,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "milk",
+      "a gallon of milk"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Simple Truth Organic",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "bananas",
+    "name": "Fresh Bunch of Bananas, 1 lb",
+    "price_cents": 75,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "bananas",
+      "a bunch of bananas",
+      "nanas"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Fresh Bananas",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "apples",
+    "name": "Kroger Gala Apples, 3 lb",
+    "price_cents": 499,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "apples"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "oranges",
+    "name": "Kroger Fresh Navel Oranges Bag, 4 lb",
+    "price_cents": 799,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "oranges"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "yogurt",
+    "name": "Stonyfield Organic Whole Milk Probiotic Yogurt, 32 oz",
+    "price_cents": 679,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "yogurt",
+      "yoghurt"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Stonyfield Organic",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "butter",
+    "name": "Kroger Salted Butter Sticks, 4 sticks / 16 oz / 2 pk",
+    "price_cents": 799,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "butter"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "jam",
+    "name": "Smucker's Seedless Strawberry Jam, 18 oz",
+    "price_cents": 599,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "jam",
+      "jelly",
+      "preserves"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Smucker's",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "peanut-butter",
+    "name": "Jif Creamy Peanut Butter, 16 oz",
+    "price_cents": 349,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "peanut butter"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Jif",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "honey",
+    "name": "Kroger Clover Honey Bear, 12 oz",
+    "price_cents": 449,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "honey"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "chicken-soup",
+    "name": "Campbell's Condensed Homestyle Chicken Noodle Soup, 10.5 oz",
+    "price_cents": 229,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "chicken soup",
+      "soup",
+      "chicken noodle"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Campbell's",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "tomato-soup",
+    "name": "Campbell's Condensed Tomato Soup, 10.75 oz",
+    "price_cents": 150,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "tomato soup"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Campbell's",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "chicken-broth",
+    "name": "Pacific Foods Low Sodium Organic Free Range Chicken Broth",
+    "price_cents": 329,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "broth",
+      "chicken broth",
+      "stock"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Pacific Foods",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "rice",
+    "name": "Kroger Enriched Long Grain White Rice, 32 oz",
+    "price_cents": 299,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "rice",
+      "white rice"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "pasta",
+    "name": "Barilla Spaghetti Pasta, 16 oz",
+    "price_cents": 229,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "pasta",
+      "spaghetti",
+      "noodles"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Barilla",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "pasta-sauce",
+    "name": "Bertolli Traditional Marinara Sauce, 24 oz",
+    "price_cents": 299,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "pasta sauce",
+      "tomato sauce",
+      "marinara"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Bertolli",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "tuna",
+    "name": "Kroger Wild Caught Chunk Light Tuna in Water, 5 oz",
+    "price_cents": 100,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "tuna",
+      "canned tuna"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "frozen-vegetables",
+    "name": "Kroger Meal Ready Sides Frozen Vegetables Mixed, 12 oz",
+    "price_cents": 229,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "frozen vegetables",
+      "veggies",
+      "mixed vegetables"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "frozen-peas",
+    "name": "Birds Eye Steamfresh Sweet Peas, 10 oz",
+    "price_cents": 169,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "peas"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Birds Eye",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "potatoes",
+    "name": "Russet Potatoes Bag, 5 lb",
+    "price_cents": 299,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "potatoes"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "onions",
+    "name": "Kroger Yellow Onion 3 lb Bag",
+    "price_cents": 289,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "onions"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "carrots",
+    "name": "Kroger Whole Carrots, 2 lb",
+    "price_cents": 199,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "carrots"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "crackers",
+    "name": "Kroger Original Saltines Crackers, 16 oz",
+    "price_cents": 200,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "crackers",
+      "saltines"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "cheese",
+    "name": "Kroger Medium Cheddar Sliced Cheese, 8 slices / 6 oz",
+    "price_cents": 200,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "cheese",
+      "cheddar",
+      "sliced cheese"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "cookies",
+    "name": "Bakery Fresh Oatmeal Raisin Cookies, 12 count",
+    "price_cents": 300,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "cookies",
+      "biscuits"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Bakery",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "applesauce",
+    "name": "Mott's Applesauce, 3.9 oz",
+    "price_cents": 399,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "applesauce",
+      "apple sauce"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Mott's",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "prunes",
+    "name": "Mariani Pitted Prunes, 18 oz",
+    "price_cents": 599,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "prunes",
+      "dried plums"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Mariani",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "almonds",
+    "name": "Kroger Roasted Unsalted Almonds, 32 oz",
+    "price_cents": 1299,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "almonds",
+      "nuts"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "chocolate",
+    "name": "HERSHEY'S SPECIAL DARK Mildly Sweet Chocolate XL, 4.25 oz",
+    "price_cents": 299,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "chocolate",
+      "a chocolate bar",
+      "sweets"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Hershey's",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "hard-candy",
+    "name": "Werther's Original Caramel Hard Candies, 5.5 oz",
+    "price_cents": 219,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "candy",
+      "candies",
+      "butterscotch"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Werther's Original",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "orange-juice",
+    "name": "Simply Pulp-Free Orange Juice Bottle, 46 fl oz",
+    "price_cents": 549,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "orange juice",
+      "oj",
+      "juice"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Simply",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "prune-juice",
+    "name": "Sunsweet Amaz!n Prune Juice, 64 fl oz",
+    "price_cents": 949,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "prune juice"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Sunsweet",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "water",
+    "name": "Dasani Purified Water Bottles, 24 bottles / 16.9 fl oz",
+    "price_cents": 699,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "water",
+      "bottled water"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Dasani",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "ensure",
+    "name": "Ensure Original Vanilla Nutrition Shake, 6 pk / 8 fl oz",
+    "price_cents": 1399,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "ensure",
+      "nutrition shake",
+      "protein shake",
+      "the vanilla drink"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Ensure",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "electrolyte",
+    "name": "Pedialyte Essential Rehydration Electrolyte Drink, 1.05 qt",
+    "price_cents": 799,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "electrolyte drink",
+      "pedialyte",
+      "gatorade"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Pedialyte",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "coffee",
+    "name": "Starbucks House Blend Medium Roast Ground Coffee, 12 oz",
+    "price_cents": 799,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "coffee"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Starbucks",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "tea",
+    "name": "Bigelow Cozy Chamomile Caffeine Free Herbal Tea Bags, 20 ct",
+    "price_cents": 299,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "tea",
+      "chamomile",
+      "herbal tea"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Bigelow",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "sugar",
+    "name": "Smart Way Granulated Sugar, 4 lb",
+    "price_cents": 349,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "sugar"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Smart Way",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "salt",
+    "name": "Kroger Iodized Salt, 26 oz",
+    "price_cents": 100,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "salt"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "flour",
+    "name": "Kroger Unbleached Enriched All Purpose Flour, 5 lb",
+    "price_cents": 349,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "flour"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "olive-oil",
+    "name": "Pompeian Smooth First Cold Pressed Extra Virgin, 16 fl oz",
+    "price_cents": 959,
+    "category": "food",
+    "certification": null,
+    "aliases": [
+      "olive oil",
+      "oil"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Pompeian",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "toothpaste",
+    "name": "Colgate Cavity Protection Fluoride Toothpaste, 4 oz",
+    "price_cents": 299,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "toothpaste"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Colgate",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "toothbrush",
+    "name": "Colgate Extra Clean Toothbrush Full Head Soft, 1 ct",
+    "price_cents": 179,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "toothbrush"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Colgate",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "denture-cleanser",
+    "name": "Polident 3 Minute Antibacterial Dental Appliance, 60 ct",
+    "price_cents": 649,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "denture tablets",
+      "denture cleaner",
+      "polident"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Polident",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "denture-adhesive",
+    "name": "Super Poligrip Original Denture Adhesive Cream, 2.4 oz",
+    "price_cents": 849,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "denture glue",
+      "denture cream",
+      "poligrip"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Poligrip",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "soap",
+    "name": "Dove 2 Bars Beauty Bar Soap Sensitive, 2 ct / 3.75 oz",
+    "price_cents": 779,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "soap",
+      "bar soap"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Dove",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "shampoo",
+    "name": "Kristin Ess Extra Gentle Shampoo, 10 fl oz",
+    "price_cents": 1599,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "shampoo"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kristin Ess Hair",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "lotion",
+    "name": "Cetaphil Moisturizing Lotion 2 oz",
+    "price_cents": 549,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "lotion",
+      "hand cream",
+      "moisturizer"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Cetaphil",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "lip-balm",
+    "name": "eos Vanilla Bean 2-Pack Lip Balm Sticks, 0.14 oz",
+    "price_cents": 499,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "lip balm",
+      "chapstick"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "EOS",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "incontinence-pads",
+    "name": "Poise Incontinence Pads for Women, 20 count",
+    "price_cents": 849,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "pads",
+      "poise pads",
+      "bladder pads"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Poise",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "reading-glasses",
+    "name": "Foster Grant Essentials Reading Glasses, +2.00 power",
+    "price_cents": 1399,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "reading glasses",
+      "glasses",
+      "readers"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Foster Grant",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "hearing-aid-batteries",
+    "name": "Energizer Hearing Aid 312 Zinc Air Batteries, 6 count",
+    "price_cents": 999,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "hearing aid batteries",
+      "batteries for my hearing aid"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Energizer®",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "cotton-swabs",
+    "name": "Kroger Paper Cotton Swabs, 375 ct",
+    "price_cents": 379,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "cotton swabs",
+      "q-tips"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "nail-clippers",
+    "name": "Sally Hansen Treat Your Toes Control Grip Toenail, 1 ct",
+    "price_cents": 429,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "nail clippers"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Sally Hansen",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "tissues",
+    "name": "Kleenex Ultra Soft Facial Tissues, 4 ct",
+    "price_cents": 899,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [
+      "tissues",
+      "kleenex"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kleenex",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "toilet-paper",
+    "name": "Charmin Ultra Soft Toilet Paper 12 Mega Rolls, 12 rolls",
+    "price_cents": 1999,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "toilet paper",
+      "tp",
+      "bathroom tissue"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Charmin",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "paper-towels",
+    "name": "Bounty Paper Towels Select-A-Size White 6 Double, 6 rolls",
+    "price_cents": 1499,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "paper towels",
+      "kitchen towels"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Bounty",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "dish-soap",
+    "name": "Dawn Ultra Original Scent Liquid Dish Soap, 18 fl oz",
+    "price_cents": 429,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "dish soap",
+      "dishwashing liquid",
+      "dawn"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Precious",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "laundry-detergent",
+    "name": "Tide Original Scent Liquid Laundry Detergent, 100 fl oz",
+    "price_cents": 1599,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "laundry detergent",
+      "laundry soap",
+      "tide"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Tide",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "trash-bags",
+    "name": "Glad ForceFlex Tall Kitchen Drawstring Trash Bags, 40 ct",
+    "price_cents": 1399,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "trash bags",
+      "garbage bags"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Glad",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "aa-batteries",
+    "name": "Energizer Max AA 8pk, 8 pk",
+    "price_cents": 999,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "double a batteries",
+      "aa batteries",
+      "batteries"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Energizer®",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "aaa-batteries",
+    "name": "Energizer Max AAA Alkaline Batteries, 8 pk",
+    "price_cents": 999,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "triple a batteries",
+      "aaa batteries",
+      "remote batteries"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Energizer®",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "led-bulbs",
+    "name": "Philips 10-Watt (60-Watt) A19 LED Light Bulb, 4 pk",
+    "price_cents": 799,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "light bulbs",
+      "bulbs",
+      "a new bulb"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Philips",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "night-light",
+    "name": "Plug In Night Light",
+    "price_cents": 699,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "night light"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "sponges",
+    "name": "Scotch-Brite Heavy Duty Scrub Sponge, 3 ea",
+    "price_cents": 549,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "sponges"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Scotch-Brite™",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "disinfecting-wipes",
+    "name": "Clorox Disinfecting Wipes Crisp Lemon, 75 ct",
+    "price_cents": 749,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "wipes",
+      "cleaning wipes",
+      "clorox wipes"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Clorox",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "food-storage-bags",
+    "name": "Ziploc Brand Sandwich Bags with EasyGuide Texture, 105 cnt",
+    "price_cents": 649,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "ziploc bags",
+      "sandwich bags",
+      "plastic bags"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Ziploc",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "aluminum-foil",
+    "name": "Kroger Aluminum Foil, 75 sq ft",
+    "price_cents": 629,
+    "category": "household",
+    "certification": null,
+    "aliases": [
+      "foil",
+      "tin foil"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "acetaminophen",
+    "name": "Tylenol Extra Strength Acetaminophen, 100 ct",
+    "price_cents": 1649,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "tylenol",
+      "acetaminophen",
+      "pain reliever",
+      "headache pills"
+    ],
+    "label_dose": "Label: adults and children 12 years and over take 2 tablets every 6 hours while symptoms last do not take more than 6 tablets in 24 hours, unless directed by a doctor do not",
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Tylenol",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "ibuprofen",
+    "name": "Advil Pain Reliever and Fever Reducer, 200 ct",
+    "price_cents": 2499,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "advil",
+      "ibuprofen"
+    ],
+    "label_dose": "Label: adults and children 12 years and over take 2 caplets every 8 hours while symptoms persist children under 12 years ask a doctor do not take more than 6 caplets in 24 h",
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Advil",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "antacid",
+    "name": "TUMS Chewable Antacid Tablets Extra Strength, 96 ct",
+    "price_cents": 549,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "tums",
+      "antacid",
+      "heartburn tablets"
+    ],
+    "label_dose": "Label: adults and children 12 years of age and over: chew 2-4 tablets as symptoms occur, or as directed by a doctor",
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Tums",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "allergy",
+    "name": "Claritin 24 Hour Allergy Relief Loratadine Tablets 10mg",
+    "price_cents": 1349,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "allergy pills",
+      "claritin",
+      "antihistamine"
+    ],
+    "label_dose": "Label: adults and children 6 years and over chew 2 tablets daily; not more than 2 chewable tablets in 24 hours children 2 to under 6 years of age chew 1 tablet daily; not mo",
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Claritin",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "eye-drops",
+    "name": "Advanced Eye Relief Dry Eye Lubricant Drops, .5 fl oz",
+    "price_cents": 899,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "eye drops",
+      "artificial tears"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Advanced Eye Relief",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "cough-drops",
+    "name": "HALLS Cough and Throat Relief Cherry Cough Drops, 30 ct",
+    "price_cents": 329,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "cough drops",
+      "throat drops",
+      "halls"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "HALLS",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "bandages",
+    "name": "BAND-AID Brand Flexible Fabric Adhesive Bandages, 100 ct",
+    "price_cents": 1249,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "band aids",
+      "bandages",
+      "plasters"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Band-Aid",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "antiseptic-wipes",
+    "name": "Kroger Alcohol Swabs, 100 ct",
+    "price_cents": 299,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "alcohol wipes",
+      "antiseptic wipes"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "hydrocortisone",
+    "name": "Kroger Maximum Strength Hydrocortisone Anti-Itch Cream, 1 oz",
+    "price_cents": 599,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "itch cream",
+      "hydrocortisone",
+      "cortisone cream"
+    ],
+    "label_dose": "Label: Adults and children 2 years of age and older: Apply to affected area not more than 3 to 4 times daily",
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "thermometer",
+    "name": "Kroger 9 Second Comfort Flex Tip Digital Thermometer, 1 ct",
+    "price_cents": 799,
+    "category": "otc",
+    "certification": null,
+    "aliases": [
+      "thermometer"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
     "id": "calcium-120",
     "name": "Calcium 600mg, 120 tablets",
     "price_cents": 1800,
     "category": "supplement",
     "certification": "USP",
     "aliases": [
-      "the purple bottle"
+      "the purple bottle",
+      "calcium",
+      "calcium pills"
     ],
     "label_dose": "1 tablet daily with food",
     "units": 120,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "Nature Made",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
     "ingredients": [
-      "calcium"
+      "Vitamin D3",
+      "Calcium",
+      "Maltodextrin",
+      "Cellulose Gel",
+      "Croscarmellose Sodium",
+      "Hydroxypropyl Methylcellulose"
     ],
     "certification_source": {
-      "status": "demo_only",
+      "status": "demo_scripted",
       "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "note": "Scripted demo record kept as quoted in the scenes; QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle lists Nature Made Calcium 600 mg with Vitamin D3 Softgels, 100 at $23.99"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
   },
   {
     "id": "glucosamine-usp",
@@ -31,372 +2454,534 @@
     "category": "supplement",
     "certification": "USP",
     "aliases": [
-      "joint support"
+      "joint support",
+      "glucosamine",
+      "joint pills"
     ],
     "label_dose": "1 tablet daily",
     "units": 90,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "Kirkland Signature",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
     "ingredients": [
-      "glucosamine"
+      "Calories",
+      "Total Carbohydrates",
+      "Sodium",
+      "Glucosamine HCl",
+      "Chondroitin Sulfate Sodium",
+      "Glucosamine Hydrochloride"
     ],
     "certification_source": {
-      "status": "demo_only",
+      "status": "demo_scripted",
       "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "note": "Scripted demo record kept as quoted in the scenes"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
   },
   {
     "id": "vitamin-d3",
-    "name": "Vitamin D3, 100 softgels",
-    "price_cents": 1200,
+    "name": "Nature Made Vitamin D3 2000 IU (50 mcg) Softgels, 90",
+    "price_cents": 1449,
     "category": "supplement",
     "certification": "USP",
     "aliases": [
-      "vitamin D"
+      "vitamin d",
+      "vitamin d3",
+      "the little yellow pills"
     ],
-    "label_dose": "1 softgel daily with food",
-    "units": 100,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "vitamin D3"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "fiber-capsules",
-    "name": "Fiber, 120 capsules",
-    "price_cents": 1600,
-    "category": "supplement",
-    "certification": "USP",
-    "aliases": [
-      "fiber"
-    ],
-    "label_dose": "2 capsules daily with water",
-    "units": 120,
-    "units_per_dose": 2,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "psyllium"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "multivitamin",
-    "name": "Daily multivitamin, 60 tablets",
-    "price_cents": 1450,
-    "category": "supplement",
-    "certification": "USP",
-    "aliases": [],
-    "label_dose": "1 tablet daily with food",
-    "units": 60,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "vitamins and minerals"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "vitamin-c",
-    "name": "Vitamin C, 100 tablets",
-    "price_cents": 900,
-    "category": "supplement",
-    "certification": "USP",
-    "aliases": [],
-    "label_dose": "1 tablet daily",
-    "units": 100,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "ascorbic acid"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "b12",
-    "name": "Vitamin B12, 90 tablets",
-    "price_cents": 1100,
-    "category": "supplement",
-    "certification": "USP",
-    "aliases": [],
-    "label_dose": "1 tablet daily",
-    "units": 90,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "cyanocobalamin"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "magnesium",
-    "name": "Magnesium, 90 tablets",
-    "price_cents": 1300,
-    "category": "supplement",
-    "certification": "USP",
-    "aliases": [],
-    "label_dose": "1 tablet daily with food",
-    "units": 90,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "magnesium"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "omega-3",
-    "name": "Omega-3, 60 softgels",
-    "price_cents": 1900,
-    "category": "supplement",
-    "certification": "USP",
-    "aliases": [],
-    "label_dose": "1 softgel daily with food",
-    "units": 60,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "fish oil"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "lutein",
-    "name": "Lutein, 60 softgels",
-    "price_cents": 1700,
-    "category": "supplement",
-    "certification": "USP",
-    "aliases": [],
-    "label_dose": "1 softgel daily with food",
-    "units": 60,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "lutein"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "oatmeal",
-    "name": "Plain oats, 20 portions",
-    "price_cents": 600,
-    "category": "food",
-    "certification": null,
-    "aliases": [],
-    "label_dose": null,
-    "units": 20,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "whole grain oats"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "tea",
-    "name": "Herbal tea, 20 bags",
-    "price_cents": 500,
-    "category": "food",
-    "certification": null,
-    "aliases": [],
-    "label_dose": null,
-    "units": 20,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "rooibos"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "brown-rice",
-    "name": "Brown rice, 10 portions",
-    "price_cents": 700,
-    "category": "food",
-    "certification": null,
-    "aliases": [],
-    "label_dose": null,
-    "units": 10,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "brown rice"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "olive-oil",
-    "name": "Olive oil, 500 mL",
-    "price_cents": 1000,
-    "category": "food",
-    "certification": null,
-    "aliases": [],
-    "label_dose": null,
-    "units": 500,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "olive oil"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "soap",
-    "name": "Unscented soap, 4 bars",
-    "price_cents": 650,
-    "category": "household",
-    "certification": null,
-    "aliases": [],
-    "label_dose": null,
-    "units": 4,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "soap base"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "tissues",
-    "name": "Tissues, 6 boxes",
-    "price_cents": 850,
-    "category": "household",
-    "certification": null,
-    "aliases": [],
-    "label_dose": null,
-    "units": 6,
-    "units_per_dose": 1,
-    "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
-    "ingredients": [
-      "paper"
-    ],
-    "certification_source": {
-      "status": "demo_only",
-      "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
-    },
-    "demo_only": true
-  },
-  {
-    "id": "toothpaste",
-    "name": "Fluoride toothpaste, 1 tube",
-    "price_cents": 450,
-    "category": "personal-care",
-    "certification": null,
-    "aliases": [],
     "label_dose": null,
     "units": 1,
     "units_per_dose": 1,
     "risk": null,
-    "brand": "TrustTag Demo Brand",
-    "merchant": "TrustTag Demo Store",
+    "brand": "Nature Made",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Nature Made products carry the USP Verified Mark; check the mark on this bottle"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "fiber-capsules",
+    "name": "Metamucil 3-in-1 Psyllium Daily Fiber Supplement, 160 ct",
+    "price_cents": 2499,
+    "category": "supplement",
+    "certification": null,
+    "aliases": [
+      "fiber",
+      "fiber pills",
+      "metamucil"
+    ],
+    "label_dose": "Take as directed on the label",
+    "units": 160,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Metamucil",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
     "ingredients": [
-      "sodium fluoride"
+      "Calories",
+      "Total Carbohydrates",
+      "Dietary Fiber",
+      "Soluble Fiber",
+      "Protein",
+      "Iron"
     ],
     "certification_source": {
-      "status": "demo_only",
+      "status": "store_listing",
       "url": null,
-      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
     },
-    "demo_only": true
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "multivitamin",
+    "name": "Centrum Silver Multivitamin Supplement, 125 ct",
+    "price_cents": 1649,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [
+      "multivitamin",
+      "my daily vitamin",
+      "centrum"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Centrum",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Centrum Silver products carry the USP Verified Mark; check the mark on this bottle"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "vitamin-c",
+    "name": "Nature Made Extra Strength Vitamin C 1000 mg Tablets",
+    "price_cents": 2199,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [
+      "vitamin c"
+    ],
+    "label_dose": "Take as directed on the label",
+    "units": 100,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Nature Made",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [
+      "Vitamin C",
+      "Mannitol",
+      "Corn Starch",
+      "Cellulose Gel",
+      "Maltodextrin",
+      "Crospovidone"
+    ],
+    "certification_source": {
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Nature Made products carry the USP Verified Mark; check the mark on this bottle"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "b12",
+    "name": "Nature Made Vitamin B12 1000 mcg Softgels, 90 softgel",
+    "price_cents": 2399,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [
+      "b12",
+      "vitamin b12",
+      "b twelve"
+    ],
+    "label_dose": "Take as directed on the label",
+    "units": 160,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Nature Made",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [
+      "Vitamin B12",
+      "Calcium",
+      "Cellulose Gel",
+      "Hypromellose",
+      "Stearic Acid",
+      "Silicon Dioxide"
+    ],
+    "certification_source": {
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Nature Made products carry the USP Verified Mark; check the mark on this bottle"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "magnesium",
+    "name": "Nature Made Magnesium Citrate 250 mg Softgels, 60 ct",
+    "price_cents": 1999,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [
+      "magnesium"
+    ],
+    "label_dose": "Take as directed on the label",
+    "units": 90,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Nature Made",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [
+      "Calories",
+      "Magnesium",
+      "Gelatin",
+      "Medium Chain Triglycerides",
+      "Glycerin",
+      "Water"
+    ],
+    "certification_source": {
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Nature Made products carry the USP Verified Mark; check the mark on this bottle"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "omega-3",
+    "name": "Nature Made Fish Oil 1200 mg Softgels, 100",
+    "price_cents": 2249,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [
+      "fish oil",
+      "omega 3",
+      "omega three"
+    ],
+    "label_dose": "Take as directed on the label",
+    "units": 210,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Nature Made",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [
+      "Calories",
+      "Total Fat",
+      "Saturated Fat",
+      "Polyunsaturated Fat",
+      "Monounsaturated Fat",
+      "Cholesterol"
+    ],
+    "certification_source": {
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Nature Made products carry the USP Verified Mark; check the mark on this bottle"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "lutein",
+    "name": "PreserVision AREDS 2 Formula + Multivitamin Eye, 60 ct",
+    "price_cents": 2499,
+    "category": "supplement",
+    "certification": null,
+    "aliases": [
+      "eye vitamins",
+      "lutein",
+      "preservision"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "PreserVision",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "probiotic",
+    "name": "Align Digestive Support Probiotic Capsules, 28 ct",
+    "price_cents": 3299,
+    "category": "supplement",
+    "certification": null,
+    "aliases": [
+      "probiotic",
+      "probiotics",
+      "align"
+    ],
+    "label_dose": "Take as directed on the label",
+    "units": 28,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Align",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [
+      "Bifidobacterium infantis 35624",
+      "Microcrystalline Cellulose",
+      "Hypromellose",
+      "Sucrose",
+      "Magnesium Stearate",
+      "Sodium Caseinate"
+    ],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "iron",
+    "name": "Nature Made Iron Tablets 65mg, 180 ct",
+    "price_cents": 1449,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [
+      "iron pills",
+      "iron"
+    ],
+    "label_dose": "Take as directed on the label",
+    "units": 365,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Nature Made",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [
+      "Calcium",
+      "Iron",
+      "Cellulose Gel",
+      "Croscarmellose Sodium",
+      "Hypromellose",
+      "Color added"
+    ],
+    "certification_source": {
+      "status": "usp_verified_program",
+      "url": "https://www.usp.org/verification-services/verified-mark",
+      "note": "Nature Made products carry the USP Verified Mark; check the mark on this bottle"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "cat-food",
+    "name": "Fancy Feast Chicken Feast Classic Grain Free Wet Cat, 3 oz.",
+    "price_cents": 110,
+    "category": "pet",
+    "certification": null,
+    "aliases": [
+      "cat food",
+      "food for the cat",
+      "food for whiskers"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Fancy Feast",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "dog-food",
+    "name": "Dry Dog Food Small Bag",
+    "price_cents": 1999,
+    "category": "pet",
+    "certification": null,
+    "aliases": [
+      "dog food",
+      "food for the dog"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "bird-seed",
+    "name": "Kroger Wild Bird Seed, 5 lb",
+    "price_cents": 699,
+    "category": "pet",
+    "certification": null,
+    "aliases": [
+      "bird seed",
+      "food for the birds"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Kroger",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "store_listing",
+      "url": null,
+      "note": "Listed at QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle on 2026-10-18"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "store",
+      "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+      "location_id": "70500807",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "stamps",
+    "name": "Postage Stamps Book",
+    "price_cents": 1460,
+    "category": "other",
+    "certification": null,
+    "aliases": [
+      "stamps",
+      "postage"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
+  },
+  {
+    "id": "puzzle-book",
+    "name": "Crossword Puzzle Book Large Print",
+    "price_cents": 899,
+    "category": "other",
+    "certification": null,
+    "aliases": [
+      "crossword",
+      "puzzle book",
+      "crosswords"
+    ],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "Store brand",
+    "merchant": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
+    "ingredients": [],
+    "certification_source": {
+      "status": "typical_listing",
+      "url": null,
+      "note": "Curated everyday item; price is a typical US price, not a live quote"
+    },
+    "demo_only": false,
+    "price_source": {
+      "kind": "typical",
+      "fetched_at": "2026-10-18T10:18:13.702Z"
+    }
   },
   {
     "id": "miracle-joint",
