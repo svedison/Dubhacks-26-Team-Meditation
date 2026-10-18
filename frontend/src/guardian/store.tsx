@@ -3,8 +3,8 @@ import { api } from '../shared/config'
 import type { Alert, GuardianEvent, Memory, Order, Product, Settings, ShareLevel } from '../shared/contracts'
 import { useSocket, type SocketStatus } from '../shared/useSocket'
 
-// GET /api/orders 的返回形状契约里没写，这里按 tools/mock-server 的实际返回（已写进给用户的接口建议）
-export type Ledger = { share_level: ShareLevel; month_total_cents: number; orders: Order[] }
+// GET /api/orders 的返回形状见 shared-contracts.md「订单与设置响应细节」：minimum 档总额为 null
+export type Ledger = { share_level: ShareLevel; month_total_cents: number | null; orders: Order[] }
 
 type Store = {
   status: SocketStatus

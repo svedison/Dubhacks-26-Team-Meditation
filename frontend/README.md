@@ -27,4 +27,6 @@ cd frontend && npm install && npm run dev                     # 前端 5173，/a
 
 - 老人端连 `/ws?role=elder`，收 `state` `transcript` `speak` `card` `clock` `ask`，发 `utterance {text, source}` 和 `spoke {}`（每段语音播完发一次）。`speak`/`ask` 的 `audio_url` 为空时用 iPad 自带的朗读。
 - 监护人端连 `/ws?role=guardian`，收 `alert` `order` `memory` `clock`（字段和 `type` 平铺在同一层）；调 `GET /api/alerts|settings|orders|memories|products`、`POST /api/alerts/:id/archive`、`PUT /api/settings`、`PUT /api/memories/:id`。
-- 音频上传 `POST /api/audio?seq=<请求序号>&sr=16000&speech=1[&end=1]`，请求体是 16 kHz、单声道、16 位小端 PCM。只在有人说话时发（前面带约 0.3 秒预录），一句话的最后一块带 `end=1`；设备自己说话时不发。同一时间只有一个请求在路上，网络慢时会把排队的音频合并进下一个请求，所以每个请求的长度不固定，按 `seq` 顺序拼起来就是连续的音频。
+- 音频上传：每说完一句话发一次 `POST /api/audio`，`Content-Type: audio/wav`，请求体是这一整句的 WAV（16 kHz、单声道、16 位，前面带约 0.4 秒预录），正好对上 `server/` 里 `/api/audio` 按整句转写的做法。说话的判断由浏览器里的 Silero VAD 做；设备自己在说话时不发。麦克风常开在 iPad 上连续测过 30 分钟，没有断。
+- 播放：`speak` / `ask` 的 `audio_url` 有值就播这个文件（后端配了 MiniMax 时就是 Arrogant_Miss 的声音），为空才用 iPad 自带的朗读；每段播完发一次 `spoke`。
+- 开心、担心、警报这三种表情收到后至少保持 3 秒，说话期间也保持；契约外的事件（比如 `connected`）会被忽略。

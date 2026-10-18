@@ -10,7 +10,9 @@ function fmt(ms: number) {
 }
 
 export default function MicTest() {
-  const uploadAll = new URLSearchParams(window.location.search).get('vad') !== '1'
+  // 默认连续分块上传；?vad=1 时和老人端一样，一句话说完整句上传
+  const mode = new URLSearchParams(window.location.search).get('vad') === '1' ? 'utterance' : 'stream'
+  const uploadAll = mode === 'stream'
   const mic = useRef<MicStream | null>(null)
   const [s, setS] = useState<MicStatus | null>(null)
   const [now, setNow] = useState(Date.now())
@@ -22,7 +24,7 @@ export default function MicTest() {
   }, [])
 
   function start() {
-    const m = new MicStream({ uploadAll, onStatus: setS })
+    const m = new MicStream({ mode, onStatus: setS })
     mic.current = m
     m.start().catch((e: Error) => { console.error(e); setStartError(`${e.name}: ${e.message}`) })
   }

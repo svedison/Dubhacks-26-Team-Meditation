@@ -13,6 +13,7 @@ export default function SettingsPage() {
   const { settings, saveSettings } = useGuardian()
   const [draft, setDraft] = useState<Pick<Settings, 'card_last4' | 'card_owner' | 'monthly_baseline_cents'> | null>(null)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState(false)
 
   useEffect(() => {
     if (settings) setDraft({ card_last4: settings.card_last4, card_owner: settings.card_owner, monthly_baseline_cents: settings.monthly_baseline_cents })
@@ -20,10 +21,13 @@ export default function SettingsPage() {
 
   if (!settings || !draft) return <section className="g-page"><h1 className="g-h1">Settings</h1><p className="g-lede">Loading…</p></section>
 
+  // 后端只收 4 位数字的卡尾号（shared-contracts.md），不满 4 位时不让保存
+  const cardOk = /^\d{4}$/.test(draft.card_last4)
   const saveCard = () => {
+    setSaveError(false)
     void saveSettings(draft)
       .then(() => { setSaved(true); window.setTimeout(() => setSaved(false), 1800) })
-      .catch((e: Error) => console.error(e))
+      .catch((e: Error) => { console.error(e); setSaveError(true) })
   }
 
   return (
@@ -76,7 +80,8 @@ export default function SettingsPage() {
             <input inputMode="numeric" value={Math.round(draft.monthly_baseline_cents / 100)} onChange={(e) => setDraft({ ...draft, monthly_baseline_cents: Number(e.target.value.replace(/\D/g, '') || 0) * 100 })} />
           </div>
         </label>
-        <button className="g-save" onClick={saveCard}>{saved ? 'Saved' : 'Save'}</button>
+        <button className="g-save" onClick={saveCard} disabled={!cardOk}>{saved ? 'Saved' : 'Save'}</button>
+        {saveError && <p className="g-error">Didn't save. Try again.</p>}
       </div>
 
       <h2 className="g-h2">She calls it</h2>
