@@ -114,7 +114,8 @@ KROGER_CLIENT_ID=... KROGER_CLIENT_SECRET=... npx tsx ../tools/shelf/build-shelf
 npx tsx ../tools/shelf/build-shelf.mts --write --recalls
 ```
 
-- 演示脚本依赖的记录原样保留：calcium-120 仍是 120 片 18 美元、别名 "the purple bottle"，glucosamine-usp、miracle-joint 等三个风险品不变，所以第二幕和第四幕（"estimated to last 119 days"）不受影响。
+- 2026-10-18 03:30 起数据来自 **QFC University Village（2746 NE 45th St，UW 旁边）** 的实时门店价和品名，97 个日用品里 90 个拿到了门店数据，其余 7 个（鸡蛋、狗粮、小夜灯、邮票、填字书等）用典型价并在 `price_source` 标明。
+- 演示脚本依赖的五条记录钉在 `tools/shelf/demo-records.json`，脚本永远以它为准：calcium-120 仍是 120 片 18 美元、别名 "the purple bottle"（门店实价 23.99 写在 `certification_source.note` 里），glucosamine-usp 24 美元，三个风险品不变，所以第二幕和第四幕（"estimated to last 119 days"）不受影响。
 - 新商品的图片：老人端按 id 找本地图，找不到显示首字母，A 有空可以给常用的几个补图。
 - 服务端进 Claude 的只是 `src/shelf.ts` 挑出的最多 12 个候选，货架再扩也不拖慢。
 

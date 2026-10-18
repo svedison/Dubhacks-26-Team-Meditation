@@ -1,0 +1,136 @@
+[
+  {
+    "id": "calcium-120",
+    "name": "Calcium 600mg, 120 tablets",
+    "price_cents": 1800,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [
+      "the purple bottle"
+    ],
+    "label_dose": "1 tablet daily with food",
+    "units": 120,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "calcium"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "glucosamine-usp",
+    "name": "Glucosamine 1500mg, 90 tablets",
+    "price_cents": 2400,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [
+      "joint support"
+    ],
+    "label_dose": "1 tablet daily",
+    "units": 90,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "glucosamine"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "miracle-joint",
+    "name": "Miracle Joint Pills",
+    "price_cents": 8900,
+    "category": "supplement",
+    "certification": null,
+    "aliases": [
+      "miracle joint pills"
+    ],
+    "label_dose": null,
+    "units": 60,
+    "units_per_dose": 2,
+    "risk": {
+      "kind": "fda_fraud",
+      "alternative_id": "glucosamine-usp"
+    },
+    "brand": "Fictional Demo Brand",
+    "merchant": "Fictional TV seller",
+    "ingredients": [
+      "unknown"
+    ],
+    "certification_source": {
+      "status": "not_verified",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "instant-memory",
+    "name": "Instant Memory Miracle",
+    "price_cents": 7900,
+    "category": "supplement",
+    "certification": null,
+    "aliases": [
+      "memory miracle"
+    ],
+    "label_dose": null,
+    "units": 30,
+    "units_per_dose": 1,
+    "risk": {
+      "kind": "unverified",
+      "alternative_id": "b12"
+    },
+    "brand": "Fictional Demo Brand",
+    "merchant": "Fictional TV seller",
+    "ingredients": [
+      "unknown"
+    ],
+    "certification_source": {
+      "status": "not_verified",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "detox-cure",
+    "name": "Seven-day Detox Cure",
+    "price_cents": 6900,
+    "category": "supplement",
+    "certification": null,
+    "aliases": [
+      "detox cure"
+    ],
+    "label_dose": null,
+    "units": 30,
+    "units_per_dose": 1,
+    "risk": {
+      "kind": "recall",
+      "alternative_id": "fiber-capsules"
+    },
+    "brand": "Fictional Demo Brand",
+    "merchant": "Fictional TV seller",
+    "ingredients": [
+      "unknown"
+    ],
+    "certification_source": {
+      "status": "not_verified",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  }
+]

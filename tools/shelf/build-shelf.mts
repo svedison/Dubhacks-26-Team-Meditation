@@ -18,7 +18,7 @@ const write = args.includes('--write');
 const ZIP = process.env.KROGER_ZIP || '98105'; // University District, Seattle
 const CHAIN = process.env.KROGER_CHAIN || 'QFC';
 
-interface CatalogueItem { id: string; search: string; category: string; aliases: string[]; typical_cents: number; dose_from_label?: boolean; dsld?: string; certification?: string }
+interface CatalogueItem { id: string; search: string; search2?: string; category: string; aliases: string[]; typical_cents: number; dose_from_label?: boolean; dsld?: string; certification?: string; keep_demo_record?: boolean }
 interface Product {
   id: string; name: string; price_cents: number; category: string; certification: string | null; aliases: string[]; label_dose: string | null;
   units: number; units_per_dose: number; risk: { kind: 'fda_fraud' | 'recall' | 'unverified'; alternative_id: string } | null;
@@ -27,7 +27,9 @@ interface Product {
   price_source?: { kind: 'store' | 'typical'; store?: string; location_id?: string; fetched_at: string };
 }
 const catalogue = JSON.parse(readFileSync(resolve(here, 'catalogue.json'), 'utf8')) as { items: CatalogueItem[]; risk_samples_kept_from_demo: string[] };
-const current = JSON.parse(readFileSync(resolve(root, 'modules/role-d/data/products.json'), 'utf8')) as Product[];
+// The five scripted demo records, as the scenes quote them. Read from this file, never from the generated products.json,
+// so a rebuild cannot drift them (an earlier run replaced the calcium name with the store's before this existed).
+const current = JSON.parse(readFileSync(resolve(here, 'demo-records.json'), 'utf8')) as Product[];
 const byId = new Map(current.map(p => [p.id, p]));
 const now = new Date().toISOString();
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
@@ -39,6 +41,20 @@ async function getJson<T>(url: string, init?: RequestInit): Promise<T | null> {
   } catch (e) { console.warn(`  fetch failed ${url.slice(0, 100)}: ${e instanceof Error ? e.message : e}`); return null; }
 }
 const title = (s: string) => s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+// Store descriptions can run long ("Kroger® Vitamin D Whole Milk Gallon Jug"); Milo reads the name aloud, so keep it short.
+function storeName(hit: KrogerProduct): string {
+  let base = hit.description.replace(/[®™]/g, '').replace(/\b(BIG DEAL!?|NEW!?|Value Pack)\b/gi, '').replace(/\s+!/g, '').replace(/\s+/g, ' ').trim();
+  // Marketing copy after the first separator ("| Small Meal Replacement Shake", "- Soft White (2700K)", ", Gain Lavender Scent") is not the name.
+  const cut = base.split(/\s[|–-]\s|,\s/)[0].trim();
+  if (cut.length >= 12) base = cut;
+  base = base.replace(/\s+(for|with|in)\s+[^,]{25,}$/i, '').replace(/[.\s]+$/, '');
+  const size = hit.items?.[0]?.size?.trim().replace(/\s*\/\s*/g, ' / ');
+  const addSize = Boolean(size && !base.toLowerCase().includes(size.toLowerCase()));
+  // Shorten the description, never the pack size: "...6 Double Rolls, 6" must not happen.
+  const room = 60 - (addSize ? size!.length + 2 : 0);
+  if (base.length > room) base = base.slice(0, room).replace(/[\s,(+-]+\S*$/, '').replace(/\s+\d+$/, '').replace(/[,\s]+$/, ''); // no dangling "10mg 10"
+  return addSize ? `${base}, ${size}` : base;
+}
 
 // ---------- Kroger ----------
 interface KrogerProduct { productId: string; upc?: string; brand?: string; description: string; items?: { size?: string; price?: { regular?: number; promo?: number }; inventory?: { stockLevel?: string } }[] }
@@ -111,19 +127,24 @@ const products: Product[] = [];
 let priced = 0, labelled = 0;
 for (const item of catalogue.items) {
   const existing = byId.get(item.id);
-  const hit = store ? await store.search(item.search) : null;
+  const listing = store ? (await store.search(item.search)) ?? (item.search2 ? await store.search(item.search2) : null) : null;
+  // Scripted records (the $18 calcium refill, the $24 glucosamine alternative) keep their quoted name, price and pack size.
+  const pinned = Boolean(item.keep_demo_record && existing);
+  const hit = pinned ? null : listing;
   const [w1, w2] = item.search.split(' ');
   const brandGuess = w2 && /^[A-Z][a-z]/.test(w2) && /^[A-Z]/.test(w1) && !['Large', 'Whole', 'Plain', 'Soft', 'Gentle', 'Wild', 'Hard', 'Dark', 'Extra', 'Long', 'Sliced', 'Frozen', 'Pitted', 'Ground', 'Salted', 'Bottled', 'Digital', 'Plug', 'Kitchen', 'Reading', 'Hearing', 'Alcohol', 'Artificial', 'Dry', 'Postage', 'Crossword', 'Chicken', 'Tomato', 'Strawberry', 'Peanut', 'Orange', 'Prune', 'Navel', 'Gala', 'Russet', 'Yellow', 'Saltine', 'Oatmeal', 'Butterscotch', 'Chamomile', 'Granulated', 'Iodized', 'All', 'Lip', 'Nail', 'Cotton', 'Denture', 'Wild'].includes(w1) ? `${w1} ${w2}` : w1;
   const product: Product = {
     id: item.id,
-    name: hit ? `${hit.description}${hit.items?.[0]?.size ? `, ${hit.items[0].size}` : ''}` : existing?.name ?? title(item.search),
+    name: hit ? storeName(hit) : existing?.name ?? title(item.search),
     price_cents: hit ? Math.round(((hit.items?.[0]?.price?.promo || hit.items?.[0]?.price?.regular) ?? 0) * 100) : item.typical_cents,
     category: item.category, certification: item.certification ?? null, aliases: item.aliases,
     label_dose: existing?.label_dose ?? null, units: existing?.units ?? 1, units_per_dose: existing?.units_per_dose ?? 1, risk: null,
     brand: hit?.brand ?? (/^[A-Z]/.test(brandGuess) && !['Large', 'Whole', 'Plain', 'Soft', 'Gentle', 'Wild', 'Hard'].includes(brandGuess) ? brandGuess : 'Store brand'),
     merchant: store ? store.store : 'Typical US grocery listing',
     ingredients: existing?.ingredients ?? [],
-    certification_source: item.certification === 'USP'
+    certification_source: pinned
+      ? { status: 'demo_scripted', url: null, note: `Scripted demo record kept as quoted in the scenes${listing ? `; ${store!.store} lists ${storeName(listing)} at $${(((listing.items?.[0]?.price?.promo || listing.items?.[0]?.price?.regular) ?? 0)).toFixed(2)}` : ''}` }
+      : item.certification === 'USP'
       ? { status: 'usp_verified_program', url: 'https://www.usp.org/verification-services/verified-mark', note: `${brandGuess} products carry the USP Verified Mark; check the mark on this bottle` }
       : { status: hit ? 'store_listing' : 'typical_listing', url: null, note: hit ? `Listed at ${store!.store} on ${now.slice(0, 10)}` : 'Curated everyday item; price is a typical US price, not a live quote' },
     demo_only: false,
