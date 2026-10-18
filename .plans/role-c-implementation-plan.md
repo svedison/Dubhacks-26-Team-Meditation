@@ -33,10 +33,10 @@ Files: `server/src/modules/risk.ts`, `server/test/risk-payment.test.ts`, `server
 
 Interfaces: preserve `check()`, `isScam()`, `pay()`; export `PaymentResult` with `status: 'paid' | 'simulated_paid'` and `ref: string`.
 
-- [ ] Write tests for the three demo products, risk kinds, missing/unsafe alternatives, scam precedence, ordinary “today”, malformed/payment-ineligible drafts and catalog-price mismatch.
-- [ ] Run `node --import tsx --test test/risk-payment.test.ts`; observe failures for ordinary “today” and unsafe drafts.
-- [ ] Implement narrowly matched bilingual scam triggers and strict payment validation; keep simulated success explicit.
-- [ ] Run `npm test` and `npm run typecheck`; commit the verified task.
+- [x] Write tests for the three demo products, risk kinds, missing/unsafe alternatives, scam precedence, ordinary “today”, malformed/payment-ineligible drafts and catalog-price mismatch.
+- [x] Run `node --import tsx --test test/risk-payment.test.ts`; observe failures for ordinary “today” and unsafe drafts.
+- [x] Implement narrowly matched bilingual scam triggers and strict payment validation; keep simulated success explicit.
+- [x] Run `npm test` and `npm run typecheck`; commit the verified task.
 
 ## Task 2: Order persistence and ledger
 
@@ -44,19 +44,19 @@ Files: create `server/src/modules/orders.ts`; modify `server/src/pipeline.ts`, `
 
 Interfaces: `placeOrder(draft: Order, isCurrent?: () => boolean): Promise<Order | null>` consumes `pay()` and atomically stores Order + payment ref before publishing. Pipeline remains responsible for explicit consent, draft construction and generation invalidation.
 
-- [ ] Test same-ID retry, changed-ID-payload conflict, rollback on SQLite failure, stale generation and real guardian events after confirmation.
-- [ ] Test default/minimum/open filtering, blocked-order exclusion from monthly totals and offset timestamps at month boundaries.
-- [ ] Run the tests and observe failures; implement the service and wire the one existing confirmation path to it.
-- [ ] Run the full suite and typecheck; commit the verified task.
+- [x] Test same-ID retry, changed-ID-payload conflict, rollback on SQLite failure, stale generation and real guardian events after confirmation.
+- [x] Test default/minimum/open filtering, blocked-order exclusion from monthly totals and offset timestamps at month boundaries.
+- [x] Run the tests and observe failures; implement the service and wire the one existing confirmation path to it.
+- [x] Run the full suite and typecheck; commit the verified task.
 
 ## Task 3: Acceptance, handoff and Visa Q&A
 
 Files: create `server/test/role-c-api.test.ts`, `.plans/role-c-handoff.md`, `.plans/visa-qa.md`; update `server/README.md` and clarify existing response semantics in `.plans/shared-contracts.md`.
 
-- [ ] Exercise REST settings validation and all three share levels, duplicate receipt and blocked receipt; verify Scene 2 order + rule-7 alert and Scene 3 alternative via actual WS transports with only external AI/TTS replaced.
-- [ ] Verify persisted orders/payment refs survive a fresh process, plus actual localhost HTTP/WS smoke.
-- [ ] Check official Visa documentation and write three honest English Q&A answers distinguishing implemented app checks, simulated payment and proposed Visa capabilities.
-- [ ] Run full suite, typecheck and `git diff --check`; request an independent code review, address important findings, and export a reviewable patch and handoff.
+- [x] Exercise REST settings validation and all three share levels, duplicate receipt and blocked receipt; verify Scene 2 order + rule-7 alert and Scene 3 alternative via actual WS transports with only external AI/TTS replaced.
+- [x] Verify persisted orders/payment refs survive a fresh process, plus actual localhost HTTP/WS smoke.
+- [x] Check official Visa documentation and write three honest English Q&A answers distinguishing implemented app checks, simulated payment and proposed Visa capabilities.
+- [x] Run full suite, typecheck and `git diff --check`; request an independent code review, address important findings, and export a reviewable patch and handoff.
 
 ## Decisions and progress
 
@@ -64,3 +64,10 @@ Files: create `server/test/role-c-api.test.ts`, `.plans/role-c-handoff.md`, `.pl
 - Work is isolated in this chat's fresh clone on `codex/role-c-risk-payment`, based on `c8e5a2c`.
 - Baseline: 20/20 tests passed on Node 24.21.0. Dependency install reports one moderate and one high advisory; inspect before final handoff.
 - Preserve B's pure risk checker and existing D alert call site to avoid duplicate alerts. Blocked checks remain decisions/alerts rather than inventing purchase records without consent.
+
+- Task 1 complete: targeted tests failed on hyphenated gift-card, ordinary today and forged amounts, then full suite 26/26 + typecheck passed.
+- Task 2 complete: rollback/retry and UTC boundary tests failed, then full suite 32/32 + typecheck passed.
+- Task 3 complete: settings, receipts, HTTP/WS scenes and restart persistence passed; production entrypoint smoke passed.
+- User confirmed no Visa project and requested simulation only.
+- Final review: independent reviewer found one P2 (decimal amounts split urgency phrases). Added a failing regression, fixed normalization, and verified full suite 38/38 + typecheck. No deferred minor findings.
+- Ruling: leave existing provider/static dependency upgrades, authentication, physical-device/voice/D expansion and real-payment cross-process reconciliation outside this simulation delivery; they require coordinated team work and remain documented limitations.
