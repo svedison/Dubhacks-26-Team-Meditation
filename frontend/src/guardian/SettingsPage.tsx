@@ -71,7 +71,7 @@ export default function SettingsPage() {
       <div className="g-form">
         {/* 她付钱用的那张卡：Visa 蓝底、白色 Visa 标志、尾号，输入尾号时卡面跟着变 */}
         <div className="g-visa-card" aria-label={`Visa card ending ${draft.card_last4}`}>
-          <VisaMark height={24} color="#ffffff" />
+          <VisaMark height={36} color="#ffffff" />
           <span className="g-visa-card__chip" aria-hidden />
           <span className="g-visa-card__num">•••• {draft.card_last4.padEnd(4, '·')}</span>
           <span className="g-visa-card__owner">{draft.card_owner === 'elder' ? 'Hers' : 'Mine'}</span>

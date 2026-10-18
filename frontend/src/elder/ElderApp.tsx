@@ -273,12 +273,6 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
         </div>
       )}
 
-      {/* 醒着时角上留着时钟；聊起来变小变淡，不抢字幕，但到货、提醒那几幕仍看得出是哪天几点 */}
-      {now && showFace && (
-        <div className={`clock${corner ? ' clock--quiet' : ''}`}>
-          <span className="clock__time">{clockLabel(now)}</span>
-        </div>
-      )}
       <ClockJump clock={view.clock} />
       <AnimatePresence>
         {!showFace && (

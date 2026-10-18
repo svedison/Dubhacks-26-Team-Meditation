@@ -64,7 +64,7 @@ export default function ProductCard({ product, size = 'elder', orderStatus, tag,
         {/* 后端确认下单以后，章盖下去，紧接着从卡片底部滑出这条：用哪张卡付的 */}
         {done && cardLast4 && (
           <div className="pcard__pay">
-            <VisaMark height={18} />
+            <VisaMark height={30} />
             <span className="pcard__pay-num">•••• {cardLast4}</span>
             <span className="pcard__pay-ok" aria-hidden><Check strokeWidth={3.4} /></span>
           </div>

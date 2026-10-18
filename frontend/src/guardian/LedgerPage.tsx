@@ -49,7 +49,7 @@ export default function LedgerPage() {
                 <span className={`g-pill g-pill--${o.status}`}>{STATUS_TEXT[o.status]}</span>
                 {/* 付成功的单写上用的哪张卡：Visa 标志加尾号 */}
                 {o.status !== 'blocked' && settings && (
-                  <span className="g-order__card"><VisaMark height={11} /> ••{settings.card_last4}</span>
+                  <span className="g-order__card"><VisaMark height={16} /> ••{settings.card_last4}</span>
                 )}
                 {/* 每一单前面写下单那天，两单同一个东西也分得清 */}
                 <span>{shortDay(o.created_at)} · {o.status === 'blocked' ? o.block_reason : o.received ? 'Received' : `Arrives ${dayLabel(o.deliver_on)}`}</span>
