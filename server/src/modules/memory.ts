@@ -70,16 +70,26 @@ export function resetMemoryModule(): void {
 
 // ---------- conversation hooks (called by the pipeline) ----------
 /** Returns D's spoken reply when the utterance answered a delivery / dose / reminder prompt, else null. */
+// A short reply that can only be an answer to a question D asked: yes/no for a delivery or dose, took it/later for a reminder.
+const SHORT_ANSWER = /^(?:yes|yeah|yep|okay|ok|sure|got it|i (?:got|received) it|received|no|not yet|nope|took it|taken|i took it|skip|skipped|later|not now)\b/i;
 export function handleAnswer(text: string): string | null {
   lastSpoken = null;
   // Only consult D while it is actually waiting for an answer; otherwise product mentions in ordinary shopping
   // talk ("the purple bottle is empty") would be mistaken for an ambiguous reminder reply.
   const snap = roleD.snapshot();
-  const waiting = snap.prompts.some(p => p.askedAt) || snap.expiredPrompts.length > 0 || snap.noteQueue.length > 0
-    || (snap.replyBarrierUntil !== undefined && snap.replyBarrierUntil > roleD.now());
-  if (!waiting) return null;
-  try { return roleD.handleAnswer(text) ? (lastSpoken ?? '') : null; }
-  catch (error) { console.warn(`Role D answer failed: ${error instanceof Error ? error.message : error}`); return null; }
+  const active = snap.prompts.find(p => p.askedAt);
+  const barrier = snap.replyBarrierUntil !== undefined && snap.replyBarrierUntil > roleD.now();
+  if (!active && !snap.expiredPrompts.length && !snap.noteQueue.length && !barrier) return null;
+  try {
+    // The question on the table takes her answer. A question whose minute ran out takes only a short, plain answer,
+    // and only when it is the one such question; "Okay, thank you for letting me know" five minutes later is talk for
+    // Claude, not a reason to ask her for a product name.
+    const late = !active && snap.expiredPrompts.length === 1 && SHORT_ANSWER.test(text.trim()) && text.trim().split(/\s+/).length <= 5 ? snap.expiredPrompts[0] : null;
+    const target = active ?? late;
+    if (target) return roleD.handleAnswer(text, { kind: target.kind, ref: target.ref, at: target.at }) ? (lastSpoken ?? '') : null;
+    if (snap.noteQueue.length || barrier) return roleD.handleAnswer(text) ? (lastSpoken ?? '') : null;
+    return null;
+  } catch (error) { console.warn(`Role D answer failed: ${error instanceof Error ? error.message : error}`); return null; }
 }
 /** Once per refill note: the question to tack onto the next reply, and the product it is about. */
 export function takeRefillSuggestion(): { text: string; productId: string } | null {
