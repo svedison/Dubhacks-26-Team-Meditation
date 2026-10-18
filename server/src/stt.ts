@@ -2,7 +2,8 @@ import './config.js';
 import WebSocket from 'ws';
 
 type TranscriptHandler = (text: string) => void | Promise<unknown>;
-export interface LiveTranscriber { send(chunk: Buffer): void; finalize(): void; close(): void }
+/** `closed` turns true once Deepgram hangs up or errors; the owner then opens a fresh session for the next chunk. */
+export interface LiveTranscriber { send(chunk: Buffer): void; finalize(): void; close(): void; readonly closed: boolean }
 /** Raw PCM input (A's iPad mic uploads): 16 kHz mono 16-bit little-endian. Omit for container audio (webm/mp4). */
 export interface LiveOptions { pcmSampleRate?: number }
 interface DeepgramResult {
@@ -12,14 +13,16 @@ interface DeepgramResult {
 }
 export function createLiveTranscriber(onTranscript: TranscriptHandler, options: LiveOptions = {}): LiveTranscriber {
   const key = process.env.DEEPGRAM_API_KEY;
-  if (!key) return { send() {}, finalize() {}, close() {} };
+  if (!key) return { send() {}, finalize() {}, close() {}, closed: false };
   let closed = false;
   let bufferedBytes = 0;
   let buffered: Buffer[] = [];
   let segments: string[] = [];
   let lastFinal = '';
   let flushTimer: ReturnType<typeof setTimeout> | undefined;
-  const params = new URLSearchParams({ model: 'nova-3', smart_format: 'true', interim_results: 'true', endpointing: '1000', utterance_end_ms: '1500', vad_events: 'true' });
+  // The iPad ends a sentence itself after 1.2 s of silence (end=1 -> Finalize), so Deepgram's own endpointing sits
+  // above that: with the old 1000 ms a 1.1 s breath split one sentence into two turns before the device had decided.
+  const params = new URLSearchParams({ model: 'nova-3', smart_format: 'true', interim_results: 'true', endpointing: '1500', utterance_end_ms: '2000', vad_events: 'true' });
   if (options.pcmSampleRate) { params.set('encoding', 'linear16'); params.set('sample_rate', String(options.pcmSampleRate)); params.set('channels', '1'); }
   const socket = new WebSocket(`wss://api.deepgram.com/v1/listen?${params}`, {
     headers: { Authorization: `Token ${key}` }, handshakeTimeout: 5_000,
@@ -45,8 +48,9 @@ export function createLiveTranscriber(onTranscript: TranscriptHandler, options: 
       if (text && marker !== lastFinal) { segments.push(text); lastFinal = marker; }
       if (result.speech_final || result.from_finalize) deliver();
       else {
+        // Safety net only: the device's end=1, Deepgram's endpointing and UtteranceEnd normally deliver first.
         if (flushTimer) clearTimeout(flushTimer);
-        flushTimer = setTimeout(deliver, 1_500);
+        flushTimer = setTimeout(deliver, 4_000);
         flushTimer.unref();
       }
     } catch { /* Ignore malformed provider events. */ }
@@ -60,9 +64,13 @@ export function createLiveTranscriber(onTranscript: TranscriptHandler, options: 
     if (flushTimer) clearTimeout(flushTimer);
     buffered = []; segments = []; bufferedBytes = 0;
   };
-  socket.on('close', cleanup);
-  socket.on('error', () => { cleanup(); console.warn('Deepgram live unavailable; keyboard input remains available'); socket.terminate(); });
+  socket.on('close', (code, reason) => {
+    if (!closed) console.warn(`Deepgram live session closed by the provider (${code} ${reason.toString() || 'no reason'}); the next mic chunk opens a new one`);
+    cleanup();
+  });
+  socket.on('error', error => { cleanup(); console.warn(`Deepgram live unavailable (${error.message}); keyboard input remains available`); socket.terminate(); });
   return {
+    get closed() { return closed; },
     send(chunk) {
       if (closed) return;
       if (socket.readyState === WebSocket.OPEN) {

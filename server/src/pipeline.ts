@@ -1,10 +1,11 @@
 import { randomUUID } from 'node:crypto';
+import { setTimeout as delay } from 'node:timers/promises';
 import { all, get, getSettings, saveSettings } from './db.js';
 import { now } from './clock.js';
 import { toElder } from './bus.js';
 import { state } from './state.js';
 import { extractWakeName, isOnlyWakeName, matchesWakeName, normalize } from './wake.js';
-import { decide, FALLBACK_REPLY, type Context, type Decision } from './llm.js';
+import { decide, fallbackDecision, FALLBACK_REPLY, type Context, type Decision } from './llm.js';
 import { synthesize } from './tts.js';
 import * as risk from './modules/risk.js';
 import { placeOrder } from './modules/orders.js';
@@ -13,6 +14,32 @@ import type { Card, Emotion, Order, Source, UtteranceResult } from './contracts.
 
 interface ReplyPlan { text: string; emotion: Emotion; card?: Card; order?: Order; scamText?: string }
 export interface PipelineDependencies { decide: typeof decide; synthesize: typeof synthesize }
+export interface PipelineTimeouts {
+  /** One Claude or TTS call. The providers give up after 4 s on their own; this guard sits above them. */
+  step: number;
+  /** A turn that makes no progress for this long is released with the spoken fallback. Last resort for anything unforeseen. */
+  stage: number;
+  /** Longest wait for the rest of a sentence the elder is still saying. */
+  hold: number;
+}
+export const DEFAULT_TIMEOUTS: PipelineTimeouts = { step: 5_000, stage: 10_000, hold: 6_000 };
+
+// A turn moves queued → waiting (the device is still playing the previous answer) → holding (the elder is still
+// talking) → thinking (Claude) → responding (TTS, then the speak event) → done. Up to and including thinking, a
+// further voice fragment is the rest of the same sentence: it replaces the turn with the joined text.
+type Stage = 'queued' | 'waiting' | 'holding' | 'thinking' | 'responding' | 'done';
+const JOINABLE: ReadonlySet<Stage> = new Set(['queued', 'waiting', 'holding', 'thinking']);
+interface Job {
+  id: number; text: string; display: string; displayed: boolean; source: Source; version: number;
+  alive: boolean; stage: Stage; stageAt: number; arrivedAt: number; claudeMs: number;
+  controller: AbortController; watchdog?: () => void;
+  historyEntry: Context['history'][number] | null; consumedNote: string | null;
+}
+export interface PipelineStatus {
+  state: UtteranceResult['state'];
+  turn: { id: number; source: Source; stage: Stage; stage_ms: number; text: string } | null;
+}
+
 export class ConversationPipeline {
   private pending: { productId: string; priceCents: number } | null = null;
   private awaitingName = false;
@@ -22,7 +49,13 @@ export class ConversationPipeline {
   private history: Context['history'] = [];
   private generation = 0;
   private queue: Promise<unknown> = Promise.resolve();
-  constructor(private dependencies: PipelineDependencies = { decide, synthesize }) {
+  private seq = 0;
+  private latest: Job | null = null; // newest turn; a voice fragment may still join it
+  private running: Job | null = null;
+  private mic = { speechAt: 0, endAt: 0 };
+  private readonly timeouts: PipelineTimeouts;
+  constructor(private dependencies: PipelineDependencies = { decide, synthesize }, timeouts: Partial<PipelineTimeouts> = {}) {
+    this.timeouts = { ...DEFAULT_TIMEOUTS, ...timeouts };
     // D's Memory module speaks on its own (delivery / dose / reminder prompts); serialise it with normal replies.
     setSpeaker(event => this.enqueue(() => this.proactive(event)));
   }
@@ -33,8 +66,7 @@ export class ConversationPipeline {
   }
   private async proactive(event: ProactiveSpeech): Promise<void> {
     await state.waitForSpeech();
-    let audio_url: string | null = null;
-    try { audio_url = await this.dependencies.synthesize(event.text); } catch { /* Browser fallback. */ }
+    const audio_url = await this.bounded('Memory prompt TTS', () => this.dependencies.synthesize(event.text), () => null);
     if (state.current === 'idle') state.wake(); // the device starts the conversation, no wake word needed for the answer
     state.speak('happy');
     toElder({ type: 'transcript', role: 'ai', text: event.text });
@@ -45,29 +77,134 @@ export class ConversationPipeline {
 
   reset(): void {
     this.generation++;
+    if (this.latest) this.abandon(this.latest, 'reset');
+    if (this.running) this.abandon(this.running, 'reset');
+    this.latest = null; this.running = null;
     this.pending = null; this.awaitingName = false; this.noteFor = null; this.lastScam = null;
     this.chatRounds = 0; this.history = []; this.queue = Promise.resolve();
+    this.mic = { speechAt: 0, endAt: 0 };
     state.reset();
   }
+  /** For /api/health: what the conversation is doing right now. */
+  status(): PipelineStatus {
+    const job = this.running ?? (this.latest?.alive ? this.latest : null);
+    return { state: state.current, turn: job ? { id: job.id, source: job.source, stage: job.stage, stage_ms: Date.now() - job.stageAt, text: job.text.slice(0, 80) } : null };
+  }
+  /** The iPad uploads mic chunks only while the elder is talking (`speech=1`) and marks the last chunk of a sentence `end=1`. */
+  noteMic(kind: 'speech' | 'end'): void { this.mic[kind === 'speech' ? 'speechAt' : 'endAt'] = Date.now(); }
+  private elderTalking(at = Date.now()): boolean { return this.mic.speechAt > this.mic.endAt && at - this.mic.speechAt < 1_500; }
+  /** A sentence end reached the mic after this turn's text arrived: Deepgram's final for it is on its way. */
+  private finalPending(job: Job, at = Date.now()): boolean { return this.mic.endAt > job.arrivedAt && at - this.mic.endAt < 1_500; }
+
   handleUtterance(text: string, source: Source): Promise<UtteranceResult> {
+    const clean = text.trim();
     const version = this.generation;
-    const job = this.queue.then(async () => {
-      try { return await this.process(text.trim(), source, version); }
-      catch {
-        if (version !== this.generation) return this.silent();
-        console.warn('Conversation step failed; using spoken fallback');
-        this.pending = null;
-        return this.respond({ text: FALLBACK_REPLY, emotion: 'worried' }, version);
-      }
-    });
-    this.queue = job.catch(() => {});
-    return job;
+    const previous = this.continuedTurn(source, version);
+    const job: Job = {
+      id: ++this.seq, text: previous ? `${previous.text} ${clean}` : clean,
+      display: previous && !previous.displayed ? `${previous.display} ${clean}` : clean, displayed: false,
+      source, version, alive: true, stage: 'queued', stageAt: Date.now(), arrivedAt: Date.now(), claudeMs: 0,
+      controller: new AbortController(), historyEntry: null, consumedNote: null,
+    };
+    if (previous) this.abandon(previous, `the sentence went on; turn #${job.id} takes the joined text`);
+    this.latest = job;
+    const run = this.queue.then(() => this.run(job));
+    this.queue = run.catch(() => {});
+    return run;
+  }
+  /** The previous voice turn, when it is still unanswered and this voice fragment is the rest of the same sentence. */
+  private continuedTurn(source: Source, version: number): Job | null {
+    const previous = this.latest;
+    if (source !== 'voice' || !previous || !previous.alive || previous.source !== 'voice' || previous.version !== version) return null;
+    return JOINABLE.has(previous.stage) ? previous : null;
+  }
+  private dead(job: Job): boolean { return !job.alive || job.version !== this.generation; }
+  private setStage(job: Job, stage: Stage): void { job.stage = stage; job.stageAt = Date.now(); job.watchdog?.(); }
+  private abandon(job: Job, why: string): void {
+    if (!job.alive) return;
+    job.alive = false;
+    job.controller.abort();
+    if (job.historyEntry) this.history = this.history.filter(entry => entry !== job.historyEntry);
+    if (job.consumedNote && !this.noteFor) this.noteFor = job.consumedNote;
+    console.info(`[pipeline] turn #${job.id} dropped while ${job.stage}: ${why}`);
   }
   private silent(): UtteranceResult { return { reply_text: '', audio_url: null, state: state.current }; }
-  private async respond(plan: ReplyPlan, version: number): Promise<UtteranceResult> {
-    let audio_url: string | null = null;
-    try { audio_url = await this.dependencies.synthesize(plan.text); } catch { /* Browser fallback. */ }
-    if (version !== this.generation) return this.silent();
+
+  /** One turn with a watchdog: whatever stalls inside, the queue moves on and the elder hears something. */
+  private async run(job: Job): Promise<UtteranceResult> {
+    if (this.dead(job)) return this.silent();
+    this.running = job;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let expire!: (result: Promise<UtteranceResult>) => void;
+    const watchdog = new Promise<UtteranceResult>(resolve => { expire = resolve; });
+    job.watchdog = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => expire(this.release(job)), this.timeouts.stage); // ref'd: part of an in-flight turn
+    };
+    job.watchdog();
+    try { return await Promise.race([this.attempt(job), watchdog]); }
+    finally {
+      clearTimeout(timer); job.watchdog = undefined; job.alive = false; job.stage = 'done';
+      if (this.running === job) this.running = null;
+    }
+  }
+  private async attempt(job: Job): Promise<UtteranceResult> {
+    try { return await this.process(job); }
+    catch (error) {
+      if (this.dead(job)) return this.silent();
+      console.warn(`[pipeline] turn #${job.id} failed while ${job.stage} (${error instanceof Error ? error.message : 'error'}); using spoken fallback`);
+      this.pending = null;
+      try { return await this.respond({ text: FALLBACK_REPLY, emotion: 'worried' }, job); }
+      catch { state.recover(); return this.silent(); }
+    }
+  }
+  /** The watchdog fired: drop the turn, apologise once, and reopen the listening window. */
+  private async release(job: Job): Promise<UtteranceResult> {
+    console.warn(`[pipeline] turn #${job.id} made no progress for ${this.timeouts.stage} ms while ${job.stage} ("${job.text.slice(0, 60)}"); releasing the conversation`);
+    const current = job.alive && job.version === this.generation;
+    this.abandon(job, 'watchdog');
+    if (!current) return this.silent();
+    this.pending = null;
+    const apology: Job = { ...job, alive: true, controller: new AbortController(), watchdog: undefined, historyEntry: null, consumedNote: null };
+    try { return await this.respond({ text: FALLBACK_REPLY, emotion: 'worried' }, apology); }
+    catch { state.recover(); return this.silent(); }
+    finally { apology.alive = false; }
+  }
+  /** Resolve with `fallback()` when `work` neither settles in time nor succeeds; a stuck provider never stalls a turn. */
+  private bounded<T>(label: string, work: () => Promise<T>, fallback: () => T): Promise<T> {
+    return new Promise<T>(resolve => {
+      const timer = setTimeout(() => { console.warn(`[pipeline] ${label} gave nothing back after ${this.timeouts.step} ms; going on without it`); resolve(fallback()); }, this.timeouts.step);
+      Promise.resolve().then(work).then(
+        value => { clearTimeout(timer); resolve(value); },
+        error => { clearTimeout(timer); console.warn(`[pipeline] ${label} failed (${error instanceof Error ? error.message : 'error'})`); resolve(fallback()); },
+      );
+    });
+  }
+  /** The elder is still talking (or just stopped and Deepgram's final is due): wait for the rest of the sentence. */
+  private async hold(job: Job): Promise<void> {
+    this.setStage(job, 'holding');
+    const started = Date.now();
+    while (!this.dead(job) && Date.now() - started < this.timeouts.hold) {
+      const at = Date.now();
+      if (!this.elderTalking(at) && !this.finalPending(job, at)) return;
+      await delay(50);
+    }
+  }
+  private async decide(job: Job, context: Context): Promise<Decision> {
+    this.setStage(job, 'thinking');
+    const started = Date.now();
+    const decision = await this.bounded(`turn #${job.id} Claude`, () => this.dependencies.decide(job.text, context, job.controller.signal), fallbackDecision);
+    job.claudeMs = Date.now() - started;
+    // Claude answered, but the elder went on talking meanwhile: let the rest of the sentence replace this turn.
+    if (!this.dead(job) && job.source === 'voice' && (this.elderTalking() || this.finalPending(job))) await this.hold(job);
+    return decision;
+  }
+
+  private async respond(plan: ReplyPlan, job: Job): Promise<UtteranceResult> {
+    this.setStage(job, 'responding');
+    const started = Date.now();
+    const audio_url = await this.bounded(`turn #${job.id} TTS`, () => this.dependencies.synthesize(plan.text), () => null);
+    if (this.dead(job)) return this.silent();
     if (plan.card) toElder({ type: 'card', ...plan.card });
     state.speak(plan.emotion);
     toElder({ type: 'transcript', role: 'ai', text: plan.text });
@@ -78,6 +215,8 @@ export class ConversationPipeline {
     }
     this.history.push({ role: 'assistant', content: plan.text });
     this.history = this.history.slice(-8);
+    this.setStage(job, 'done');
+    console.info(`[pipeline] turn #${job.id} -> ${plan.emotion} after ${Date.now() - job.arrivedAt} ms (Claude ${job.claudeMs} ms, TTS ${Date.now() - started} ms)`);
     return { reply_text: plan.text, audio_url, state: state.current, ...(plan.card ? { card: plan.card } : {}), ...(plan.order ? { order: plan.order } : {}) };
   }
   private scam(text: string): ReplyPlan {
@@ -103,7 +242,7 @@ export class ConversationPipeline {
     this.pending = { productId: product.id, priceCents: product.price_cents };
     return { text: `${product.name} is $${(product.price_cents / 100).toFixed(2)}; would you like me to order it?`, emotion: 'happy', card: { product } };
   }
-  private async confirm(version: number): Promise<ReplyPlan> {
+  private async confirm(job: Job): Promise<ReplyPlan> {
     const pending = this.pending;
     this.pending = null; // Consume before awaiting payment; duplicate yes cannot charge twice.
     if (!pending) return { text: 'What would you like me to order?', emotion: 'worried' };
@@ -115,7 +254,7 @@ export class ConversationPipeline {
     delivery.setUTCDate(delivery.getUTCDate() + 5);
     const draft: Order = { id: `ord_${randomUUID()}`, product_id: product.id, price_cents: product.price_cents,
       status: 'simulated_paid', block_reason: null, created_at, deliver_on: delivery.toISOString().slice(0, 10), received: false };
-    const order = await placeOrder(draft, () => version === this.generation);
+    const order = await placeOrder(draft, () => !this.dead(job));
     if (!order) return { text: '', emotion: 'worried' };
     registerOrder(order); // D schedules the delivery question and, once received, the dose reminders.
     const text = order.status === 'simulated_paid'
@@ -123,22 +262,28 @@ export class ConversationPipeline {
       : "Your order is placed; I'll let you know when it arrives.";
     return { text, emotion: 'happy', order };
   }
-  private async process(text: string, source: Source, version: number): Promise<UtteranceResult> {
+  private async process(job: Job): Promise<UtteranceResult> {
+    this.setStage(job, 'waiting');
     await state.waitForSpeech();
-    if (version !== this.generation || !text) return this.silent();
+    if (this.dead(job) || !job.text) return this.silent();
     const settings = getSettings();
-    toElder({ type: 'transcript', role: 'grandma', text });
+    toElder({ type: 'transcript', role: 'grandma', text: job.display }); job.displayed = true;
     if (state.current === 'idle') {
       this.pending = null; this.chatRounds = 0; this.history = [];
-      if (source === 'voice' && !matchesWakeName(text, settings.wake_name)) return this.silent();
+      if (job.source === 'voice' && !matchesWakeName(job.text, settings.wake_name)) return this.silent();
       state.wake(); // Keyboard is an explicit interaction, so it opens the window.
-    } else state.listen();
+    } else if (state.current !== 'thinking') state.listen(); // a joined sentence keeps the thinking face it already shows
     // The elder paused after the name ("Milo." ... "the purple bottle is empty"): keep listening, the request follows.
-    if (source === 'voice' && settings.wake_name && isOnlyWakeName(text, settings.wake_name)) return this.silent();
+    if (job.source === 'voice' && settings.wake_name && isOnlyWakeName(job.text, settings.wake_name)) return this.silent();
+    // Still talking when the first half arrived: do not ask Claude about half a sentence.
+    if (job.source === 'voice' && this.elderTalking()) { await this.hold(job); if (this.dead(job)) return this.silent(); }
+    this.setStage(job, 'thinking');
     state.think();
+    const text = job.text;
     const context: Context = { products: all('products'), settings, chatRounds: this.chatRounds,
       pendingProductId: this.pending?.productId || null, awaitingName: this.awaitingName, history: [...this.history] };
-    this.history.push({ role: 'user', content: text });
+    job.historyEntry = { role: 'user', content: text };
+    this.history.push(job.historyEntry);
 
     // The rest of a scam sentence that STT split in two ("...someone called." / "They said buy a gift card today"):
     // one warning and one red card are enough, so fold the second half into the same alert and keep listening.
@@ -150,13 +295,13 @@ export class ConversationPipeline {
     // (or another scam) right after the warning is routed normally instead of being swallowed as the note.
     let decided: Decision | null = null;
     if (this.noteFor) {
-      const alertId = this.noteFor; this.noteFor = null;
+      const alertId = this.noteFor; this.noteFor = null; job.consumedNote = alertId;
       if (!risk.isScam(text)) {
-        decided = await this.dependencies.decide(text, context);
-        if (version !== this.generation) return this.silent();
+        decided = await this.decide(job, context);
+        if (this.dead(job)) return this.silent();
         if (!['refill', 'new_request', 'risky_product', 'scam'].includes(decided.intent)) {
           saveGrandmaNote(alertId, text);
-          return this.respond({ text: "Thank you; I've added your words to the message for your daughter.", emotion: 'worried' }, version);
+          return this.respond({ text: "Thank you; I've added your words to the message for your daughter.", emotion: 'worried' }, job);
         }
       }
     }
@@ -167,17 +312,17 @@ export class ConversationPipeline {
       return { reply_text: memoryReply, audio_url: null, state: state.current };
     }
     // Local safety rules still work when Claude is unavailable.
-    if (risk.isScam(text)) return this.respond(this.scam(text), version);
+    if (risk.isScam(text)) return this.respond(this.scam(text), job);
     if (!settings.wake_name && !this.awaitingName) {
       this.awaitingName = true;
-      return this.respond({ text: "I'm your AI shopping helper; what would you like to call me?", emotion: 'happy' }, version);
+      return this.respond({ text: "I'm your AI shopping helper; what would you like to call me?", emotion: 'happy' }, job);
     }
     if (settings.wake_name) this.awaitingName = false;
     if (this.awaitingName) {
       const name = extractWakeName(text);
       if (name) {
         saveSettings({ ...getSettings(), wake_name: name }); this.awaitingName = false;
-        return this.respond({ text: `You can call me ${name}; what would you like to shop for?`, emotion: 'happy' }, version);
+        return this.respond({ text: `You can call me ${name}; what would you like to shop for?`, emotion: 'happy' }, job);
       }
     }
     const normalized = normalize(text);
@@ -187,8 +332,9 @@ export class ConversationPipeline {
       decision = { intent: 'confirm_yes', product_id: null, reply: '', elder_name: null };
     } else if (this.pending && /^(no|no thanks|no thank you|cancel|cancel it|never mind|nope)$/.test(normalized)) {
       decision = { intent: 'confirm_no', product_id: null, reply: '', elder_name: null };
-    } else decision = await this.dependencies.decide(text, context);
-    if (version !== this.generation) return this.silent();
+    } else decision = await this.decide(job, context);
+    if (this.dead(job)) return this.silent();
+    this.setStage(job, 'responding'); // decided: from here on a new fragment is a new turn, never a replacement
     let plan: ReplyPlan;
     switch (decision.intent) {
       case 'scam': plan = this.scam(text); break;
@@ -197,7 +343,7 @@ export class ConversationPipeline {
       case 'confirm_yes':
         plan = /\b(if|unless|maybe|not|don't)\b/i.test(text)
           ? { text: 'Would you like me to place this order?', emotion: 'worried' }
-          : await this.confirm(version);
+          : await this.confirm(job);
         break;
       case 'confirm_no': this.pending = null; plan = { text: "Okay, I won't order it.", emotion: 'happy' }; break;
       case 'name_answer': {
@@ -221,7 +367,7 @@ export class ConversationPipeline {
         }
       }
     }
-    return this.respond(plan, version);
+    return this.respond(plan, job);
   }
 }
 export const pipeline = new ConversationPipeline();

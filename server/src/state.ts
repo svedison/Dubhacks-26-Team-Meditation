@@ -43,6 +43,14 @@ export class ConversationState {
     });
   }
   waitForSpeech(): Promise<void> { return this.speech; }
+  /** A reply never came (pipeline watchdog): forget any speech in flight and reopen the listening window. */
+  recover(): void {
+    this.generation++;
+    acknowledgeSpoke();
+    this.speaking = false;
+    this.speech = Promise.resolve();
+    this.listen();
+  }
   reset(): void {
     this.generation++;
     acknowledgeSpoke();

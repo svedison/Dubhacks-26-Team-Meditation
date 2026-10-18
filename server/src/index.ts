@@ -10,7 +10,7 @@ import { pathToFileURL } from 'node:url';
 import { z } from 'zod';
 import { audioDir, serverRoot } from './config.js';
 import { all, get, getSettings, put, remove, resetDatabase, saveSettings } from './db.js';
-import { acknowledgeSpoke, addClient, toGuardian } from './bus.js';
+import { acknowledgeSpoke, addClient, hasElder, toGuardian } from './bus.js';
 import { now, resetClock, setClock, startClock, stopClock } from './clock.js';
 import { memorySchema, settingsSchema } from './contracts.js';
 import { handleUtterance, pipeline } from './pipeline.js';
@@ -59,7 +59,8 @@ export async function buildServer() {
     socket.on('message', (data, binary) => {
       if (role !== 'elder') return;
       if (binary) {
-        if (!live || !liveConnections.has(live)) {
+        if (!live || live.closed || !liveConnections.has(live)) {
+          if (live) liveConnections.delete(live);
           const version = audioGeneration;
           live = createLiveTranscriber(text => version === audioGeneration ? handleUtterance(text, 'voice') : undefined);
           liveConnections.add(live);
@@ -94,7 +95,8 @@ export async function buildServer() {
     const query = audioQuerySchema.parse(request.query ?? {});
     const version = audioGeneration;
     if (query.seq !== undefined) {
-      if (pcmSession && pcmSession.sampleRate !== query.sr) dropPcmSession();
+      // A session Deepgram hung up on is replaced on the next chunk; before, its chunks were silently dropped until 90 s of silence.
+      if (pcmSession && (pcmSession.sampleRate !== query.sr || pcmSession.live.closed)) dropPcmSession();
       if (!pcmSession || !liveConnections.has(pcmSession.live)) {
         const live = createLiveTranscriber(text => version === audioGeneration ? handleUtterance(text, 'voice') : undefined, { pcmSampleRate: query.sr });
         liveConnections.add(live);
@@ -104,13 +106,19 @@ export async function buildServer() {
       pcmSession.idle = setTimeout(dropPcmSession, 90_000);
       pcmSession.idle.unref();
       if (request.body.length) pcmSession.live.send(request.body);
-      if (query.end) pcmSession.live.finalize();
+      if (query.end) { pcmSession.live.finalize(); pipeline.noteMic('end'); }
+      else if (query.speech && request.body.length) pipeline.noteMic('speech'); // the elder is talking right now
       return reply.code(202).send({ ok: true, seq: query.seq, stt: Boolean(process.env.DEEPGRAM_API_KEY) });
     }
     const text = await transcribeAudio(request.body, request.headers['content-type'] || 'application/octet-stream');
     if (!text || version !== audioGeneration) return { reply_text: FALLBACK_REPLY, audio_url: null, state: state.current };
     return handleUtterance(text, 'voice');
   });
+  // Public, read-only: what the conversation is doing. Lets anyone on the team see a stuck turn without the debug token.
+  app.get('/api/health', async () => ({
+    ok: true, now: now(), uptime_s: Math.round(process.uptime()), commit: process.env.RENDER_GIT_COMMIT?.slice(0, 7) ?? null,
+    ...pipeline.status(), elder_connected: hasElder(), stt_sessions: liveConnections.size, mic_session: pcmSession !== null,
+  }));
   app.get('/api/products', async () => all('products'));
   app.get('/api/orders', async () => ledger());
   app.post('/api/orders/:id/received', async (request, reply) => {
@@ -149,12 +157,20 @@ export async function buildServer() {
     const patch = settingsSchema.partial().strict().parse(request.body);
     return saveSettings(settingsSchema.parse({ ...getSettings(), ...patch }));
   });
-  // The deployed URL is public: when DEBUG_TOKEN is set, /debug/* needs it as ?token= or the x-debug-token header.
+  // The deployed URL is public: when DEBUG_TOKEN is set, /debug/* needs it as the x-debug-token header, an
+  // Authorization: Bearer header or ?token=. Both sides are trimmed (a newline pasted into Render's env field
+  // must not lock everyone out) and a mismatch logs the lengths so the dashboard value can be checked.
   app.addHook('onRequest', async (request, reply) => {
-    const token = process.env.DEBUG_TOKEN;
-    if (!token || !request.url.startsWith('/debug')) return;
-    const given = request.headers['x-debug-token'] ?? (request.query as { token?: string } | undefined)?.token;
-    if (given !== token) return reply.code(401).send({ error: 'Debug token required' });
+    const expected = (process.env.DEBUG_TOKEN ?? '').trim();
+    if (!expected || !request.url.startsWith('/debug')) return;
+    const header = request.headers['x-debug-token'];
+    const bearer = request.headers.authorization?.match(/^Bearer\s+(.+)$/i)?.[1];
+    const query = (request.query as { token?: string } | undefined)?.token;
+    const [given, via] = typeof header === 'string' ? [header, 'x-debug-token header'] : bearer ? [bearer, 'Authorization header'] : [query, '?token='];
+    if (typeof given !== 'string' || given.trim() !== expected) {
+      request.log.warn(`Debug token mismatch: got ${typeof given === 'string' ? given.trim().length : 0} characters via ${via}, DEBUG_TOKEN has ${expected.length}`);
+      return reply.code(401).send({ error: 'Debug token required' });
+    }
   });
   app.post('/debug/clock', async request => ({ now: await setClock(clockSchema.parse(request.body).now) }));
   app.post('/debug/reset', async () => {
