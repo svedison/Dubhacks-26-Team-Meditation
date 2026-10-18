@@ -55,13 +55,14 @@ function fitSize(text: string, width: number, height: number): number {
   return SIZES[SIZES.length - 1]
 }
 
-// 屏幕上只留两句：最新一句，以及它前面紧挨着的另一方的一句；AI 这句太长时只留它自己
+// 屏幕上只留一问一答：奶奶刚开口时只有她这一句（上一轮 AI 的话先退场，不和新的一句叠在一起）；
+// AI 回答时，上面留着她刚说的那句；AI 这句太长时只留它自己
 function visible(lines: Line[]): Line[] {
   const last = lines.at(-1)
   if (!last) return []
-  if (last.role === 'ai' && last.text.length > 110) return [last]
+  if (last.role === 'grandma' || last.text.length > 110) return [last]
   const prev = lines.at(-2)
-  return prev && prev.role !== last.role ? [prev, last] : [last]
+  return prev && prev.role === 'grandma' ? [prev, last] : [last]
 }
 
 type Props = { lines: Line[]; width: number; height: number; headline: boolean }

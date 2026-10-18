@@ -16,7 +16,8 @@ export default function LedgerPage() {
   const { ledger, products, settings } = useGuardian()
   if (!ledger) return <section className="g-page"><h1 className="g-h1">Money</h1><p className="g-lede">Loading…</p></section>
   return (
-    <section className="g-page">
+    <section className="g-page g-ledger">
+      <div className="g-ledger__head">
       <h1 className="g-h1">Money</h1>
       <p className="g-lede">{LEVEL_TEXT[ledger.share_level]}</p>
       {ledger.month_total_cents !== null && (
@@ -26,6 +27,7 @@ export default function LedgerPage() {
           {settings && <span className="g-total__base">Usually about {money(settings.monthly_baseline_cents)}</span>}
         </div>
       )}
+      </div>
       {ledger.orders.length > 0 ? (
         <ul className="g-orders">
           {ledger.orders.slice().reverse().map((o) => (

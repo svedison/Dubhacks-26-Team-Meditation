@@ -83,14 +83,16 @@
 .pcard--risk .pcard__media img { filter: grayscale(0.7) brightness(0.8) contrast(0.92); }
 
 /* 并排时卡片顶部的小标签，用卡片自己的颜色 */
-.pcard__tag { position: absolute; top: 12px; left: 12px; z-index: 1; padding: 6px 12px; border-radius: 999px; font-size: 18px; font-weight: 900; background: rgba(251, 247, 239, 0.94); color: var(--ok); }
-.pcard--risk .pcard__tag { background: #fbefe4; color: #8c2b25; }
+/* 并排时卡片最上面一条小标签，图片在它下面，不压住商品图上的字 */
+.pcard__tag { display: block; padding: 7px 16px 6px; font-size: 18px; font-weight: 900; letter-spacing: 0.02em; background: #e4ecdf; color: var(--ok); }
+.pcard--risk .pcard__tag { background: #4f1719; color: #fbefe4; }
 
 /* 「Ordered」橡皮章：斜着盖下去 */
+.pcard__media { position: relative; }
 .pcard__stamp {
   position: absolute;
-  top: 16px;
-  right: 14px;
+  bottom: 10px;
+  right: 10px;
   display: inline-flex;
   align-items: center;
   gap: 6px;

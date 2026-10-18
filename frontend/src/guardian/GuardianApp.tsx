@@ -1,4 +1,4 @@
-import { Home, Pill, ReceiptText, Settings as SettingsIcon } from 'lucide-react'
+import { ChevronDown, Home, Pill, ReceiptText, Settings as SettingsIcon } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useState } from 'react'
 import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
@@ -48,11 +48,13 @@ function Pages() {
 }
 
 function TopBar() {
-  const { status, clock } = useGuardian()
+  const { status, clock, alerts } = useGuardian()
+  // 页头这双眼睛和相框里是同一双：有没处理的红色警报时是担心的样子，平时慢慢眨眼
+  const worried = alerts.some((a) => a.level === 'red' && !a.archived)
   return (
     <header className="g-top">
       <div className="g-top__brand">
-        <span className="g-top__eyes" aria-hidden><i /><i /></span>
+        <span className={`g-top__eyes${worried ? ' is-worried' : ''}`} aria-hidden><i /><i /></span>
         <span>Milo</span>
       </div>
       <div className="g-top__right">
@@ -108,6 +110,7 @@ function ThisWeek({ animateIn }: { animateIn: boolean }) {
   const now = clock ?? new Date().toISOString()
   const week = alerts.filter((a) => hoursBetween(a.created_at, now) <= 24 * 7)
   const seen = week.filter((a) => a.archived).sort((x, y) => hoursBetween(y.created_at, x.created_at))
+  const [openId, setOpenId] = useState<string | null>(null)
   if (week.length > 0 && seen.length === 0) return null
   return (
     <section className="g-week" aria-label="This week">
@@ -127,10 +130,28 @@ function ThisWeek({ animateIn }: { animateIn: boolean }) {
                 animate={{ opacity: 1, y: 0, backgroundColor: '#efe7dc' }}
                 transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1], backgroundColor: { delay: 0.3, duration: 1.4 } }}
               >
-                <span className="g-week__dot" aria-hidden />
-                <span className="g-week__title">{a.title}</span>
-                <time className="g-week__time">{clockLabel(a.created_at)}</time>
-                <span className="g-week__seen">Seen</span>
+                {/* 点开看当时那张卡上写了什么 */}
+                <button className="g-week__btn" aria-expanded={openId === a.id} onClick={() => setOpenId(openId === a.id ? null : a.id)}>
+                  <span className="g-week__dot" aria-hidden />
+                  <span className="g-week__title">{a.title}</span>
+                  <time className="g-week__time">{clockLabel(a.created_at)}</time>
+                  <span className="g-week__seen">Seen</span>
+                  <ChevronDown className="g-week__chev" aria-hidden strokeWidth={2.6} />
+                </button>
+                <AnimatePresence initial={false}>
+                  {openId === a.id && (
+                    <motion.div
+                      className="g-week__more"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+                    >
+                      <p>{a.body}</p>
+                      {a.grandma_note && <p className="g-week__note">“{a.grandma_note}”</p>}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.li>
             ))}
           </AnimatePresence>

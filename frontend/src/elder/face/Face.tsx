@@ -156,10 +156,10 @@ export default function Face({ state, talking, level, hear }: Props) {
         r.brow?.setAttribute('opacity', `${p.brow}`)
         r.brow?.setAttribute('transform', `rotate(${p.browA * dir} ${cx} ${by + bh / 2})`)
 
-        // 腮红：眼睛外下方的粉色横条（尺寸按 VoCat 产品图量的），从下面滑进来
-        const blw = 0.65 * E
-        const blh = 0.25 * E
-        r.blush?.setAttribute('x', `${cx + dir * 0.35 * E - blw / 2}`)
+        // 腮红：眼睛正下方的粉色横条，宽度收在眼睛以内，从下面滑进来
+        const blw = 0.6 * E
+        const blh = 0.2 * E
+        r.blush?.setAttribute('x', `${cx + dir * 0.08 * E - blw / 2}`)
         r.blush?.setAttribute('y', `${cy + 0.45 * E - blh / 2 + (1 - p.blush) * 0.4 * E}`)
         r.blush?.setAttribute('opacity', `${p.blush * 0.9}`)
 

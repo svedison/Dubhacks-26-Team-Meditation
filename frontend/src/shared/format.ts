@@ -43,3 +43,10 @@ export function dayAndTime(now: string): { day: string; time: string } {
 export function hoursBetween(from: string, to: string): number {
   return parse(to).diff(parse(from), 'hours').hours
 }
+
+// 名字按第一个逗号或括号断成两行：「Calcium 600mg」大字，「120 tablets」「as seen on TV」小一号（只是排版换行）
+export function splitName(name: string): [string, string | null] {
+  const m = name.match(/^(.*?)\s*(?:,\s*|\((.*)\)\s*$)(.*)$/)
+  if (!m) return [name, null]
+  return [m[1], (m[2] ?? m[3]).trim() || null]
+}

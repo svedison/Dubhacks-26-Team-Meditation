@@ -208,17 +208,17 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
 
   return (
     <Stage background="var(--elder-bg)">
-      {/* 照片层一直在后台轮播：待机时铺满；醒来后虚化压暗留在背景里，提醒这是家人的相框 */}
+      {/* 照片层一直在后台轮播：待机时铺满；醒来后轻轻虚化压暗，家人的样子还认得出，提醒这是家人的相框 */}
       <motion.div
         className="layer"
         initial={false}
-        animate={{ opacity: showFace ? 0.4 : 1, filter: showFace ? 'blur(24px) brightness(0.5) saturate(0.85)' : 'blur(0px) brightness(1) saturate(1)' }}
+        animate={{ opacity: showFace ? 0.8 : 1, filter: showFace ? 'blur(9px) brightness(0.5) saturate(0.9)' : 'blur(0px) brightness(1) saturate(1)' }}
         transition={{ duration: showFace ? 0.5 : 0.8 }}
       >
         <PhotoFrame photos={photos} />
       </motion.div>
       {/* 警报：深酒红，中间亮四周暗。整屏红只留给诈骗；有替代品的假药只把风险卡压红 */}
-      <motion.div className="layer alert-wash" initial={false} animate={{ opacity: face === 'alert' && !pair ? 1 : 0 }} transition={{ duration: 0.8, ease: [0.43, 0.195, 0.02, 1] }} />
+      <motion.div className="layer alert-wash" initial={false} animate={{ opacity: face === 'alert' && !pair ? 0.9 : 0 }} transition={{ duration: 0.8, ease: [0.43, 0.195, 0.02, 1] }} />
       <div className="mat" aria-hidden />
 
       <AnimatePresence>
@@ -240,8 +240,8 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
 
       {corner && (
         <motion.div layout="position" className={`talk ${layoutCls}`} transition={{ layout: MOVE }} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          {/* 字幕区高 = 744 − 上沿 240 − 下边距 56；宽度和 elder.css 里 .talk 一致 */}
-          <Chat lines={view.lines} width={scam ? 1021 : pair ? 470 : view.card ? 540 : 860} height={448} headline={scam} />
+          {/* 字幕区高 = 744 − 上沿 272 − 下边距 56；宽度和 elder.css 里 .talk 一致 */}
+          <Chat lines={view.lines} width={scam ? 1021 : pair ? 470 : view.card ? 540 : 860} height={416} headline={scam} />
         </motion.div>
       )}
       {corner && (

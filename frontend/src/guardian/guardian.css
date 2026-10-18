@@ -33,7 +33,7 @@
 .g-top__eyes i { width: 9px; height: 12px; border-radius: 50%; background: #fff1dc; animation: g-blink 5s infinite; }
 .g-top__right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; min-width: 0; }
 .g-top__clock { font-size: 15px; font-weight: 700; color: var(--g-sub); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.g-live { display: inline-flex; align-items: center; gap: 6px; font-size: 17px; font-weight: 800; white-space: nowrap; }
+.g-live { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 600; color: var(--g-sub); white-space: nowrap; }
 .g-live::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--g-ok); }
 .g-live--down::before, .g-live--connecting::before { background: #c9a14a; }
 
@@ -56,8 +56,10 @@
 .g-total__value { font-family: var(--font-display); font-size: 68px; font-weight: 900; line-height: 1; letter-spacing: -0.02em; }
 .g-total__base { font-size: 18px; font-weight: 700; color: var(--g-sub); }
 .g-orders { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.g-order { display: flex; flex-direction: column; gap: 6px; }
-.g-order__meta { display: flex; align-items: center; gap: 10px; padding-left: 4px; font-size: 16px; font-weight: 700; color: var(--g-sub); }
+.g-order { display: flex; flex-direction: column; border-radius: var(--radius-l); background: #fff; border: 1px solid var(--g-line); overflow: hidden; }
+.g-order .pcard { border: 0; border-radius: 0; box-shadow: none; }
+/* 状态那一行收在同一张卡里，不再像掉到下一张卡上 */
+.g-order__meta { display: flex; align-items: center; gap: 10px; padding: 10px 16px 12px; border-top: 1px solid var(--g-line); font-size: 16px; font-weight: 700; color: var(--g-sub); }
 .g-pill { font-weight: 900; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: #dcefe2; color: var(--g-ok); }
 .g-pill--blocked { background: #f3e1dc; color: #8a2e24; }
 
@@ -67,6 +69,7 @@
 .g-mem.is-paused { opacity: 0.6; }
 .g-mem__top { display: flex; flex-direction: column; gap: 4px; }
 .g-mem__name { margin: 0; font-size: 24px; font-weight: 900; line-height: 1.2; }
+.g-mem__size { display: block; font-size: 18px; font-weight: 700; color: var(--g-sub); }
 .g-mem__dose { margin: 4px 0 0; color: var(--g-sub); font-size: 19px; font-weight: 700; }
 .g-mem__facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 14px 0 0; }
 .g-mem__facts div { padding: 10px; border-radius: var(--radius-s); background: var(--g-bg); }
@@ -101,6 +104,9 @@
 .g-save.is-dirty { border-color: var(--g-ink); background: var(--g-ink); color: #fff !important; cursor: pointer; box-shadow: 0 3px 0 #000; }
 .g-save.is-dirty:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
 .g-save.is-dirty:disabled { opacity: 0.35; cursor: default; }
+.g-save { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.g-save svg { width: 20px; height: 20px; }
+.g-save.is-saved { border-color: #bfdcc8; background: #dcefe2; color: var(--g-ok) !important; box-shadow: none; }
 .g-error { margin: 0; font-size: 18px; font-weight: 800; color: #8a2e24; }
 .g-readonly { display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; border-radius: var(--radius-l); background: #fff; border: 1px solid var(--g-line); }
 .g-readonly__value { font-family: var(--font-display); font-size: 32px; font-weight: 900; }
@@ -156,7 +162,13 @@
 /* 本周回顾：灰色的一行一件事 */
 .g-week { margin-top: 18px; }
 .g-week__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.g-week__row { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "dot title seen" "dot time seen"; column-gap: 12px; align-items: center; padding: 14px 16px; border-radius: var(--radius-m); background: #efe7dc; color: var(--g-sub); }
+.g-week__row { border-radius: var(--radius-m); background: #efe7dc; color: var(--g-sub); overflow: hidden; }
+.g-week__btn { width: 100%; display: grid; grid-template-columns: auto 1fr auto auto; grid-template-areas: "dot title seen chev" "dot time seen chev"; column-gap: 12px; align-items: center; padding: 14px 16px; border: 0; background: transparent; text-align: left; cursor: pointer; }
+.g-week__chev { grid-area: chev; width: 20px; height: 20px; color: #8a7d70; transition: transform 200ms ease; }
+.g-week__btn[aria-expanded="true"] .g-week__chev { transform: rotate(180deg); }
+.g-week__more { padding: 0 16px 0 40px; }
+.g-week__more p { margin: 0 0 12px; font-size: 18px; font-weight: 500; line-height: 1.4; color: #4a4038; }
+.g-week__more .g-week__note { font-weight: 700; padding-left: 12px; border-left: 3px solid #d6a24a; }
 .g-week__dot { grid-area: dot; width: 12px; height: 12px; border-radius: 50%; background: #c9bfb3; }
 .g-week__row--red .g-week__dot { background: #8a6a52; }
 .g-week__row--yellow .g-week__dot { background: #d6a24a; }
@@ -171,4 +183,38 @@
   .g-home:has(.g-week) { display: grid; grid-template-columns: minmax(0, 1fr) 400px; column-gap: 48px; align-items: start; }
   .g-home .g-week { margin-top: 14px; position: sticky; top: 96px; }
   .g-home .g-week .g-h2 { margin-top: 0; }
+}
+
+/* 页头的眼睛担心时：上眼皮内高外低，底色偏红，不眨眼 */
+.g-top__eyes { transition: background 300ms ease; }
+.g-top__eyes.is-worried { background: #4a1f1d; }
+.g-top__eyes.is-worried i { animation: none; clip-path: polygon(0 42%, 100% 6%, 100% 100%, 0 100%); }
+.g-top__eyes.is-worried i + i { clip-path: polygon(0 6%, 100% 42%, 100% 100%, 0 100%); }
+@media (prefers-reduced-motion: reduce) { .g-top__eyes i { animation: none; } }
+
+/* 电脑宽度（1024 以上）：四个标签都用同一个 1080 宽的版心，标签栏移到页头中间，切标签时什么都不横移 */
+@media (min-width: 1024px) {
+  .g-app { padding-bottom: 40px; }
+  .g-main, .g-main:has(.g-home .g-week) { max-width: 1120px; }
+  .g-top, .g-app:has(.g-home .g-week) .g-top { padding-left: calc((100% - 1080px) / 2); padding-right: calc((100% - 1080px) / 2); }
+  .g-tabs {
+    top: 10px;
+    bottom: auto;
+    left: 50%;
+    width: 520px;
+    translate: -50% 0;
+    padding: 4px;
+    border-radius: 18px;
+    box-shadow: none;
+    z-index: 6;
+  }
+  .g-tab { min-height: 48px; flex-direction: row; gap: 8px; }
+  .g-tab svg { width: 20px; height: 20px; }
+  .g-home:not(:has(.g-week)) .g-home__main { max-width: 640px; }
+  .g-ledger { display: grid; grid-template-columns: 400px minmax(0, 1fr); column-gap: 48px; align-items: start; }
+  .g-ledger .g-orders, .g-ledger > .g-note { margin-top: 14px; }
+  .g-pills .g-mems { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g-settings { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 48px; align-items: start; }
+  .g-settings > .g-h1 { grid-column: 1 / -1; }
+  .g-settings__name { grid-column: 2; }
 }

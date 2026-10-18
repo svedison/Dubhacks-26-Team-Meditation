@@ -15,9 +15,13 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false)
   const [saveError, setSaveError] = useState(false)
 
+  // 只在卡片这几项从后端变了时才重置草稿：点分享级别保存回来，卡片区没保存的修改还在
+  const last4 = settings?.card_last4
+  const owner = settings?.card_owner
+  const baseline = settings?.monthly_baseline_cents
   useEffect(() => {
-    if (settings) setDraft({ card_last4: settings.card_last4, card_owner: settings.card_owner, monthly_baseline_cents: settings.monthly_baseline_cents })
-  }, [settings])
+    if (last4 !== undefined && owner !== undefined && baseline !== undefined) setDraft({ card_last4: last4, card_owner: owner, monthly_baseline_cents: baseline })
+  }, [last4, owner, baseline])
 
   if (!settings || !draft) return <section className="g-page"><h1 className="g-h1">Settings</h1><p className="g-lede">Loading…</p></section>
 
@@ -33,9 +37,10 @@ export default function SettingsPage() {
   }
 
   return (
-    <section className="g-page">
+    <section className="g-page g-settings">
       <h1 className="g-h1">Settings</h1>
 
+      <div className="g-settings__share">
       <h2 className="g-h2">What she shares</h2>
       <p className="g-note">Choose this with her.</p>
       <div className="g-levels" role="radiogroup" aria-label="Share level">
@@ -58,7 +63,9 @@ export default function SettingsPage() {
           )
         })}
       </div>
+      </div>
 
+      <div className="g-settings__card">
       <h2 className="g-h2">Card</h2>
       <div className="g-form">
         <label className="g-field">
@@ -82,14 +89,20 @@ export default function SettingsPage() {
             <input inputMode="numeric" value={Math.round(draft.monthly_baseline_cents / 100)} onChange={(e) => setDraft({ ...draft, monthly_baseline_cents: Number(e.target.value.replace(/\D/g, '') || 0) * 100 })} />
           </div>
         </label>
-        <button className={`g-save${dirty ? ' is-dirty' : ''}`} onClick={saveCard} disabled={!cardOk || !dirty}>{saved ? 'Saved' : 'Save'}</button>
+        <button className={`g-save${dirty ? ' is-dirty' : ''}${saved ? ' is-saved' : ''}`} onClick={saveCard} disabled={!cardOk || !dirty}>
+          {saved ? <><Check aria-hidden strokeWidth={3} /> Saved</> : 'Save'}
+        </button>
         {saveError && <p className="g-error">Didn't save. Try again.</p>}
       </div>
 
+      </div>
+
+      <div className="g-settings__name">
       <h2 className="g-h2">She calls it</h2>
       <div className="g-readonly">
         <span className="g-readonly__value">“{settings.wake_name}”</span>
         <span className="g-note">Only she can change it.</span>
+      </div>
       </div>
     </section>
   )

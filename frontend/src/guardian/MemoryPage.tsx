@@ -1,5 +1,5 @@
 import { Pause, Play } from 'lucide-react'
-import { shortDay } from '../shared/format'
+import { shortDay, splitName } from '../shared/format'
 import { useGuardian } from './store'
 
 const ANSWER_TEXT = { taken: 'Taken', skipped: 'Skipped', later: 'Later', unconfirmed: 'No answer' } as const
@@ -7,7 +7,7 @@ const ANSWER_TEXT = { taken: 'Taken', skipped: 'Skipped', later: 'Later', unconf
 export default function MemoryPage() {
   const { memories, products, saveMemory } = useGuardian()
   return (
-    <section className="g-page">
+    <section className="g-page g-pills">
       <h1 className="g-h1">Pills</h1>
       <p className="g-lede">Milo reminds her each day.</p>
       {memories.length === 0 && (
@@ -19,11 +19,15 @@ export default function MemoryPage() {
       <ul className="g-mems">
         {memories.map((m) => {
           const p = products[m.product_id]
+          const [name, size] = splitName(p?.name ?? m.product_id)
           const days = Math.floor(m.stock_units / Math.max(1, m.units_per_dose * m.times.length))
           return (
             <li key={m.id} className={`g-mem${m.paused ? ' is-paused' : ''}`}>
               <div className="g-mem__top">
-                <h2 className="g-mem__name">{p?.name ?? m.product_id}</h2>
+                <h2 className="g-mem__name">
+                  {name}
+                  {size && <span className="g-mem__size">{size}</span>}
+                </h2>
                 <p className="g-mem__dose">{m.dose_text} · {m.times.join(', ')}</p>
               </div>
               <dl className="g-mem__facts">

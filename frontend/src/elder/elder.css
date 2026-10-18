@@ -64,10 +64,10 @@
 /* 脸：全屏 ↔ 左上角 */
 .face-box { position: absolute; }
 .face-box--full { left: 0; top: 0; width: 100%; height: 100%; }
-.face-box--corner { left: -71px; top: -30px; width: 480px; height: 317px; } /* 眼睛左缘对齐 56px 外边距，眉毛离边框留出空间 */
+.face-box--corner { left: -114px; top: -52px; width: 640px; height: 422px; } /* 眼睛约 128px 高，左缘对齐 56px 外边距，眉毛离边框留出空间 */
 
 /* 字幕区：全屏统一 56px 外边距 */
-.talk { position: absolute; top: 240px; bottom: 56px; left: 56px; }
+.talk { position: absolute; top: 272px; bottom: 56px; left: 56px; }
 /* 只有字幕时字幕列放宽、字更大，右边不空一大块；商品卡进来时字幕列平滑收窄让位 */
 .talk { transition: width 600ms cubic-bezier(0.43, 0.195, 0.02, 1); }
 .talk.is-solo { width: 860px; }
@@ -96,7 +96,10 @@
   line-height: 1.22;
   font-weight: 700;
   color: #fff6ea;
-  background: rgba(255, 241, 220, 0.07);
+  /* 照片现在认得出人，字幕底要压暗才读得清 */
+  background: rgba(26, 19, 15, 0.62);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border-radius: 38px 38px 38px 14px;
   padding: 18px 30px 20px;
 }
@@ -108,7 +111,8 @@
   font-size: 30px;
   line-height: 1.25;
   font-weight: 700;
-  color: rgba(255, 241, 220, 0.66);
+  color: rgba(255, 241, 220, 0.78);
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.7), 0 0 2px rgba(0, 0, 0, 0.6);
   padding: 4px 26px 4px 0;
   border-right: 4px solid rgba(255, 241, 220, 0.28);
   text-align: right;
