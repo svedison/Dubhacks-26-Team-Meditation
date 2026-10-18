@@ -33,7 +33,10 @@ test('approved Visa check keeps the order simulated and retries reuse one privat
   const ref = db.get('kv', 'payment:visa_order'); assert.match(String(ref), /^sim_/);
   assert.deepEqual(await placeOrder(draft()), a);
   assert.equal(db.get('kv', 'payment:visa_order'), ref); assert.equal(calls, 1);
-  assert.deepEqual(Object.keys(a!).sort(), Object.keys(draft()).sort());
+  // The order carries only the sanitised outcome of the check (2026-10-18, shown on both screens): no PAN, CVV, approval code or raw response.
+  assert.deepEqual(Object.keys(a!).sort(), [...Object.keys(draft()), 'payment_check'].sort());
+  assert.deepEqual(a!.payment_check, { provider: 'visa_pav', environment: 'sandbox', approved: true, action_code: '00', checked_at: evidence.checkedAt, note: null });
+  assert.doesNotMatch(JSON.stringify(a), /primaryAccountNumber|approvalCode|cardCvv2Value/);
 });
 
 test('reset during a pending Visa check cannot persist an old order', async () => {
@@ -91,4 +94,21 @@ test('failed Visa preflight clearly reports no order and a fresh offer/confirmat
     assert.equal((await say('yes')).order?.status, 'simulated_paid');
     assert.equal(calls, 2); assert.equal(db.all('orders').length, 2);
   } finally { conversation.reset(); }
+});
+test('soft mode: an approved check rides on the order; an unreachable sandbox still places the simulated order and says so', async () => {
+  process.env.VISA_SANDBOX_PREFLIGHT = 'soft';
+  mock.method(visaSandbox, 'validateTestAccount', async () => evidence);
+  const first = await placeOrder({ ...draft(), id: 'soft-ok' });
+  assert.equal(first?.status, 'simulated_paid');
+  assert.deepEqual(first?.payment_check, { provider: 'visa_pav', environment: 'sandbox', approved: true, action_code: evidence.actionCode, checked_at: evidence.checkedAt, note: null });
+  mock.restoreAll();
+  mock.method(visaSandbox, 'validateTestAccount', async () => { throw new VisaSandboxError('network_error'); });
+  const second = await placeOrder({ ...draft(), id: 'soft-down' });
+  assert.equal(second?.status, 'simulated_paid');
+  assert.equal(second?.payment_check?.approved, false); assert.equal(second?.payment_check?.note, 'network_error');
+  assert.equal(db.all('orders').filter(o => o.id.startsWith('soft-')).length, 2);
+  // Strict mode is unchanged: the same failure places nothing.
+  process.env.VISA_SANDBOX_PREFLIGHT = '1';
+  await assert.rejects(placeOrder({ ...draft(), id: 'strict-down' }), VisaSandboxError);
+  assert.equal(db.get('orders', 'strict-down'), undefined);
 });

@@ -350,8 +350,9 @@ export class ConversationPipeline {
     }
     if (!order) return { text: '', emotion: 'worried' };
     registerOrder(order); // D schedules the delivery question and, once received, the dose reminders.
-    const text = order.status === 'simulated_paid'
-      ? "Your simulated order is placed; I'll let you know when it arrives."
+    // She never hears "simulated": the data keeps status simulated_paid and the guardian page says so once.
+    const text = order.payment_check?.approved
+      ? "Your order is placed; Visa confirmed your card. I'll let you know when it arrives."
       : "Your order is placed; I'll let you know when it arrives.";
     return { text, emotion: 'happy', order };
   }

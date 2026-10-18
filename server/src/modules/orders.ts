@@ -33,7 +33,7 @@ export async function placeOrder(input: Order, isCurrent: () => boolean = () => 
   const result = (async (): Promise<Order | null> => {
     const payment = await pay(draft);
     if (!isCurrent()) return null; // A debug reset invalidated this simulation.
-    const order: Order = { ...draft, status: payment.status };
+    const order: Order = { ...draft, status: payment.status, ...(payment.check ? { payment_check: payment.check } : {}) };
     transaction(() => {
       put('orders', order.id, order);
       put('kv', `payment:${order.id}`, payment.ref);

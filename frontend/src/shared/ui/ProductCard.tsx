@@ -15,11 +15,12 @@ type Props = {
   product: Product
   size?: 'elder' | 'compact'
   orderStatus?: Order['status'] // 只有后端确认的订单状态才显示成功章
+  paymentCheck?: Order['payment_check'] // Visa 沙盒卡校验通过时章下多一行
   tag?: string // 并排时卡片顶部的小标签（Skip this / Try this）
 }
 
 // 两端共用：老人端大卡、监护人端小卡是同一个组件
-export default function ProductCard({ product, size = 'elder', orderStatus, tag }: Props) {
+export default function ProductCard({ product, size = 'elder', orderStatus, paymentCheck, tag }: Props) {
   const done = orderStatus === 'paid' || orderStatus === 'simulated_paid'
   const img = product.image_url ?? productImage(product.id)
   const risk = product.risk
@@ -32,7 +33,11 @@ export default function ProductCard({ product, size = 'elder', orderStatus, tag 
         {done && (
           <div className="pcard__stamp" role="status">
             <Check aria-hidden strokeWidth={3.4} />
-            {orderStatus === 'simulated_paid' ? 'Simulated order' : 'Ordered'}
+            <span className="pcard__stamp-text">
+              Ordered
+              {/* 老人端不说 simulated：状态仍在数据里，监护人端 Money 页底部注明一次。卡校验通过时加一行 */}
+              {paymentCheck?.approved && <small className="pcard__visa">Card checked with Visa</small>}
+            </span>
           </div>
         )}
       </div>

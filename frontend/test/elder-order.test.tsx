@@ -23,14 +23,21 @@ test('a happy offer is not a completed order', () => {
   expect(view.card?.done).toBe(false)
 })
 
-test('only a successful matching order completes the card and retains simulated status', () => {
+test('only a successful matching order completes the card; the stamp says Ordered, plus the Visa line when the card was checked', () => {
   expect(elderReducer(offer(), { type: 'order', ...order, product_id: 'other' }).card?.done).toBe(false)
   expect(elderReducer(offer(), { type: 'order', ...order, status: 'blocked' }).card?.done).toBe(false)
   const view = elderReducer(offer(), { type: 'order', ...order })
   expect(view.card?.done).toBe(true)
-  expect(view.card?.orderStatus).toBe('simulated_paid')
-  const html = renderToStaticMarkup(<ProductCard product={product} orderStatus={view.card?.orderStatus} />)
-  expect(html).toContain('Simulated order')
+  expect(view.card?.orderStatus).toBe('simulated_paid') // the data keeps the simulated status; the elder never reads the word
+  const plain = renderToStaticMarkup(<ProductCard product={product} orderStatus={view.card?.orderStatus} paymentCheck={view.card?.paymentCheck} />)
+  expect(plain).toContain('Ordered')
+  expect(plain).not.toContain('Simulated')
+  expect(plain).not.toContain('Visa')
+  const check = { provider: 'visa_pav' as const, environment: 'sandbox' as const, approved: true, action_code: '00', checked_at: '2026-10-18T10:00:00Z', note: null }
+  const checked = elderReducer(offer(), { type: 'order', ...order, payment_check: check })
+  expect(checked.card?.paymentCheck?.approved).toBe(true)
+  const html = renderToStaticMarkup(<ProductCard product={product} orderStatus={checked.card?.orderStatus} paymentCheck={checked.card?.paymentCheck} />)
+  expect(html).toContain('Card checked with Visa')
 })
 
 test('confirmed alternative becomes the completed product, without stamping the rejected product', () => {

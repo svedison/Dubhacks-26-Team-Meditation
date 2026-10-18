@@ -9,8 +9,8 @@ const LEVEL_TEXT = {
   open: 'She chose: every order.',
 } as const
 
-// simulated_paid 必须显示 Simulated（shared-contracts.md）
-const STATUS_TEXT = { paid: 'Paid', simulated_paid: 'Simulated', blocked: 'Blocked' } as const
+// 老人端和卡片上不说 simulated；这一页底部一句话注明演示没有真实扣款（shared-contracts.md 2026-10-18）
+const STATUS_TEXT = { paid: 'Paid', simulated_paid: 'Placed', blocked: 'Blocked' } as const
 
 // 后端已按分享层级过滤，这里返回什么就显示什么
 export default function LedgerPage() {
@@ -40,17 +40,23 @@ export default function LedgerPage() {
       )}
       </div>
       {ledger.orders.length > 0 ? (
+        <>
         <ul className="g-orders">
           {ledger.orders.slice().reverse().map((o) => (
             <li key={o.id} className="g-order">
               {products[o.product_id] && <ProductCard product={products[o.product_id]} size="compact" />}
               <div className="g-order__meta">
                 <span className={`g-pill g-pill--${o.status}`}>{STATUS_TEXT[o.status]}</span>
+                {o.payment_check?.approved && <span className="g-visa">Visa ✓ card checked</span>}
                 <span>{o.status === 'blocked' ? o.block_reason : o.received ? 'Received' : `Arrives ${dayLabel(o.deliver_on)}`}</span>
               </div>
             </li>
           ))}
         </ul>
+        {ledger.orders.some((o) => o.status === 'simulated_paid') && (
+          <p className="g-note">Demo build: orders are placed in the Visa sandbox, no real charge.</p>
+        )}
+        </>
       ) : (
         <p className="g-note">Details stay with her.</p>
       )}

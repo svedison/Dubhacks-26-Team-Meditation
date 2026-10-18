@@ -25,6 +25,8 @@ export type Order = {
   created_at: string
   deliver_on: string
   received: boolean
+  // 下单前 Visa 沙盒账户校验的脱敏结果（见 shared-contracts.md）；后端没开校验时没有这个字段
+  payment_check?: { provider: 'visa_pav'; environment: 'sandbox'; approved: boolean; action_code: string | null; checked_at: string; note: string | null } | null
 }
 
 export type MemoryAnswer = 'taken' | 'skipped' | 'later' | 'unconfirmed'

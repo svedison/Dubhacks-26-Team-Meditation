@@ -248,3 +248,7 @@
 /* Money 总额下面：这个月对着她平常一个月的进度条 */
 .g-total__bar { display: block; height: 10px; margin: 10px 0 2px; border-radius: 999px; background: #efe7dc; overflow: hidden; }
 .g-total__bar i { display: block; height: 100%; border-radius: 999px; background: var(--g-ink); transition: width 600ms cubic-bezier(0.43, 0.195, 0.02, 1); }
+
+/* Money 页：Visa 卡校验一行 + 页底的演示说明 */
+.g-visa { font-weight: 600; color: #1a1f71; }
+.g-note { margin: 14px 2px 0; font-size: 13px; opacity: 0.6; }

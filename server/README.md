@@ -198,7 +198,13 @@ curl -s -X POST localhost:8799/api/audio -H 'content-type: audio/webm' --data-bi
 
 ## Visa Sandbox（已接入测试账户验证）
 
-`pay()` 可先调用 **Payment Account Validation**，通过后继续模拟下单。验证的是 Visa 门户提供的固定测试卡，不是 Settings 的卡尾号，也不是老人真实的卡；**不是购买授权或扣款**。Order 仍为 `simulated_paid`，前端必须保留 Simulated。没有接入 Intelligent Commerce 或 Token Service。
+`pay()` 可先调用 **Payment Account Validation**，通过后继续模拟下单。验证的是 Visa 门户提供的固定测试卡，不是 Settings 的卡尾号，也不是老人真实的卡；**不是购买授权或扣款**。Order 仍为 `simulated_paid`。没有接入 Intelligent Commerce 或 Token Service。
+
+**怎么在演示里看到它（2026-10-18）**：校验的脱敏结果作为 Order 的可选字段 `payment_check`（provider、approved、action_code、checked_at、note）随 `order` 事件发给两端。通过时 Milo 说 *"Your order is placed; Visa confirmed your card. I'll let you know when it arrives."*，老人端商品卡的章是 "Ordered" 加一行 "Card checked with Visa"，监护人端 Money 页每笔订单带 "Visa ✓ card checked"。语音和卡片都不再出现 "simulated"：状态仍存 `simulated_paid`，Money 页底部注明一次 "Demo build: orders are placed in the Visa sandbox, no real charge"。
+
+`VISA_SANDBOX_PREFLIGHT` 三个值：`0`（默认）不调用、订单没有 `payment_check`；`1` 严格，校验失败不下单（luyichen 的原设计）；`soft` 演示用，3 秒内没结果照常模拟下单并带 `approved: false, note: 原因码`，Milo 只说 "Your order is placed"。
+
+**部署到 Render**：Dashboard → milo → Environment → Secret Files，把下面 8 个文件按原名各加一个（Render 挂在 `/etc/secrets/`），再加环境变量 `VISA_SANDBOX_DIR=/etc/secrets` 和 `VISA_SANDBOX_PREFLIGHT=soft`（或 `1`）。保存后自动重启；之后下一单，`GET /api/orders` 里应能看到 `payment_check.approved: true`。
 
 把以下文件保存在 Git 仓库外的私有目录（目录权限 700，文件 600）：
 

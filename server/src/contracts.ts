@@ -7,10 +7,18 @@ export const productSchema = z.object({
   risk: z.object({ kind: z.enum(['fda_fraud', 'recall', 'unverified']), alternative_id: z.string() }).nullable(),
   image_url: z.string().url().nullable().optional(), // store photo (QFC listing); the elder page falls back to its local images by id
 });
+// Sanitised outcome of the Visa sandbox Payment Account Validation run before an order: it says the card on file
+// checked out (or that the check could not be made), never a PAN, approval code or raw provider response.
+export const paymentCheckSchema = z.object({
+  provider: z.literal('visa_pav'), environment: z.literal('sandbox'), approved: z.boolean(),
+  action_code: z.string().nullable(), checked_at: z.string(), note: z.string().nullable(),
+});
+export type PaymentCheck = z.infer<typeof paymentCheckSchema>;
 export const orderSchema = z.object({
   id: z.string(), product_id: z.string(), price_cents: z.number().int().nonnegative(),
   status: z.enum(['paid', 'simulated_paid', 'blocked']), block_reason: z.string().nullable(),
   created_at: z.string().datetime({ offset: true }), deliver_on: z.string().date(), received: z.boolean(),
+  payment_check: paymentCheckSchema.nullable().optional(),
 });
 export const memorySchema = z.object({
   id: z.string(), product_id: z.string(), dose_text: z.string(),

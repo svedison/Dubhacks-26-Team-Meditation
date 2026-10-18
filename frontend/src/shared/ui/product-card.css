@@ -126,3 +126,7 @@
 @media (prefers-reduced-motion: reduce) {
   .pcard__stamp { animation: none; }
 }
+
+/* 下单章里的 Visa 一行：和 "Ordered" 同色，小一号，不抢眼 */
+.pcard__stamp-text { display: inline-flex; flex-direction: column; align-items: flex-start; line-height: 1.05; }
+.pcard__visa { display: block; font-size: 0.55em; font-weight: 600; letter-spacing: 0.02em; opacity: 0.92; margin-top: 2px; }
