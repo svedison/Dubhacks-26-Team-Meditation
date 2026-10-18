@@ -1,4 +1,5 @@
 import { Pause, Play } from 'lucide-react'
+import { useState } from 'react'
 import { dayKey, lastSevenDays, shortDay, splitName } from '../shared/format'
 import { useGuardian } from './store'
 
@@ -6,6 +7,15 @@ const ANSWER_TEXT = { taken: 'Taken', skipped: 'Skipped', later: 'Later', unconf
 
 export default function MemoryPage() {
   const { memories, products, saveMemory, clock } = useGuardian()
+  const [saving, setSaving] = useState<string | null>(null)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const toggle = async (id: string, paused: boolean) => {
+    setSaving(id)
+    setSaveError(null)
+    try { await saveMemory(id, { paused }) }
+    catch { setSaveError(id) }
+    finally { setSaving(null) }
+  }
   const week = lastSevenDays(clock ?? new Date().toISOString())
   return (
     <section className="g-page g-pills">
@@ -52,11 +62,13 @@ export default function MemoryPage() {
               <button
                   className="g-icon-btn"
                   aria-label={m.paused ? 'Resume reminder' : 'Pause reminder'}
-                  onClick={() => void saveMemory({ ...m, paused: !m.paused }).catch((e: Error) => console.error(e))}
+                  disabled={saving !== null}
+                  onClick={() => void toggle(m.id, !m.paused)}
                 >
                   {m.paused ? <Play strokeWidth={2.4} /> : <Pause strokeWidth={2.4} />}
-                  <span>{m.paused ? 'Resume' : 'Pause'}</span>
+                  <span>{saving === m.id ? 'Saving…' : m.paused ? 'Resume' : 'Pause'}</span>
                 </button>
+              {saveError === m.id && <p className="g-error" role="alert">Didn't save. Try again.</p>}
             </li>
           )
         })}

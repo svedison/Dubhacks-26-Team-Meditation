@@ -108,7 +108,7 @@ test('a fresh process recovers orders, payment references and settings from SQLi
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
 
-test('localhost HTTP/WS completes refill, scam alert/note and alternative purchase', async () => {
+test('four scenes over HTTP/WS: naming, refill/scam, alternative, delivery/dose/reminder', async () => {
   const originalFetch = globalThis.fetch;
   process.env.ANTHROPIC_API_KEY = 'test-only';
   // Replace only the external model response; all app transports, risk checks,
@@ -137,19 +137,34 @@ test('localhost HTTP/WS completes refill, scam alert/note and alternative purcha
     const base = await app.listen({ host: '127.0.0.1', port: 0 });
     const wsBase = base.replace('http:', 'ws:');
     const events: Record<string, unknown>[] = [];
+    const elderEvents: Record<string, unknown>[] = [];
+    const waitFor = async (predicate: () => boolean) => {
+      for (let i = 0; i < 200 && !predicate(); i++) await delay(10);
+      assert.ok(predicate(), 'expected pipeline event within 2 seconds');
+    };
     guardian = new WebSocket(`${wsBase}/ws?role=guardian`);
     guardian.on('message', data => events.push(JSON.parse(data.toString())));
     await once(guardian, 'open');
     elder = new WebSocket(`${wsBase}/ws?role=elder`);
-    elder.on('message', data => { if (JSON.parse(data.toString()).type === 'speak') elder!.send(JSON.stringify({ type: 'spoke' })); });
+    elder.on('message', data => {
+      const event = JSON.parse(data.toString()); elderEvents.push(event);
+      if (event.type === 'speak' || event.type === 'ask') elder!.send(JSON.stringify({ type: 'spoke' }));
+    });
     await once(elder, 'open');
     const request = async (path: string, method: string, body: unknown) => {
       const response = await fetch(base + path, { method, headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
       assert.equal(response.status, 200); return response.json();
     };
     const say = (text: string) => request('/api/utterance', 'POST', { text, source: 'keyboard' });
+    await request('/debug/reset', 'POST', {}); // This test server has isolated in-memory storage.
+    await request('/api/settings', 'PUT', { wake_name: '' });
+    assert.match((await say('Hello?')).reply_text, /AI shopping helper.*call me/);
+    assert.match((await say("Let's call you Lily.")).reply_text, /call me Lily/);
+    assert.equal(db.getSettings().wake_name, 'Lily');
+    assert.equal(db.getSettings().elder_name, 'Grandma');
     await request('/api/settings', 'PUT', { share_level: 'open' });
     assert.equal((await say('the purple bottle is empty today')).card.product.id, 'calcium-120');
+    assert.equal(elderEvents.some(e => e.type === 'order'), false, 'offer is not an order confirmation');
     const refill = await say('yes');
     assert.equal(refill.order.status, 'simulated_paid');
     assert.equal(db.get('orders', refill.order.id)?.price_cents, 1800);
@@ -171,6 +186,33 @@ test('localhost HTTP/WS completes refill, scam alert/note and alternative purcha
     const ledger = await (await fetch(base + '/api/orders')).json();
     assert.equal(ledger.month_total_cents, 4200);
     assert.equal(ledger.orders.length, 3);
+    await waitFor(() => elderEvents.filter(e => e.type === 'order').length === 2);
+    assert.deepEqual(elderEvents.filter(e => e.type === 'order').map(e => e.status), ['simulated_paid', 'simulated_paid']);
+
+    // Use D's real scheduler and the pipeline's real proactive queue. Unlike
+    // the bridge unit test, do not replace setSpeaker: delivery must reach WS.
+    const asks = () => elderEvents.filter(e => e.type === 'ask');
+    await request('/debug/clock', 'POST', { now: `${alternative.order.deliver_on}T09:00:00Z` });
+    await waitFor(() => asks().some(e => e.kind === 'received' && String(e.text).includes('Calcium')));
+    await say('Yes, got it.');
+    await waitFor(() => asks().some(e => e.kind === 'received' && String(e.text).includes('Glucosamine')));
+    assert.equal(db.get('orders', refill.order.id)?.received, true);
+    await say('Yes, got it.');
+    await waitFor(() => asks().some(e => e.kind === 'dose_confirm'));
+    assert.equal(db.get('orders', alternative.order.id)?.received, true);
+    assert.equal(db.all('memories').some(m => m.product_id === 'glucosamine-usp'), false);
+    await say('Okay.');
+    const memory = db.all('memories').find(m => m.product_id === 'glucosamine-usp');
+    assert.ok(memory); assert.equal(memory.stock_units, 90);
+    assert.deepEqual(memory.times, ['08:00']);
+    await request('/debug/clock', 'POST', { now: `${memory.start_date}T08:00:05Z` });
+    await waitFor(() => asks().some(e => e.kind === 'reminder'));
+    await say('Took it.');
+    const afterDose = db.get('memories', memory.id)!;
+    assert.equal(afterDose.stock_units, 89);
+    assert.equal(afterDose.log.at(-1)?.answer, 'taken');
+    await waitFor(() => events.some(e => e.type === 'memory' && e.id === memory.id && e.stock_units === 89));
+    assert.equal(db.all('orders').filter(o => o.id !== 'ord_00').length, 2);
   } finally {
     globalThis.fetch = originalFetch; process.env.ANTHROPIC_API_KEY = '';
     for (const socket of [elder, guardian]) if (socket && socket.readyState !== WebSocket.CLOSED) {

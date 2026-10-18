@@ -76,6 +76,7 @@ export type ElderEvent =
   | { type: 'transcript'; role: 'grandma' | 'ai'; text: string }
   | { type: 'speak'; text: string; audio_url: string | null }
   | { type: 'card'; product: Product; alternative?: Product }
+  | ({ type: 'order' } & Order)
   | { type: 'clock'; now: string }
   | { type: 'ask'; text: string; audio_url: string | null; kind: 'received' | 'dose_confirm' | 'reminder' }
 

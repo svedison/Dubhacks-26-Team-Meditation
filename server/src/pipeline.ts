@@ -70,6 +70,7 @@ export class ConversationPipeline {
     try { audio_url = await this.dependencies.synthesize(plan.text); } catch { /* Browser fallback. */ }
     if (version !== this.generation) return this.silent();
     if (plan.card) toElder({ type: 'card', ...plan.card });
+    if (plan.order) toElder({ type: 'order', ...plan.order });
     state.speak(plan.emotion);
     toElder({ type: 'transcript', role: 'ai', text: plan.text });
     toElder({ type: 'speak', text: plan.text, audio_url });
