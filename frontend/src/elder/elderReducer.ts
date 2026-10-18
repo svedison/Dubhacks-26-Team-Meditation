@@ -1,9 +1,9 @@
-import type { ElderEvent, FaceState, Product } from '../shared/contracts'
+import type { ElderEvent, FaceState, Order, Product } from '../shared/contracts'
 
 // ask：这句是设备主动提的问题（后端 ask 事件），她回答时问题要留在屏上
 export type Line = { id: number; role: 'grandma' | 'ai'; text: string; ask?: boolean }
 
-export type CardView = { product: Product; alternative?: Product; done: boolean }
+export type CardView = { product: Product; alternative?: Product; done: boolean; orderStatus?: Order['status'] }
 
 export type ElderView = {
   face: FaceState
@@ -26,7 +26,7 @@ function addLine(v: ElderView, role: Line['role'], text: string, ask = false): E
     // 同一句先作为字幕到、再作为 ask 到：只补上「是提问」这个标记
     return ask && !last.ask ? { ...v, lines: [...v.lines.slice(0, -1), { ...last, ask: true }] } : v
   }
-  // 卡片已经完成（开心脸盖过章）以后奶奶又开口，说明换了话题，收起卡片
+  // 收到订单成功确认以后奶奶又开口，说明换了话题，收起卡片
   const card = role === 'grandma' && v.card?.done ? null : v.card
   return { ...v, awake: true, conversing: true, card, lines: [...v.lines, { id: nextId++, role, text, ask }].slice(-12) }
 }
@@ -44,7 +44,6 @@ export function elderReducer(v: ElderView, e: ElderEvent | { type: 'socket_down'
         face: e.state,
         awake: true,
         heardWhileIdle: null,
-        card: e.state === 'happy' && woke.card ? { ...woke.card, done: true } : woke.card,
       }
     }
     case 'transcript':
@@ -56,6 +55,12 @@ export function elderReducer(v: ElderView, e: ElderEvent | { type: 'socket_down'
       return addLine(v.card?.done ? { ...v, card: null } : v, 'ai', e.text, true)
     case 'card':
       return { ...v, awake: true, conversing: true, card: { product: e.product, alternative: e.alternative, done: false } }
+    case 'order': {
+      if (!v.card || (e.status !== 'paid' && e.status !== 'simulated_paid')) return v
+      const product = v.card.alternative?.id === e.product_id ? v.card.alternative
+        : v.card.product.id === e.product_id ? v.card.product : null
+      return product ? { ...v, card: { product, done: true, orderStatus: e.status } } : v
+    }
     case 'clock':
       return { ...v, clock: e.now }
     case 'speak':

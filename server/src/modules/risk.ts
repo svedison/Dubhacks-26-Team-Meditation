@@ -4,6 +4,7 @@ import { now } from '../clock.js';
 import { toGuardian } from '../bus.js';
 import type { Order, Product, Settings } from '../contracts.js';
 import { orderSchema } from '../contracts.js';
+import { visaSandbox, VisaSandboxError } from './visa-sandbox.js';
 
 export interface CheckResult { ok: boolean; reason: string | null; alternative?: Product }
 export interface PaymentResult { status: 'paid' | 'simulated_paid'; ref: string }
@@ -42,8 +43,11 @@ export async function pay(order: Order): Promise<PaymentResult> {
   const product = get('products', order.product_id);
   if (!product || !check(order.product_id, '').ok) throw new Error('Product is not eligible for payment');
   if (order.price_cents !== product.price_cents) throw new Error('Order price does not match the shelf');
-  // No external payment call. A future provider must throw on failure, never
-  // silently convert a failed sandbox charge into a successful simulation.
+  const preflight = process.env.VISA_SANDBOX_PREFLIGHT;
+  if (preflight && preflight !== '0' && preflight !== '1') throw new VisaSandboxError('configuration_error');
+  // Validates a fixed Visa sandbox fixture, not the elder's card or this purchase.
+  // An enabled check must succeed; failures never silently fall back to simulation.
+  if (preflight === '1') await visaSandbox.validateTestAccount();
   return { status: 'simulated_paid', ref: `sim_${randomUUID()}` };
 }
 export function visibleOrders(orders: Order[], level: Settings['share_level']): Order[] {

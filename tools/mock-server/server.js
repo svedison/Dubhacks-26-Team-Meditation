@@ -67,7 +67,7 @@ async function sceneRefill() {
   heard("Yes.");
   const order = { id: "ord_" + Date.now(), product_id: "calcium-120", price_cents: 1800, status: "simulated_paid",
     block_reason: null, created_at: state.now, deliver_on: "2026-10-22", received: false };
-  state.orders.push(order); toGuardian({ type: "order", ...order });
+  state.orders.push(order); toGuardian({ type: "order", ...order }); toElder({ type: "order", ...order });
   toElder({ type: "state", state: "happy" });
   await say("Done. I'll let you know when it arrives.");
   toElder({ type: "state", state: "listening" });
@@ -95,7 +95,7 @@ async function sceneFake() {
   heard("Okay.");
   const order = { id: "ord_" + Date.now(), product_id: "glucosamine-usp", price_cents: 2400, status: "simulated_paid",
     block_reason: null, created_at: state.now, deliver_on: "2026-10-22", received: false };
-  state.orders.push(order); toGuardian({ type: "order", ...order });
+  state.orders.push(order); toGuardian({ type: "order", ...order }); toElder({ type: "order", ...order });
   toElder({ type: "state", state: "happy" });
   await say("Ordered. Thursday as well.");
   toElder({ type: "state", state: "listening" });

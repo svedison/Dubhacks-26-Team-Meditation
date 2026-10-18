@@ -47,3 +47,7 @@ This is backend acceptance evidence, not a claim that a physical phone/iPad, rea
 ## Existing dependency advisories
 
 `npm ci`/`npm audit` on the unchanged lockfile reports one high (`@fastify/static`) and one moderate (`@anthropic-ai/sdk`) vulnerable dependency. Fixes require versions outside the current declared ranges. These belong to B's static-serving/provider dependencies; no forced upgrades were made in C's change. Coordinate upgrades before deployment. The backend still has B's unauthenticated hackathon API and is not a production payment service.
+
+## Sandbox follow-up — 2026-10-18
+
+The earlier simulation-only delivery is now supplemented by an optional, tested Visa Payment Account Validation sandbox client. It validates a fixed portal test fixture and still creates simulated_paid orders. Setup and limits are in `server/README.md`; current judge answers are in `visa-qa.md`. No purchase authorization or real payment is claimed.

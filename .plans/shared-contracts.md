@@ -66,6 +66,7 @@
 | `transcript` | `{role: "grandma|ai", text}` | 字幕追加一条，奶奶右、AI 左 |
 | `speak` | `{text, audio_url}` | 播放，播完回 `spoke` |
 | `card` | `{product, alternative?}` | 弹商品卡片；有 alternative 时并排显示 |
+| `order` | Order 对象 | 仅明确确认且下单成功后发给老人端；匹配商品后显示下单状态，`simulated_paid` 标注 **Simulated order**。开心表情不代表下单成功。监护人端仍沿用分享过滤规则 |
 | `clock` | `{now}` | 角上更新演示时钟 |
 | `ask` | `{text, audio_url, kind: "received|dose_confirm|reminder"}` | Memory 主动开口，等奶奶回答 |
 

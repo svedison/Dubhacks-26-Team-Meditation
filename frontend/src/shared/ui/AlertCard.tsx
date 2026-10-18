@@ -1,5 +1,6 @@
 import { Check, Phone, Pill } from 'lucide-react'
 import { motion } from 'motion/react'
+import { useState } from 'react'
 import type { Alert } from '../contracts'
 import { timeAgo } from '../format'
 import './alert-card.css'
@@ -9,13 +10,23 @@ type Props = {
   now: string | null
   phone: string | null
   fresh: boolean
-  onArchive: (id: string) => void
+  onArchive: (id: string) => Promise<void>
 }
 
 const NO_NOTE = "Grandma didn't want to explain this one"
 
 // 等级只按后端给的 level 渲染：red 置顶、中性深色、带 Call 和 Got it；yellow 普通卡无电话；normal 普通卡
 export default function AlertCard({ alert, now, phone, fresh, onArchive }: Props) {
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState(false)
+  const archive = async () => {
+    if (saving) return
+    setSaving(true)
+    setSaveError(false)
+    try { await onArchive(alert.id) }
+    catch { setSaveError(true) }
+    finally { setSaving(false) }
+  }
   const level = alert.level
   const showNote = level !== 'normal'
   return (
@@ -49,11 +60,12 @@ export default function AlertCard({ alert, now, phone, fresh, onArchive }: Props
               <Phone aria-hidden strokeWidth={2.4} /> Call
             </a>
           )}
-          <button className="btn btn--ghost" onClick={() => onArchive(alert.id)}>
-            <Check aria-hidden strokeWidth={2.6} /> Got it
+          <button className="btn btn--ghost" disabled={saving} onClick={() => void archive()}>
+            <Check aria-hidden strokeWidth={2.6} /> {saving ? 'Saving…' : 'Got it'}
           </button>
         </div>
       )}
+      {saveError && <p className="acard__error" role="alert">Didn't save. Try again.</p>}
     </motion.article>
   )
 }

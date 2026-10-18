@@ -9,6 +9,7 @@ import { decide, fallbackDecision, FALLBACK_REPLY, type Context, type Decision }
 import { synthesize } from './tts.js';
 import * as risk from './modules/risk.js';
 import { placeOrder } from './modules/orders.js';
+import { VisaSandboxError } from './modules/visa-sandbox.js';
 import { createAlert, extendAlert, saveGrandmaNote, handleAnswer as memoryAnswer, registerOrder, setSpeaker, takeRefillSuggestion, updateAlert, type ProactiveSpeech } from './modules/memory.js';
 import type { Card, Emotion, Order, Source, UtteranceResult } from './contracts.js';
 
@@ -259,6 +260,7 @@ export class ConversationPipeline {
     const audio_url = await this.bounded(`turn #${job.id} TTS`, () => this.dependencies.synthesize(plan.text), () => null);
     if (this.dead(job)) return this.silent();
     if (plan.card) toElder({ type: 'card', ...plan.card });
+    if (plan.order) toElder({ type: 'order', ...plan.order });
     state.speak(plan.emotion);
     toElder({ type: 'transcript', role: 'ai', text: plan.text });
     toElder({ type: 'speak', text: plan.text, audio_url });
@@ -308,7 +310,14 @@ export class ConversationPipeline {
     delivery.setUTCDate(delivery.getUTCDate() + 5);
     const draft: Order = { id: `ord_${randomUUID()}`, product_id: product.id, price_cents: product.price_cents,
       status: 'simulated_paid', block_reason: null, created_at, deliver_on: delivery.toISOString().slice(0, 10), received: false };
-    const order = await placeOrder(draft, () => !this.dead(job));
+    let order: Order | null;
+    try { order = await placeOrder(draft, () => !this.dead(job)); }
+    catch (error) {
+      if (error instanceof VisaSandboxError) return {
+        text: "Your order wasn't placed. Please ask for the item again when you're ready.", emotion: 'worried',
+      };
+      throw error;
+    }
     if (!order) return { text: '', emotion: 'worried' };
     registerOrder(order); // D schedules the delivery question and, once received, the dose reminders.
     const text = order.status === 'simulated_paid'
