@@ -96,7 +96,11 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       return
     }
     if (e.type === 'state' || e.type === 'ask' || e.type === 'transcript') pendingIdle.current = false
-    if (e.type === 'ask' && lastFace.current === 'idle') holdFullScreen()
+    if (e.type === 'ask' && lastFace.current === 'idle') {
+      holdFullScreen()
+      // 设备主动开口就算醒了，奶奶接着回答时不再当成刚醒
+      lastFace.current = 'speaking'
+    }
     dispatch(e)
     if (e.type === 'speak' || e.type === 'ask') player.enqueue({ text: e.text, audio_url: e.audio_url })
     if (e.type === 'state' && e.state !== lastFace.current) {

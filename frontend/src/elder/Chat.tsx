@@ -57,8 +57,8 @@ export default function Chat({ lines }: { lines: Line[] }) {
             className={`chat__row chat__row--${l.role}`}
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20, transition: { duration: 0.35 } }}
-            transition={{ duration: 0.6, ease: [0.43, 0.195, 0.02, 1] }}
+            exit={{ opacity: 0, transition: { duration: 0.15 } }}
+            transition={{ duration: 0.6, delay: 0.12, ease: [0.43, 0.195, 0.02, 1] }}
           >
             <div className={`chat__bubble ${l.role === 'ai' ? sizeClass(l.text) : ''}`}>{l.role === 'ai' ? emphasize(l.text) : l.text}</div>
           </motion.div>

@@ -41,7 +41,8 @@ export function elderReducer(v: ElderView, e: ElderEvent | { type: 'socket_down'
     case 'transcript':
       return addLine(v, e.role, e.text)
     case 'ask':
-      return addLine(v, 'ai', e.text)
+      // 设备主动开口是新话题：已经下过单的卡片收起来
+      return addLine(v.card?.done ? { ...v, card: null } : v, 'ai', e.text)
     case 'card':
       return { ...v, awake: true, conversing: true, card: { product: e.product, alternative: e.alternative, done: false } }
     case 'clock':
