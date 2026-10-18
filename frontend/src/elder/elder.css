@@ -46,6 +46,12 @@
 }
 .wake__name { font-family: var(--font-display); font-size: 64px; font-weight: 500; letter-spacing: -0.01em; }
 .wake__hint { font-size: 24px; opacity: 0.7; max-width: 720px; text-align: center; }
+/* 点了以后：两条线慢慢睁成眼睛 */
+.wake.is-starting .wake__eyes i { animation: wake-open 1.6s cubic-bezier(0.43, 0.195, 0.02, 1) forwards; }
+@keyframes wake-open {
+  from { height: 10px; opacity: 0.6; }
+  to { height: 58px; width: 46px; opacity: 1; }
+}
 @keyframes wake-breathe {
   0%, 100% { opacity: 0.55; transform: scaleX(1); }
   50% { opacity: 1; transform: scaleX(1.08); }
@@ -57,12 +63,12 @@
 
 /* 脸：全屏 ↔ 左上角 */
 .face-box { position: absolute; }
-.face-box--full { left: 0; top: 0; width: 1133px; height: 744px; }
-.face-box--corner { left: -39px; top: -15px; width: 360px; height: 238px; } /* 眼睛左缘对齐 56px 外边距 */
+.face-box--full { left: 0; top: 0; width: 100%; height: 100%; }
+.face-box--corner { left: -39px; top: -14px; width: 360px; height: 238px; } /* 眼睛左缘对齐 56px 外边距 */
 
 /* 字幕区：全屏统一 56px 外边距 */
 .talk { position: absolute; top: 196px; bottom: 56px; left: 56px; }
-.talk.is-solo { width: 1021px; }
+.talk.is-solo { right: 56px; }
 .talk.is-single { width: 540px; }
 .talk.is-pair { width: 470px; }
 
@@ -111,8 +117,8 @@
 /* 商品卡片区：底边和字幕底边对齐 */
 .cards { position: absolute; top: 96px; bottom: 56px; right: 56px; display: flex; align-items: flex-end; justify-content: center; }
 .cards.is-solo { width: 0; }
-.cards.is-single { left: 636px; }
-.cards.is-pair { left: 566px; }
+.cards.is-single { width: 441px; }
+.cards.is-pair { width: 511px; }
 .card-stage { display: flex; gap: 20px; align-items: stretch; width: 100%; justify-content: center; }
 .card-stage__slot > .pcard { flex: 1; }
 .card-stage__slot { display: flex; flex-direction: column; gap: 10px; width: 380px; }

@@ -23,25 +23,36 @@ const MOVE = { duration: 0.8, ease: [0.43, 0.195, 0.02, 1] as const }
 export default function ElderApp() {
   const [live, setLive] = useState<{ mic: MicStream; player: Player } | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [starting, setStarting] = useState(false)
 
   // 必须在点击里同步启动：AudioContext、静音循环、speechSynthesis 解锁都要用户手势
   const start = () => {
-    if (live) return
+    // 启动要几秒（加载语音模型），这段时间再点不重复启动
+    if (live || starting) return
+    setStarting(true)
+    setError(null)
+    // 收起 Safari 的地址栏和标签栏（iPad 上的 Safari 支持网页全屏；不支持时页面照样铺满可见区域）
+    const root = document.documentElement
+    if (root.requestFullscreen && !document.fullscreenElement) {
+      root.requestFullscreen({ navigationUI: 'hide' }).catch((e: Error) => console.warn('[elder] fullscreen', e.message))
+    }
     const mic = new MicStream({ uploadAll: false, onStatus: () => {} })
     const started = mic.start()
     const player = new Player(mic.ctx!)
     player.unlock()
-    started.then(() => setLive({ mic, player })).catch((e: Error) => { console.error(e); setError(`${e.name}: ${e.message}`) })
+    started
+      .then(() => setLive({ mic, player }))
+      .catch((e: Error) => { console.error(e); setError(`${e.name}: ${e.message}`); setStarting(false) })
   }
 
   if (!live) {
     return (
       <Stage background="var(--elder-bg)">
         <img className="wake__bg" src={SAMPLE_PHOTOS[0]} alt="" draggable={false} />
-        <button className="wake" onClick={start}>
+        <button className={`wake${starting ? ' is-starting' : ''}`} onClick={start}>
           <span className="wake__eyes" aria-hidden><i /><i /></span>
           <span className="wake__name">TrustTag</span>
-          <span className="wake__hint">{error ? `Microphone didn't start. ${error}` : 'Tap anywhere to start listening'}</span>
+          <span className="wake__hint">{error ? `Microphone didn't start. ${error}` : starting ? 'Waking up…' : 'Tap anywhere to start listening'}</span>
         </button>
       </Stage>
     )

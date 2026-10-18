@@ -10,7 +10,7 @@ import { EYE_FILL, FACE_PARAMS, type FaceParams, type ParamKey, PARAM_KEYS } fro
 const E = 200
 const W = 1000
 const H = 660
-const CY = H * 0.45
+const CY = H * 0.5 // 没有嘴时两只眼睛正好在画面正中
 const GAP = 1.35 * E // 两眼中心距
 const MOUTH_Y = CY + 0.95 * E
 const SPRING = { type: 'spring' as const, stiffness: 240, damping: 24, mass: 1 }
@@ -99,12 +99,18 @@ export default function Face({ state, talking, level }: Props) {
       const tk = talk.get()
       const open = mouthOpen.current * Math.max(p.mouthTalk, tk)
       const mouthShown = Math.max(p.mouth, tk)
+      // 按当前露出来的部件（眉毛、眼睛、腮红、嘴）算上下边界，让整张脸作为一个整体居中
+      const eyeR = p.ry * E
+      const top = -eyeR - p.brow * (p.browGap * E + 0.1 * E)
+      let bottom = eyeR + p.blush * Math.max(0, 0.575 * E - eyeR)
+      bottom += mouthShown * Math.max(0, 0.98 * E - bottom)
+      const lift = -(top + bottom) / 2
 
       for (const side of [0, 1] as const) {
         const r = refs.current[side]
         const dir = side === 0 ? -1 : 1 // 左眼在左
         const cx = W / 2 + (dir * GAP) / 2 + orbitX + driftX
-        const cy = CY + p.dy * E + orbitY + bounce + driftY
+        const cy = CY + lift + p.dy * E + orbitY + bounce + driftY
         const rx = p.rx * E
         const ry = Math.max(0.025 * E, p.ry * E * (1 - 0.96 * closed))
         r.eye?.setAttribute('cx', `${cx}`)
@@ -154,7 +160,7 @@ export default function Face({ state, talking, level }: Props) {
       if (mouth.current) {
         const mw = (p.mouthW - 0.1 * open) * E
         const mh = (p.mouthH + 0.3 * open) * E
-        const my = MOUTH_Y + p.dy * E + bounce
+        const my = MOUTH_Y + lift + p.dy * E + bounce
         mouth.current.setAttribute('x', `${W / 2 - mw / 2 + driftX}`)
         mouth.current.setAttribute('y', `${my - mh / 2}`)
         mouth.current.setAttribute('width', `${mw}`)
