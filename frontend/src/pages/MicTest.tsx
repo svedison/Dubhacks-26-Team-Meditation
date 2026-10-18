@@ -10,8 +10,8 @@ function fmt(ms: number) {
 }
 
 export default function MicTest() {
-  // 默认连续分块上传；?vad=1 时和老人端一样，一句话说完整句上传
-  const mode = new URLSearchParams(window.location.search).get('vad') === '1' ? 'utterance' : 'stream'
+  // 默认连续分块上传；?vad=1 时和老人端一样，只在有人说话时上传
+  const mode = new URLSearchParams(window.location.search).get('vad') === '1' ? 'speech' : 'stream'
   const uploadAll = mode === 'stream'
   const mic = useRef<MicStream | null>(null)
   const [s, setS] = useState<MicStatus | null>(null)
