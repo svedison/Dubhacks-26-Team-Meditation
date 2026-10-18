@@ -1,0 +1,485 @@
+[
+  {
+    "id": "calcium-120",
+    "name": "Calcium 600mg, 120 tablets",
+    "price_cents": 1800,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [
+      "the purple bottle"
+    ],
+    "label_dose": "1 tablet daily with food",
+    "units": 120,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "calcium"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "glucosamine-usp",
+    "name": "Glucosamine 1500mg, 90 tablets",
+    "price_cents": 2400,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [
+      "joint support"
+    ],
+    "label_dose": "1 tablet daily",
+    "units": 90,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "glucosamine"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "vitamin-d3",
+    "name": "Vitamin D3, 100 softgels",
+    "price_cents": 1200,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [
+      "vitamin D"
+    ],
+    "label_dose": "1 softgel daily with food",
+    "units": 100,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "vitamin D3"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "fiber-capsules",
+    "name": "Fiber, 120 capsules",
+    "price_cents": 1600,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [
+      "fiber"
+    ],
+    "label_dose": "2 capsules daily with water",
+    "units": 120,
+    "units_per_dose": 2,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "psyllium"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "multivitamin",
+    "name": "Daily multivitamin, 60 tablets",
+    "price_cents": 1450,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [],
+    "label_dose": "1 tablet daily with food",
+    "units": 60,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "vitamins and minerals"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "vitamin-c",
+    "name": "Vitamin C, 100 tablets",
+    "price_cents": 900,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [],
+    "label_dose": "1 tablet daily",
+    "units": 100,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "ascorbic acid"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "b12",
+    "name": "Vitamin B12, 90 tablets",
+    "price_cents": 1100,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [],
+    "label_dose": "1 tablet daily",
+    "units": 90,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "cyanocobalamin"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "magnesium",
+    "name": "Magnesium, 90 tablets",
+    "price_cents": 1300,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [],
+    "label_dose": "1 tablet daily with food",
+    "units": 90,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "magnesium"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "omega-3",
+    "name": "Omega-3, 60 softgels",
+    "price_cents": 1900,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [],
+    "label_dose": "1 softgel daily with food",
+    "units": 60,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "fish oil"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "lutein",
+    "name": "Lutein, 60 softgels",
+    "price_cents": 1700,
+    "category": "supplement",
+    "certification": "USP",
+    "aliases": [],
+    "label_dose": "1 softgel daily with food",
+    "units": 60,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "lutein"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "oatmeal",
+    "name": "Plain oats, 20 portions",
+    "price_cents": 600,
+    "category": "food",
+    "certification": null,
+    "aliases": [],
+    "label_dose": null,
+    "units": 20,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "whole grain oats"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "tea",
+    "name": "Herbal tea, 20 bags",
+    "price_cents": 500,
+    "category": "food",
+    "certification": null,
+    "aliases": [],
+    "label_dose": null,
+    "units": 20,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "rooibos"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "brown-rice",
+    "name": "Brown rice, 10 portions",
+    "price_cents": 700,
+    "category": "food",
+    "certification": null,
+    "aliases": [],
+    "label_dose": null,
+    "units": 10,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "brown rice"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "olive-oil",
+    "name": "Olive oil, 500 mL",
+    "price_cents": 1000,
+    "category": "food",
+    "certification": null,
+    "aliases": [],
+    "label_dose": null,
+    "units": 500,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "olive oil"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "soap",
+    "name": "Unscented soap, 4 bars",
+    "price_cents": 650,
+    "category": "household",
+    "certification": null,
+    "aliases": [],
+    "label_dose": null,
+    "units": 4,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "soap base"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "tissues",
+    "name": "Tissues, 6 boxes",
+    "price_cents": 850,
+    "category": "household",
+    "certification": null,
+    "aliases": [],
+    "label_dose": null,
+    "units": 6,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "paper"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "toothpaste",
+    "name": "Fluoride toothpaste, 1 tube",
+    "price_cents": 450,
+    "category": "personal-care",
+    "certification": null,
+    "aliases": [],
+    "label_dose": null,
+    "units": 1,
+    "units_per_dose": 1,
+    "risk": null,
+    "brand": "TrustTag Demo Brand",
+    "merchant": "TrustTag Demo Store",
+    "ingredients": [
+      "sodium fluoride"
+    ],
+    "certification_source": {
+      "status": "demo_only",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "miracle-joint",
+    "name": "Miracle Joint Pills (fictional TV product)",
+    "price_cents": 8900,
+    "category": "supplement",
+    "certification": null,
+    "aliases": [
+      "miracle joint pills"
+    ],
+    "label_dose": null,
+    "units": 60,
+    "units_per_dose": 2,
+    "risk": {
+      "kind": "fda_fraud",
+      "alternative_id": "glucosamine-usp"
+    },
+    "brand": "Fictional Demo Brand",
+    "merchant": "Fictional TV seller",
+    "ingredients": [
+      "unknown"
+    ],
+    "certification_source": {
+      "status": "not_verified",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "instant-memory",
+    "name": "Instant Memory Miracle (fictional)",
+    "price_cents": 7900,
+    "category": "supplement",
+    "certification": null,
+    "aliases": [
+      "memory miracle"
+    ],
+    "label_dose": null,
+    "units": 30,
+    "units_per_dose": 1,
+    "risk": {
+      "kind": "unverified",
+      "alternative_id": "b12"
+    },
+    "brand": "Fictional Demo Brand",
+    "merchant": "Fictional TV seller",
+    "ingredients": [
+      "unknown"
+    ],
+    "certification_source": {
+      "status": "not_verified",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  },
+  {
+    "id": "detox-cure",
+    "name": "Seven-day Detox Cure (fictional)",
+    "price_cents": 6900,
+    "category": "supplement",
+    "certification": null,
+    "aliases": [
+      "detox cure"
+    ],
+    "label_dose": null,
+    "units": 30,
+    "units_per_dose": 1,
+    "risk": {
+      "kind": "recall",
+      "alternative_id": "fiber-capsules"
+    },
+    "brand": "Fictional Demo Brand",
+    "merchant": "Fictional TV seller",
+    "ingredients": [
+      "unknown"
+    ],
+    "certification_source": {
+      "status": "not_verified",
+      "url": null,
+      "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
+    },
+    "demo_only": true
+  }
+]

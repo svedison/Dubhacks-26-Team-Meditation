@@ -1,0 +1,12 @@
+[
+  {
+    "id": "ord_00",
+    "product_id": "calcium-120",
+    "price_cents": 1800,
+    "status": "simulated_paid",
+    "block_reason": null,
+    "created_at": "2026-09-10T15:00:00Z",
+    "deliver_on": "2026-09-14",
+    "received": true
+  }
+]

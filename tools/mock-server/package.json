@@ -2,6 +2,11 @@
   "name": "trusttag-mock-server",
   "private": true,
   "type": "module",
-  "scripts": { "start": "node server.js" },
-  "dependencies": { "ws": "^8.18.0" }
+  "scripts": {
+    "start": "node server.js",
+    "start:role-d": "node ../../modules/role-d/src/server.ts"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
 }
