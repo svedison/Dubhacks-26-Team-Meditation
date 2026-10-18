@@ -1,11 +1,12 @@
 import { Pause, Play } from 'lucide-react'
-import { shortDay, splitName } from '../shared/format'
+import { dayKey, lastSevenDays, shortDay, splitName } from '../shared/format'
 import { useGuardian } from './store'
 
 const ANSWER_TEXT = { taken: 'Taken', skipped: 'Skipped', later: 'Later', unconfirmed: 'No answer' } as const
 
 export default function MemoryPage() {
-  const { memories, products, saveMemory } = useGuardian()
+  const { memories, products, saveMemory, clock } = useGuardian()
+  const week = lastSevenDays(clock ?? new Date().toISOString())
   return (
     <section className="g-page g-pills">
       <h1 className="g-h1">Pills</h1>
@@ -35,6 +36,19 @@ export default function MemoryPage() {
                 <div><dt>Left</dt><dd>{days} days</dd></div>
                 <div><dt>Last dose</dt><dd>{m.log.length ? ANSWER_TEXT[m.log.at(-1)!.answer] : 'Not yet'}</dd></div>
               </dl>
+              {/* 最近 7 天：吃了是实心，没吃或说晚点是空心圈，还没有记录是浅灰 */}
+              <ol className="g-mem__week" aria-label="Last 7 days">
+                {week.map((d) => {
+                  const answers = m.log.filter((l) => dayKey(l.at) === d.key).map((l) => l.answer)
+                  const cls = answers.includes('taken') ? 'is-taken' : answers.length ? 'is-missed' : ''
+                  return (
+                    <li key={d.key} className={cls} aria-label={`${d.key}: ${cls ? (cls === 'is-taken' ? ANSWER_TEXT.taken : ANSWER_TEXT[answers.at(-1)!]) : 'no record'}`}>
+                      <i aria-hidden />
+                      <span aria-hidden>{d.letter}</span>
+                    </li>
+                  )
+                })}
+              </ol>
               <button
                   className="g-icon-btn"
                   aria-label={m.paused ? 'Resume reminder' : 'Pause reminder'}

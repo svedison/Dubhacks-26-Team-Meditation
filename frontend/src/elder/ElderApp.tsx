@@ -124,6 +124,12 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       return
     }
     if (e.type === 'state' || e.type === 'ask' || e.type === 'transcript') pendingIdle.current = false
+    // 她开口说新的话：上一句留下的开心、担心表情立刻收起，脸回到后端当前的状态
+    if (e.type === 'transcript' && e.role === 'grandma' && !player.playing) {
+      window.clearTimeout(emotionTimer.current)
+      clearEmotionAfterTalk.current = false
+      setEmotion(null)
+    }
     if (e.type === 'ask' && lastFace.current === 'idle') {
       holdFullScreen()
       // 设备主动开口就算醒了，奶奶接着回答时不再当成刚醒
@@ -215,7 +221,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
         animate={{ opacity: showFace ? 0.8 : 1, filter: showFace ? 'blur(9px) brightness(0.5) saturate(0.9)' : 'blur(0px) brightness(1) saturate(1)' }}
         transition={{ duration: showFace ? 0.5 : 0.8 }}
       >
-        <PhotoFrame photos={photos} />
+        <PhotoFrame photos={photos} paused={showFace} />
       </motion.div>
       {/* 警报：深酒红，中间亮四周暗。整屏红只留给诈骗；有替代品的假药只把风险卡压红 */}
       <motion.div className="layer alert-wash" initial={false} animate={{ opacity: face === 'alert' && !pair ? 0.9 : 0 }} transition={{ duration: 0.8, ease: [0.43, 0.195, 0.02, 1] }} />

@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useState } from 'react'
 import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import AlertCard from '../shared/ui/AlertCard'
-import { clockLabel, hoursBetween } from '../shared/format'
+import { clockLabel, hoursBetween, recentLabel } from '../shared/format'
 import LedgerPage from './LedgerPage'
 import MemoryPage from './MemoryPage'
 import SettingsPage from './SettingsPage'
@@ -134,7 +134,7 @@ function ThisWeek({ animateIn }: { animateIn: boolean }) {
                 <button className="g-week__btn" aria-expanded={openId === a.id} onClick={() => setOpenId(openId === a.id ? null : a.id)}>
                   <span className="g-week__dot" aria-hidden />
                   <span className="g-week__title">{a.title}</span>
-                  <time className="g-week__time">{clockLabel(a.created_at)}</time>
+                  <time className="g-week__time">{recentLabel(a.created_at, now)}</time>
                   <span className="g-week__seen">Seen</span>
                   <ChevronDown className="g-week__chev" aria-hidden strokeWidth={2.6} />
                 </button>

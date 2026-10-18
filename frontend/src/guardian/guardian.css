@@ -170,11 +170,11 @@
 .g-week__more p { margin: 0 0 12px; font-size: 18px; font-weight: 500; line-height: 1.4; color: #4a4038; }
 .g-week__more .g-week__note { font-weight: 700; padding-left: 12px; border-left: 3px solid #d6a24a; }
 .g-week__dot { grid-area: dot; width: 12px; height: 12px; border-radius: 50%; background: #c9bfb3; }
-.g-week__row--red .g-week__dot { background: #8a6a52; }
+.g-week__row--red .g-week__dot { background: #6e2224; }
 .g-week__row--yellow .g-week__dot { background: #d6a24a; }
 .g-week__title { grid-area: title; font-size: 20px; font-weight: 800; color: #4a4038; }
 .g-week__time { grid-area: time; font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.g-week__seen { grid-area: seen; font-size: 14px; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: #e2d8cb; color: #6b6158; }
+.g-week__seen { grid-area: seen; font-size: 14px; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: #e2d8cb; color: #4f4136; }
 
 /* 电脑宽度（1024 以上）的首页有本周回顾时：左边要处理的卡，右边本周回顾，顶栏边距跟着内容放宽；没有回顾就保持单栏 */
 @media (min-width: 1024px) {
@@ -218,3 +218,12 @@
   .g-settings > .g-h1 { grid-column: 1 / -1; }
   .g-settings__name { grid-column: 2; }
 }
+
+/* 用药卡上的一周圆点 */
+.g-mem__week { list-style: none; display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 14px 0 0; padding: 12px 8px 10px; border-radius: var(--radius-s); background: var(--g-bg); }
+.g-mem__week li { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.g-mem__week i { width: 18px; height: 18px; border-radius: 50%; background: #e2d8cb; }
+.g-mem__week .is-taken i { background: var(--g-ok); }
+.g-mem__week .is-missed i { background: transparent; box-shadow: inset 0 0 0 3px #c0614f; }
+.g-mem__week span { font-size: 14px; font-weight: 800; color: var(--g-sub); }
+.g-mem__week li:last-child span { color: var(--g-ink); }

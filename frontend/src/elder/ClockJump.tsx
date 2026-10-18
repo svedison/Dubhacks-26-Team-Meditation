@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import { dayAndTime, hoursBetween } from '../shared/format'
 
-// 演示时钟往后跳超过 1 小时（比如推到到货那天）时，屏幕中间出一张大字卡，让评委看懂时间过去了
+// 演示时钟往后跳超过 1 小时（比如推到到货那天）时，屏幕顶部中间出一条大字时间条，让评委看懂时间过去了；不盖住画面中间的字幕
 export default function ClockJump({ clock }: { clock: string | null }) {
   const prev = useRef<string | null>(null)
   const [shown, setShown] = useState<{ day: string; time: string; key: string } | null>(null)
@@ -23,12 +23,12 @@ export default function ClockJump({ clock }: { clock: string | null }) {
         <motion.div
           key={shown.key}
           className="clock-jump"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.4 }}
+          initial={{ opacity: 0, y: -24 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -24 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 26 }}
         >
-          <motion.div className="clock-jump__card" initial={{ y: 24, scale: 0.96 }} animate={{ y: 0, scale: 1 }} transition={{ type: 'spring', stiffness: 220, damping: 24 }}>
+          <motion.div className="clock-jump__card">
             <span className="clock-jump__day">{shown.day}</span>
             <span className="clock-jump__time">{shown.time}</span>
           </motion.div>

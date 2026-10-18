@@ -16,6 +16,27 @@ export function clockLabel(now: string): string {
   return parse(now).toFormat('ccc h:mm a')
 }
 
+// 本周回顾里的时间：和演示时钟同一天写 Today，前一天写 Yesterday，再早写星期几
+export function recentLabel(at: string, now: string): string {
+  const d = parse(at)
+  const days = parse(now).startOf('day').diff(d.startOf('day'), 'days').days
+  const day = days === 0 ? 'Today' : days === 1 ? 'Yesterday' : d.toFormat('ccc')
+  return `${day} ${d.toFormat('h:mm a')}`
+}
+
+// 最近 7 天（含今天），按演示时钟算：给用药卡画一周的圆点
+export function lastSevenDays(now: string): { key: string; letter: string }[] {
+  const today = parse(now).startOf('day')
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = today.minus({ days: 6 - i })
+    return { key: d.toISODate()!, letter: d.toFormat('ccccc') }
+  })
+}
+
+export function dayKey(at: string): string {
+  return parse(at).toISODate()!
+}
+
 export function dayLabel(date: string): string {
   return parse(date).toFormat('ccc, LLL d')
 }

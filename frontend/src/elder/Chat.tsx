@@ -41,8 +41,8 @@ function emphasize(text: string, counter: { word: number }): ReactNode[] {
   })
 }
 
-// 按一句一行的排法估算高度，从 52px 往下试，选放得进字幕区的最大字号（Nunito 粗体平均字宽约 0.52 字号）
-const SIZES = [52, 46, 40, 34]
+// 按一句一行的排法估算高度，从 44px 往下试，选放得进字幕区的最大字号（Nunito 粗体平均字宽约 0.52 字号）；档位收窄，各幕字号看起来一致
+const SIZES = [44, 40, 36]
 function fitSize(text: string, width: number, height: number): number {
   const inner = width - 60
   for (const size of SIZES) {
@@ -55,13 +55,14 @@ function fitSize(text: string, width: number, height: number): number {
   return SIZES[SIZES.length - 1]
 }
 
-// 屏幕上只留一问一答：奶奶刚开口时只有她这一句（上一轮 AI 的话先退场，不和新的一句叠在一起）；
-// AI 回答时，上面留着她刚说的那句；AI 这句太长时只留它自己
+// 屏幕上只留一问一答：AI 回答时，上面留着她刚说的那句；她在回答设备主动提的问题（ask）时，问题留在上面、她的回答在下面
+// （剂量、时间这些要她确认的内容不会被她一句「Okay」顶掉）；其他时候她开口就是新话题，只留她这一句，上一轮的话先退场
 function visible(lines: Line[]): Line[] {
   const last = lines.at(-1)
   if (!last) return []
-  if (last.role === 'grandma' || last.text.length > 110) return [last]
   const prev = lines.at(-2)
+  if (last.role === 'grandma') return prev?.ask ? [prev, last] : [last]
+  if (last.text.length > 110) return [last]
   return prev && prev.role === 'grandma' ? [prev, last] : [last]
 }
 
