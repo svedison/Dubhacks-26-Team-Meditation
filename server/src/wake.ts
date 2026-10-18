@@ -36,3 +36,17 @@ export function extractWakeName(text: string): string | null {
     .replace(/[.!?,]+$/g, '').trim();
   return /^[\p{L}][\p{L}' -]{0,39}$/u.test(name) && name.split(/\s+/).length <= 3 ? name : null;
 }
+
+const FILLERS = new Set(['hey', 'ok', 'okay', 'um', 'uh']); // "Milo hello" is a greeting and still gets an answer
+/** "Milo." / "hey Milo" on its own: the elder paused after the name, so just open the window instead of asking Claude. */
+export function isOnlyWakeName(text: string, wakeName: string): boolean {
+  const name = normalize(wakeName);
+  if (!name) return false;
+  const words = normalize(text).split(' ').filter(word => word && !FILLERS.has(word));
+  if (!words.length || words.length > name.split(' ').length) return false;
+  // Every remaining word must be part of the name ("Milo hello" is a greeting, not a bare wake).
+  const candidate = words.join(''), compact = name.replace(/ /g, '');
+  const tolerance = compact.length <= 3 ? 0 : Math.max(1, Math.floor(compact.length / 4));
+  return levenshtein(candidate, compact) <= tolerance
+    || (Math.abs(candidate.length - compact.length) <= 2 && Boolean(phonetic(compact)) && phonetic(candidate) === phonetic(compact));
+}

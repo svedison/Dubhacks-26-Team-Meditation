@@ -3,12 +3,12 @@ import { all, get, getSettings, saveSettings } from './db.js';
 import { now } from './clock.js';
 import { toElder } from './bus.js';
 import { state } from './state.js';
-import { extractWakeName, matchesWakeName, normalize } from './wake.js';
+import { extractWakeName, isOnlyWakeName, matchesWakeName, normalize } from './wake.js';
 import { decide, FALLBACK_REPLY, type Context, type Decision } from './llm.js';
 import { synthesize } from './tts.js';
 import * as risk from './modules/risk.js';
 import { placeOrder } from './modules/orders.js';
-import { createAlert, saveGrandmaNote, handleAnswer as memoryAnswer, registerOrder, setSpeaker, takeRefillSuggestion, type ProactiveSpeech } from './modules/memory.js';
+import { createAlert, extendAlert, saveGrandmaNote, handleAnswer as memoryAnswer, registerOrder, setSpeaker, takeRefillSuggestion, type ProactiveSpeech } from './modules/memory.js';
 import type { Card, Emotion, Order, Source, UtteranceResult } from './contracts.js';
 
 interface ReplyPlan { text: string; emotion: Emotion; card?: Card; order?: Order; scamText?: string }
@@ -17,6 +17,7 @@ export class ConversationPipeline {
   private pending: { productId: string; priceCents: number } | null = null;
   private awaitingName = false;
   private noteFor: string | null = null;
+  private lastScam: { id: string; at: number } | null = null;
   private chatRounds = 0;
   private history: Context['history'] = [];
   private generation = 0;
@@ -44,7 +45,7 @@ export class ConversationPipeline {
 
   reset(): void {
     this.generation++;
-    this.pending = null; this.awaitingName = false; this.noteFor = null;
+    this.pending = null; this.awaitingName = false; this.noteFor = null; this.lastScam = null;
     this.chatRounds = 0; this.history = []; this.queue = Promise.resolve();
     state.reset();
   }
@@ -73,7 +74,7 @@ export class ConversationPipeline {
     toElder({ type: 'speak', text: plan.text, audio_url });
     if (plan.scamText) {
       const alert = createAlert('red', 7, 'Check on Mom', `Milo blocked a possible scam request: ${plan.scamText}`);
-      this.noteFor = alert.id;
+      this.noteFor = alert.id; this.lastScam = { id: alert.id, at: Date.now() };
     }
     this.history.push({ role: 'assistant', content: plan.text });
     this.history = this.history.slice(-8);
@@ -132,11 +133,19 @@ export class ConversationPipeline {
       if (source === 'voice' && !matchesWakeName(text, settings.wake_name)) return this.silent();
       state.wake(); // Keyboard is an explicit interaction, so it opens the window.
     } else state.listen();
+    // The elder paused after the name ("Milo." ... "the purple bottle is empty"): keep listening, the request follows.
+    if (source === 'voice' && settings.wake_name && isOnlyWakeName(text, settings.wake_name)) return this.silent();
     state.think();
     const context: Context = { products: all('products'), settings, chatRounds: this.chatRounds,
       pendingProductId: this.pending?.productId || null, awaitingName: this.awaitingName, history: [...this.history] };
     this.history.push({ role: 'user', content: text });
 
+    // The rest of a scam sentence that STT split in two ("...someone called." / "They said buy a gift card today"):
+    // one warning and one red card are enough, so fold the second half into the same alert and keep listening.
+    if (this.lastScam && Date.now() - this.lastScam.at < 15_000 && risk.isScam(text)) {
+      extendAlert(this.lastScam.id, text); state.listen();
+      return this.silent();
+    }
     // The next answer to the notification question is a note, never purchase consent. A new shopping request
     // (or another scam) right after the warning is routed normally instead of being swallowed as the note.
     let decided: Decision | null = null;
