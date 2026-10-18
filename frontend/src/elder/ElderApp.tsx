@@ -31,9 +31,11 @@ export default function ElderApp() {
     if (live || starting) return
     setStarting(true)
     setError(null)
-    // 收起 Safari 的地址栏和标签栏（iPad 上的 Safari 支持网页全屏；不支持时页面照样铺满可见区域）
+    // 在 Safari 里打开时，用网页全屏收起地址栏（Safari 会在左上角留一个退出全屏的 ×）。
+    // 从主屏幕当 App 打开时本来就没有地址栏，不再请求全屏，也就没有那个 ×
+    const asApp = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone === true
     const root = document.documentElement
-    if (root.requestFullscreen && !document.fullscreenElement) {
+    if (!asApp && root.requestFullscreen && !document.fullscreenElement) {
       root.requestFullscreen({ navigationUI: 'hide' }).catch((e: Error) => console.warn('[elder] fullscreen', e.message))
     }
     const mic = new MicStream({ mode: 'speech', onStatus: () => {} })
@@ -96,7 +98,11 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       return
     }
     if (e.type === 'state' || e.type === 'ask' || e.type === 'transcript') pendingIdle.current = false
-    if (e.type === 'ask' && lastFace.current === 'idle') holdFullScreen()
+    if (e.type === 'ask' && lastFace.current === 'idle') {
+      holdFullScreen()
+      // 设备主动开口就算醒了，奶奶接着回答时不再当成刚醒
+      lastFace.current = 'speaking'
+    }
     dispatch(e)
     if (e.type === 'speak' || e.type === 'ask') player.enqueue({ text: e.text, audio_url: e.audio_url })
     if (e.type === 'state' && e.state !== lastFace.current) {
@@ -164,7 +170,8 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       .catch((e: Error) => console.error('[elder] settings', e.message))
   }, [])
 
-  const base: FaceState = view.face === 'idle' && playing ? 'speaking' : view.face
+  // 后端不再单独发「在说」：只要在播语音，待机、在想、在听都显示成在说的脸
+  const base: FaceState = playing && (view.face === 'idle' || view.face === 'thinking' || view.face === 'listening') ? 'speaking' : view.face
   const face: FaceState = emotion && (base === 'speaking' || base === 'listening') ? emotion : base
   const showFace = view.awake || playing
   const corner = view.conversing && !fullHold

@@ -5,9 +5,20 @@ import type { Line } from './elderReducer'
 // 价格、星期、钟点在 AI 的话里加粗变金色并加下划线（同一字体同一字号，只是排版，不做任何判断）
 const EMPHASIS = /(\$\d[\d,]*(?:\.\d{2})?|\b(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|today|tomorrow|tonight)\b|\b\d{1,2}(?::\d{2})?\s?(?:AM|PM|am|pm)\b|\b(?:at )?eight\b)/g
 
-function emphasize(text: string): ReactNode[] {
+// 一句一行：AI 的一段话按句号、问号、感叹号拆开，句与句之间留空隙，不挤成一大段
+function sentences(text: string): string[] {
+  return text.split(/(?<=[.!?])\s+(?=[A-Z0-9"“$])/).filter(Boolean)
+}
+
+function speak(text: string): ReactNode[] {
+  const counter = { word: 0 }
+  return sentences(text).map((sent, i) => (
+    <span key={i} className="chat__sent">{emphasize(sent, counter)}</span>
+  ))
+}
+
+function emphasize(text: string, counter: { word: number }): ReactNode[] {
   const parts = text.split(EMPHASIS)
-  let word = 0
   return parts.flatMap((part, i) => {
     if (!part) return []
     const em = i % 2 === 1
@@ -21,7 +32,7 @@ function emphasize(text: string): ReactNode[] {
           className={em ? 'chat__em' : undefined}
           initial={{ opacity: 0.12 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: word++ * 0.06, duration: 0.25 }}
+          transition={{ delay: counter.word++ * 0.06, duration: 0.25 }}
         >
           {w}
         </motion.span>
@@ -57,10 +68,10 @@ export default function Chat({ lines }: { lines: Line[] }) {
             className={`chat__row chat__row--${l.role}`}
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20, transition: { duration: 0.35 } }}
-            transition={{ duration: 0.6, ease: [0.43, 0.195, 0.02, 1] }}
+            exit={{ opacity: 0, transition: { duration: 0.15 } }}
+            transition={{ duration: 0.6, delay: 0.12, ease: [0.43, 0.195, 0.02, 1] }}
           >
-            <div className={`chat__bubble ${l.role === 'ai' ? sizeClass(l.text) : ''}`}>{l.role === 'ai' ? emphasize(l.text) : l.text}</div>
+            <div className={`chat__bubble ${l.role === 'ai' ? sizeClass(l.text) : ''}`}>{l.role === 'ai' ? speak(l.text) : l.text}</div>
           </motion.div>
         ))}
       </AnimatePresence>
