@@ -31,9 +31,11 @@ export default function ElderApp() {
     if (live || starting) return
     setStarting(true)
     setError(null)
-    // 收起 Safari 的地址栏和标签栏（iPad 上的 Safari 支持网页全屏；不支持时页面照样铺满可见区域）
+    // 在 Safari 里打开时，用网页全屏收起地址栏（Safari 会在左上角留一个退出全屏的 ×）。
+    // 从主屏幕当 App 打开时本来就没有地址栏，不再请求全屏，也就没有那个 ×
+    const asApp = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone === true
     const root = document.documentElement
-    if (root.requestFullscreen && !document.fullscreenElement) {
+    if (!asApp && root.requestFullscreen && !document.fullscreenElement) {
       root.requestFullscreen({ navigationUI: 'hide' }).catch((e: Error) => console.warn('[elder] fullscreen', e.message))
     }
     const mic = new MicStream({ mode: 'speech', onStatus: () => {} })

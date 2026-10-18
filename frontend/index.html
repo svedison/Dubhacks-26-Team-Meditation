@@ -8,7 +8,12 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Milo" />
-    <meta name="theme-color" content="#14110e" />
+    <meta name="theme-color" content="#1f1813" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script>
+      // 两个页面各用一份「添加到主屏幕」配置：/elder 是横屏全屏的相框，/guardian 是竖屏的手机 App
+      document.head.insertAdjacentHTML('beforeend', '<link rel="manifest" href="/manifest-' + (location.pathname.startsWith('/guardian') ? 'guardian' : 'elder') + '.webmanifest">')
+    </script>
     <meta name="description" content="A talking photo frame that shops safely for Grandma and tells you when to call." />
     <title>Milo</title>
   </head>
