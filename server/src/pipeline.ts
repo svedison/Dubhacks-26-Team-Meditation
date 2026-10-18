@@ -12,8 +12,8 @@ import { synthesize } from './tts.js';
 import * as risk from './modules/risk.js';
 import { placeOrder } from './modules/orders.js';
 import { VisaSandboxError } from './modules/visa-sandbox.js';
-import { createAlert, extendAlert, saveGrandmaNote, handleAnswer as memoryAnswer, registerOrder, setSpeaker, takeRefillSuggestion, updateAlert, type ProactiveSpeech } from './modules/memory.js';
-import type { Card, Emotion, Order, Source, UtteranceResult } from './contracts.js';
+import { createAlert, draftAlert, extendAlert, publishAlert, saveGrandmaNote, handleAnswer as memoryAnswer, registerOrder, setSpeaker, takeRefillSuggestion, type ProactiveSpeech } from './modules/memory.js';
+import type { Alert, Card, Emotion, Order, Source, UtteranceResult } from './contracts.js';
 
 /** `onSpoken` runs once the device has finished playing this reply (or the 8 s playback timeout passed). */
 interface ReplyPlan { text: string; emotion: Emotion; card?: Card; order?: Order; scamText?: string; onSpoken?: () => void }
@@ -33,9 +33,11 @@ export const DEFAULT_TIMEOUTS: PipelineTimeouts = { step: 5_000, stage: 10_000, 
 const STOP_911 = /^(?:(?:hey |ok |okay )?milo )?(?:no\b|stop\b|don t\b|dont\b|do not\b|wait\b|cancel\b|never ?mind\b|i m (?:ok|okay|fine|alright|all right)\b|no need\b)/;
 const EMERGENCY_WARNING = "That sounds serious. I'm calling 911 in five seconds. Say 'stop' if you don't want me to.";
 const EMERGENCY_CALLING = 'Calling 911 now. Help is on the way; stay with me.';
-const EMERGENCY_STOPPED = "Okay, I won't call 911. I'm letting your daughter know right now.";
+const EMERGENCY_STOPPED = "Okay, I won't call 911. I'm right here with you.";
 const EMERGENCY_ONGOING = 'Help is on the way. Stay with me.';
-interface Emergency { text: string; alertId: string; phase: 'warning' | 'countdown' | 'called' | 'stopped'; at: number; timer?: ReturnType<typeof setTimeout> }
+// The red card is a draft until the outcome: only the call going out (the danger is real) sends it. If she says stop,
+// her wish wins and the family is not told.
+interface Emergency { text: string; alert: Alert; phase: 'warning' | 'countdown' | 'called' | 'stopped'; at: number; timer?: ReturnType<typeof setTimeout> }
 
 // A turn moves queued → waiting (the device is still playing the previous answer) → holding (the elder is still
 // talking) → thinking (Claude) → responding (TTS, then the speak event) → done. Until the speak event is out, a
@@ -100,13 +102,13 @@ export class ConversationPipeline {
 
   // ---------- emergency: act first, let her stop it ----------
   // "My chest hurts" / "I fell": Milo does not advise, it acts. The warning is spoken, then she has `countdown` ms to say
-  // stop; silence means the call goes out (she may not be able to talk). The daughter's red card arrives at once and is
-  // rewritten with the outcome. In the demo the call is simulated: the frame shows "Calling 911 now".
+  // stop; silence means the call goes out (she may not be able to talk). The daughter's red card waits for the outcome:
+  // the call going out sends it; if she stopped it, it is never sent. In the demo the call is simulated: "Calling 911 now".
   private startEmergency(text: string): ReplyPlan {
     this.pending = null; this.noteFor = null;
     if (this.emergency?.timer) clearTimeout(this.emergency.timer);
-    const alert = createAlert('red', null, 'Emergency', 'Milo is calling 911 unless she stops it in the next few seconds. Call her now.', text);
-    this.emergency = { text, alertId: alert.id, phase: 'warning', at: Date.now() };
+    const alert = draftAlert('red', null, 'Emergency', '911 was called. Call her now.', text);
+    this.emergency = { text, alert, phase: 'warning', at: Date.now() };
     const version = this.generation;
     console.warn(`[pipeline] EMERGENCY from "${text.slice(0, 80)}": warning spoken, 911 countdown follows`);
     return { text: EMERGENCY_WARNING, emotion: 'alert', onSpoken: () => this.armCountdown(version) };
@@ -121,7 +123,7 @@ export class ConversationPipeline {
     const emergency = this.emergency;
     if (!emergency || emergency.phase !== 'countdown' || version !== this.generation) return;
     emergency.phase = 'called'; emergency.at = Date.now();
-    updateAlert(emergency.alertId, '911 was called. Call her now.');
+    publishAlert(emergency.alert); // danger happened: the family is told, whatever she said before
     console.warn(`[pipeline] EMERGENCY: 911 call placed (simulated) for "${emergency.text.slice(0, 80)}"`);
     await this.announce(EMERGENCY_CALLING, 'alert');
   }
@@ -129,8 +131,7 @@ export class ConversationPipeline {
     const emergency = this.emergency!;
     clearTimeout(emergency.timer);
     emergency.phase = 'stopped'; emergency.at = Date.now();
-    updateAlert(emergency.alertId, 'She stopped the 911 call herself. Call her now.');
-    console.warn('[pipeline] EMERGENCY: the elder stopped the 911 call');
+    console.warn('[pipeline] EMERGENCY: the elder stopped the 911 call; the family is not told');
     return { text: EMERGENCY_STOPPED, emotion: 'worried' };
   }
 

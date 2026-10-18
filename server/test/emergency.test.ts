@@ -1,5 +1,6 @@
 // "My chest hurts" is not a shopping request and not a chat: Milo acts (911 countdown the elder can stop) and the
-// daughter's red card follows the outcome. Everyday "I'm not feeling well" gets a warm sentence, never a shelf pitch.
+// daughter's red card follows the outcome: only 911 actually called tells her; if the elder says stop, her wish wins.
+// Everyday "I'm not feeling well" gets a warm sentence, never a shelf pitch.
 import assert from 'node:assert/strict';
 import { after, afterEach, beforeEach, test } from 'node:test';
 import { setTimeout as delay } from 'node:timers/promises';
@@ -32,15 +33,13 @@ const alerts = () => guardianEvents.filter((e): e is ServerEvent & Alert => e.ty
 const spoke = async () => { acknowledgeSpoke(); await state.waitForSpeech(); };
 const noClaude = async (): Promise<Decision> => { throw new Error('Claude must not be asked during an emergency'); };
 
-test('local rule: warning, red card at once, 911 after the countdown, no second countdown while help is coming', async () => {
+test('local rule: warning, 911 after the countdown sends the red card, no second countdown while help is coming', async () => {
   const flow = new ConversationPipeline({ decide: noClaude, synthesize: async () => null }, { countdown: 60 });
   const result = await flow.handleUtterance('I feel dizzy and my chest hurts.', 'keyboard');
   assert.match(result.reply_text, /calling 911 in five seconds/i);
   assert.equal(state.current, 'alert');
-  assert.equal(alerts().length, 1);
-  assert.equal(alerts()[0].level, 'red'); assert.equal(alerts()[0].title, 'Emergency');
-  assert.equal(alerts()[0].grandma_note, 'I feel dizzy and my chest hurts.');
-  assert.match(alerts()[0].body, /calling 911 unless she stops it/);
+  assert.equal(alerts().length, 0); // the card waits for the outcome
+  assert.equal(db.all('alerts').length, 0);
   assert.equal(flow.status().emergency, 'warning');
   await spoke(); // the warning has been heard; now she has `countdown` ms
   await delay(5); assert.equal(flow.status().emergency, 'countdown');
@@ -48,7 +47,10 @@ test('local rule: warning, red card at once, 911 after the countdown, no second 
   assert.equal(flow.status().emergency, 'called');
   assert.ok(elderEvents.some(e => e.type === 'speak' && /^Calling 911 now/.test(e.text)));
   assert.equal(state.current, 'alert');
-  assert.equal(alerts().length, 2); assert.equal(alerts()[1].id, alerts()[0].id); assert.match(alerts()[1].body, /911 was called/);
+  assert.equal(alerts().length, 1);
+  assert.equal(alerts()[0].level, 'red'); assert.equal(alerts()[0].title, 'Emergency');
+  assert.equal(alerts()[0].grandma_note, 'I feel dizzy and my chest hurts.');
+  assert.match(alerts()[0].body, /911 was called/);
   assert.equal(db.all('alerts').length, 1);
   await spoke();
   const again = await flow.handleUtterance('my chest hurts so much', 'keyboard');
@@ -56,7 +58,7 @@ test('local rule: warning, red card at once, 911 after the countdown, no second 
   assert.equal(db.all('alerts').length, 1);
   flow.reset();
 });
-test('"stop" during the countdown cancels the call; other words do not; the card says she stopped it', async () => {
+test('"stop" during the countdown cancels the call; other words do not; the family is never told', async () => {
   const flow = new ConversationPipeline({ decide: noClaude, synthesize: async () => null }, { countdown: 250 });
   await flow.handleUtterance('I fell down in the kitchen and my hip hurts.', 'keyboard');
   await spoke();
@@ -64,12 +66,11 @@ test('"stop" during the countdown cancels the call; other words do not; the card
   const more = await flow.handleUtterance('it hurts so much', 'keyboard');
   assert.equal(more.reply_text, ''); assert.equal(state.current, 'listening'); assert.equal(flow.status().emergency, 'countdown');
   const stop = await flow.handleUtterance('Milo, stop! I am okay.', 'keyboard');
-  assert.match(stop.reply_text, /won't call 911/); assert.equal(state.current, 'worried');
+  assert.equal(stop.reply_text, "Okay, I won't call 911. I'm right here with you."); assert.equal(state.current, 'worried');
   assert.equal(flow.status().emergency, 'stopped');
   await delay(350); // the countdown would have fired by now
   assert.equal(elderEvents.some(e => e.type === 'speak' && /^Calling 911 now/.test(e.text)), false);
-  assert.match(alerts().at(-1)!.body, /stopped the 911 call/);
-  assert.equal(db.all('alerts').length, 1);
+  assert.equal(alerts().length, 0); assert.equal(db.all('alerts').length, 0);
   flow.reset();
 });
 test('reset during the countdown cancels it', async () => {
@@ -95,7 +96,8 @@ test('Claude intents: emergency starts the countdown; unwell stays warm and neve
   assert.equal(replies.some(r => /shopping shelf/.test(r)), false);
   assert.equal(alerts().length, 0); // everyday discomfort does not page the daughter
   const warning = await flow.handleUtterance('I can hardly breathe', 'keyboard'); // not in the local rule; Claude decides
-  assert.match(warning.reply_text, /calling 911/); assert.equal(alerts().length, 1);
+  assert.match(warning.reply_text, /calling 911/); assert.equal(flow.status().emergency, 'warning');
+  assert.equal(alerts().length, 0); // the red card waits for the outcome of the countdown
   flow.reset();
 });
 test('the local rule knows the difference between now and a story, and "help me find calcium" is shopping', () => {

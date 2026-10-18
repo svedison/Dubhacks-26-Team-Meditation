@@ -144,9 +144,15 @@ export const listMemories = (): Memory[] => all('memories');
 
 // ---------- scam alerts from the conversation path (rule 7) ----------
 export function createAlert(level: Alert['level'], rule: number | null, title: string, body: string, note: string | null = null): Alert {
-  const alert: Alert = { id: `al_${randomUUID()}`, level, rule, title, body, grandma_note: note, created_at: now(), archived: false };
+  return publishAlert(draftAlert(level, rule, title, body, note));
+}
+/** An alert nobody has seen yet: not stored, not sent. The emergency card waits here until the outcome decides. */
+export function draftAlert(level: Alert['level'], rule: number | null, title: string, body: string, note: string | null = null): Alert {
+  return { id: `al_${randomUUID()}`, level, rule, title, body, grandma_note: note, created_at: now(), archived: false };
+}
+export function publishAlert(alert: Alert): Alert {
   put('alerts', alert.id, alert);
-  if (level === 'red' || level === 'normal') toGuardian({ type: 'alert', ...alert });
+  if (alert.level === 'red' || alert.level === 'normal') toGuardian({ type: 'alert', ...alert });
   return alert;
 }
 /** The emergency card follows the outcome (911 called / stopped): rewrite the action line and push it again. */
