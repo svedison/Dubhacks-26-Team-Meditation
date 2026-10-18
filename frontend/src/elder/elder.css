@@ -46,6 +46,12 @@
 }
 .wake__name { font-family: var(--font-display); font-size: 68px; font-weight: 900; letter-spacing: -0.01em; }
 .wake__hint { font-size: 36px; font-weight: 700; opacity: 0.8; max-width: 720px; text-align: center; }
+/* 点了以后：两条线慢慢睁成眼睛 */
+.wake.is-starting .wake__eyes i { animation: wake-open 1.6s cubic-bezier(0.43, 0.195, 0.02, 1) forwards; }
+@keyframes wake-open {
+  from { height: 10px; opacity: 0.6; }
+  to { height: 58px; width: 46px; opacity: 1; }
+}
 @keyframes wake-breathe {
   0%, 100% { opacity: 0.55; transform: scaleX(1); }
   50% { opacity: 1; transform: scaleX(1.08); }
