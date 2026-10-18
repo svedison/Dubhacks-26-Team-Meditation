@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react'
-import type { ReactNode } from 'react'
+import { useLayoutEffect, useRef, type ReactNode } from 'react'
 import type { Line } from './elderReducer'
 
 // 价格、星期、钟点在 AI 的话里加粗变金色并加下划线（同一字体同一字号，只是排版，不做任何判断）
@@ -41,8 +41,11 @@ function emphasize(text: string, counter: { word: number }): ReactNode[] {
   })
 }
 
-// 按一句一行的排法估算高度，从 44px 往下试，选放得进字幕区的最大字号（Nunito 粗体平均字宽约 0.52 字号）；档位收窄，各幕字号看起来一致
+// 按一句一行的排法估算高度，从 44px 往下试，选放得进字幕区的最大字号（Nunito 粗体平均字宽约 0.52 字号）；档位收窄，各幕字号看起来一致。
+// 估算只是起点：排出来以后还会实际量一次（见 useFitToBox）
 const SIZES = [44, 40, 36]
+// 后端会把说明书原文整段念出来（两百多个字符）：实际放不下时继续往下降，最小到这个字号
+const MIN_SIZE = 28
 function fitSize(text: string, width: number, height: number): number {
   const inner = width - 60
   for (const size of SIZES) {
@@ -68,6 +71,33 @@ function visible(lines: Line[]): Line[] {
 
 type Props = { lines: Line[]; width: number; height: number; headline: boolean }
 
+// 排版以后实际量：字幕区里正在显示的几行加起来比字幕区高，就把 AI 那段的字号每次降 2px，直到放下或到最小字号。
+// 卡片进场时字幕列会在 0.6 秒里变窄，宽度变化时重新量；React 下次写入新的估算字号时也从估算值重新开始
+function useFitToBox(box: React.RefObject<HTMLDivElement | null>, key: string) {
+  useLayoutEffect(() => {
+    const el = box.current
+    if (!el) return
+    const fit = () => {
+      const target = el.querySelector<HTMLElement>('[data-fit]')
+      if (!target) return
+      // 正在退场的旧行被 popLayout 改成绝对定位，不占位置，不算
+      const rows = [...el.querySelectorAll<HTMLElement>('[data-live]')].filter((r) => getComputedStyle(r).position !== 'absolute')
+      const gap = parseFloat(getComputedStyle(el).rowGap) || 0
+      const used = () => rows.reduce((h, r) => h + r.offsetHeight, 0) + gap * (rows.length - 1)
+      let size = Number(target.dataset.fit)
+      target.style.fontSize = `${size}px`
+      while (used() > el.clientHeight && size > MIN_SIZE) {
+        size -= 2
+        target.style.fontSize = `${size}px`
+      }
+    }
+    fit()
+    const ro = new ResizeObserver(fit)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [box, key])
+}
+
 // 诈骗时（整屏红、没有商品卡）：AI 那段话的第一句单独放大成标题，其余照常；文字还是后端的原话
 function HeadlineThenRest({ text, width, height }: { text: string; width: number; height: number }) {
   const [head, ...rest] = sentences(text)
@@ -89,14 +119,20 @@ export default function Chat({ lines, width, height, headline }: Props) {
   const shown = visible(lines)
   // 上面还有奶奶那一句时，给它留出约两行的高度
   const room = shown.length > 1 ? height - 110 : height
+  const box = useRef<HTMLDivElement>(null)
+  // 屏上最多一条 Milo 的话（回答在下，或者提问在上、她的回答在下）：字号只调这一条
+  const ai = shown.find((l) => l.role === 'ai')
+  const fitSize0 = ai ? fitSize(ai.text, width, room) : 0
+  useFitToBox(box, `${shown.map((l) => l.id).join(',')}|${width}|${height}|${fitSize0}`)
   return (
-    <div className="chat">
+    <div className="chat" ref={box}>
       <AnimatePresence initial={false} mode="popLayout">
         {shown.map((l) => (
           <motion.div
             key={l.id}
             layout="position"
             className={`chat__row chat__row--${l.role}`}
+            data-live
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, transition: { duration: 0.1 } }}
@@ -108,7 +144,11 @@ export default function Chat({ lines, width, height, headline }: Props) {
                 <HeadlineThenRest text={l.text} width={width} height={room} />
               </div>
             ) : (
-              <div className="chat__bubble" style={l.role === 'ai' ? { fontSize: fitSize(l.text, width, room) } : undefined}>
+              <div
+                className="chat__bubble"
+                style={l.role === 'ai' ? { fontSize: fitSize(l.text, width, room) } : undefined}
+                data-fit={l === ai ? fitSize0 : undefined}
+              >
                 {l.role === 'ai' ? speak(l.text) : l.text}
               </div>
             )}

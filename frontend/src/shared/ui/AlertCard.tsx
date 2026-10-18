@@ -1,4 +1,4 @@
-import { Check, Phone, Pill } from 'lucide-react'
+import { Bell, Check, Phone } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useState, type Ref } from 'react'
 import type { Alert } from '../contracts'
@@ -46,7 +46,8 @@ export default function AlertCard({ alert, now, phone, fresh, onArchive, ref }: 
       <header className="acard__head">
         {level === 'red' && <span className="acard__chip">Call today</span>}
         {level === 'yellow' && <span className="acard__chip acard__chip--soft">Take a look</span>}
-        {level === 'normal' && <span className="acard__icon" aria-hidden><Pill strokeWidth={2.2} /></span>}
+        {/* 普通提醒有补药、新愿望等好几种，契约里没有区分：用中性的提醒图标 */}
+        {level === 'normal' && <span className="acard__icon" aria-hidden><Bell strokeWidth={2.2} /></span>}
         <time className="acard__time">{timeAgo(alert.created_at, now)}</time>
       </header>
       <h2 className="acard__title">{alert.title}</h2>

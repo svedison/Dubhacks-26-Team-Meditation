@@ -62,6 +62,8 @@
 /* 状态那一行收在同一张卡里，不再像掉到下一张卡上 */
 .g-order__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 10px 16px 12px; border-top: 1px solid var(--g-line); font-size: 16px; font-weight: 700; color: var(--g-sub); }
 .g-order__meta > * { white-space: nowrap; }
+/* 日期和到货/拦截原因可能是一长句（拦截原因由后端写），这一段可以换行 */
+.g-order__meta > .g-order__when { white-space: normal; }
 .g-pill { font-weight: 900; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: #dcefe2; color: var(--g-ok); }
 .g-pill--blocked { background: #f3e1dc; color: #8a2e24; }
 
