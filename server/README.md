@@ -32,6 +32,24 @@ Claude 每轮最多一次 `messages.stream()` + `finalMessage()`，结构化输�
 
 TTS 首选 MiniMax：fetch `https://api.minimax.io/v1/t2a_v2`，`speech-02-turbo`、声音 `Arrogant_Miss`、speed 0.9、`language_boost: English`、非流式 hex 返回后解码成 MP3。没有 MiniMax key 时退到 OpenAI `gpt-4o-mini-tts`（voice `sage`）。按提供商、模型、声音、速度和文本哈希缓存到 `audio/`，通过 `/audio/<hash>.mp3` 提供。注意：MiniMax 把 Arrogant_Miss 列在普通话声音下，英文由 `language_boost` 带动，演示前请用一句英文实测听感。
 
+
+## 部署（Render 免费 Web Service，一个 https 网址托管前端、接口、WebSocket 和语音文件）
+
+仓库根目录的 `render.yaml` 是 Render Blueprint，`.node-version` 锁定 Node 22.23.3（本地实测版本）。构建命令先打包前端再装后端依赖，启动命令 `cd server && npm start`，健康检查 `/api/products`，main 有新提交自动重新部署。
+
+首次部署：登录 dashboard.render.com（用 GitHub 账号），New → Blueprint → 选这个仓库 → Apply。它会要四个值：`ANTHROPIC_API_KEY`、`MINIMAX_API_KEY`、`DEEPGRAM_API_KEY`、`DEBUG_TOKEN`（自己定一个口令）。部署完的网址形如 `https://trusttag.onrender.com`，iPad 打开 `网址/elder`，手机打开 `网址/guardian`。
+
+- `PUBLIC_BASE_URL` 在 Render 上不用填：后端自动用 Render 注入的 `RENDER_EXTERNAL_URL` 拼语音地址。其他平台或 ngrok 仍要填。
+- 设了 `DEBUG_TOKEN` 后，`/debug/clock` 和 `/debug/reset` 要带口令，否则 401：
+
+```sh
+curl -X POST "https://trusttag.onrender.com/debug/reset?token=口令"
+curl -X POST "https://trusttag.onrender.com/debug/clock?token=口令" -H 'Content-Type: application/json' -d '{"now":"2026-10-22T17:00:00.000Z"}'
+```
+
+- 免费档 15 分钟没人访问会休眠，再打开要等约一分钟：演示前先开一次 `/elder`。每次重新部署或重启 SQLite 清零，相当于自动 `/debug/reset`。
+- 密钥只放在 Render 的环境变量里，不进仓库；`server/.env` 只在本机用。
+
 ## 和 D 的 Memory 模块对接（已接好）
 
 `src/modules/memory.ts` 直接 `import` `modules/role-d/src`（tsx 能跑 D 的 `.ts` 源码），D 负责到货询问、吃法确认、每日提醒、余量和补货备注，B 只做三件事：把演示时钟同步给 D（每秒 tick，`/debug/clock` 跳表）、把 D 的 `ask`/`speak` 接到 TTS 和状态机上（和普通回答排同一条队，先发表情再发事件）、把 D 推出的 memory / alert / order 镜像进 B 的表，REST 照旧。D 的状态快照存在 `trusttag.role-d.db`，`/debug/reset` 一起清。货架也改成读 D 的 `data/products.json`（20 个商品，字段裁成契约里的那几个）。

@@ -149,6 +149,13 @@ export async function buildServer() {
     const patch = settingsSchema.partial().strict().parse(request.body);
     return saveSettings(settingsSchema.parse({ ...getSettings(), ...patch }));
   });
+  // The deployed URL is public: when DEBUG_TOKEN is set, /debug/* needs it as ?token= or the x-debug-token header.
+  app.addHook('onRequest', async (request, reply) => {
+    const token = process.env.DEBUG_TOKEN;
+    if (!token || !request.url.startsWith('/debug')) return;
+    const given = request.headers['x-debug-token'] ?? (request.query as { token?: string } | undefined)?.token;
+    if (given !== token) return reply.code(401).send({ error: 'Debug token required' });
+  });
   app.post('/debug/clock', async request => ({ now: await setClock(clockSchema.parse(request.body).now) }));
   app.post('/debug/reset', async () => {
     audioGeneration++; dropPcmSession();

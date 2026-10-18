@@ -58,7 +58,8 @@ export async function synthesize(text: string): Promise<string | null> {
   if (!tts || !text.trim()) return null;
   const hash = createHash('sha256').update(`${tts.cacheKey}:${text}`).digest('hex');
   const file = resolve(audioDir, `${hash}.mp3`);
-  const base = (process.env.PUBLIC_BASE_URL || `http://localhost:${process.env.PORT || 8787}`).replace(/\/+$/, '');
+  // Render sets RENDER_EXTERNAL_URL to the service's https URL, so audio links work there without extra config.
+  const base = (process.env.PUBLIC_BASE_URL || process.env.RENDER_EXTERNAL_URL || `http://localhost:${process.env.PORT || 8787}`).replace(/\/+$/, '');
   const url = `${base}/audio/${hash}.mp3`;
   try { if ((await stat(file)).size > 0) return url; } catch { /* Not cached. */ }
   const existing = inFlight.get(hash);
