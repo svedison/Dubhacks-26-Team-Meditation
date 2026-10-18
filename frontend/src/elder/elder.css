@@ -64,12 +64,15 @@
 /* 脸：全屏 ↔ 左上角 */
 .face-box { position: absolute; }
 .face-box--full { left: 0; top: 0; width: 100%; height: 100%; }
-.face-box--corner { left: -71px; top: -30px; width: 480px; height: 317px; } /* 眼睛左缘对齐 56px 外边距，眉毛离边框留出空间 */
+.face-box--corner { left: -114px; top: -36px; width: 640px; height: 422px; isolation: isolate; }
+.face-box--corner::before { content: ''; position: absolute; z-index: -1; inset: 8% 14% 14%; border-radius: 50%; background: radial-gradient(closest-side, rgba(22, 16, 12, 0.7), rgba(22, 16, 12, 0.45) 60%, rgba(22, 16, 12, 0)); pointer-events: none; } /* 眼睛约 128px 高，左缘对齐 56px 外边距，眉毛离边框留出空间 */
 
 /* 字幕区：全屏统一 56px 外边距 */
-.talk { position: absolute; top: 240px; bottom: 56px; left: 56px; }
-/* 没卡和单卡时字幕列一样宽：商品卡出现时字幕不跳位 */
-.talk.is-solo, .talk.is-single { width: 540px; }
+.talk { position: absolute; top: 284px; bottom: 56px; left: 56px; }
+/* 只有字幕时字幕列放宽、字更大，右边不空一大块；商品卡进来时字幕列平滑收窄让位 */
+.talk { transition: width 600ms cubic-bezier(0.43, 0.195, 0.02, 1); }
+.talk.is-solo { width: 860px; }
+.talk.is-single { width: 540px; }
 .talk.is-pair { width: 470px; }
 .talk.is-alert { right: 56px; }
 .chat__bubble--headline { background: transparent !important; padding: 0 !important; }
@@ -87,28 +90,32 @@
 }
 .chat__row { display: flex; }
 .chat__row--ai { justify-content: flex-start; }
-.chat__row--grandma { justify-content: flex-end; }
+.chat__row--grandma { justify-content: flex-start; }
 .chat__bubble { overflow-wrap: anywhere; }
 .chat__row--ai .chat__bubble {
   font-size: 40px;
   line-height: 1.22;
   font-weight: 700;
   color: #fff6ea;
-  background: rgba(255, 241, 220, 0.07);
+  /* 照片现在认得出人，字幕底要压暗才读得清 */
+  background: rgba(26, 19, 15, 0.62);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border-radius: 38px 38px 38px 14px;
   padding: 18px 30px 20px;
 }
-.chat__sent { display: block; }
+.chat__sent { display: block; text-wrap: balance; }
 .chat__sent + .chat__sent { margin-top: 0.35em; }
+/* 奶奶的话做成引述：没有底色、小一号、偏暗，AI 的字幕才是画面里最重的那块 */
 .chat__row--grandma .chat__bubble {
   max-width: 82%;
-  font-size: 32px;
+  font-size: 30px;
   line-height: 1.25;
   font-weight: 700;
-  color: #e9dfd2;
-  background: rgba(255, 241, 220, 0.1);
-  border-radius: 30px 30px 10px 30px;
-  padding: 12px 22px 14px;
+  color: rgba(255, 241, 220, 0.78);
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.7), 0 0 2px rgba(0, 0, 0, 0.6);
+  padding: 4px 0 4px 22px;
+  border-left: 4px solid rgba(255, 241, 220, 0.32);
 }
 .chat__em {
   font-weight: 700;
@@ -121,11 +128,11 @@
 /* 商品卡片区：底边和字幕底边对齐 */
 .cards { position: absolute; top: 96px; bottom: 56px; right: 56px; display: flex; align-items: flex-end; justify-content: flex-end; }
 .cards.is-solo { width: 0; }
-.cards.is-single { width: 441px; }
+.cards.is-single { width: 461px; }
 .cards.is-pair { width: 511px; }
 .card-stage { display: flex; gap: 20px; align-items: stretch; width: 100%; justify-content: flex-end; }
 .card-stage__slot > .pcard { flex: 1; }
-.card-stage__slot { display: flex; flex-direction: column; gap: 10px; width: 380px; }
+.card-stage__slot { display: flex; flex-direction: column; gap: 10px; width: 400px; }
 .card-stage--pair .card-stage__slot { width: 245px; }
 /* 并排时卡窄：价格放到名字下面 */
 .card-stage--pair .pcard__head { flex-direction: column; gap: 8px; }
@@ -133,7 +140,7 @@
 .card-stage--pair .pcard__sub { font-size: 18px; }
 .card-stage--pair .pcard__price { font-size: 46px; }
 .card-stage--pair .pcard__point-text strong { font-size: 20px; }
-.card-stage--pair .pcard__point-text span { font-size: 16px; }
+.card-stage--pair .pcard__point-text span { font-size: 18px; }
 .card-stage--pair .pcard__point.is-dose { display: none; }
 .card-stage--pair .pcard__body { padding: 14px 16px 18px; }
 /* 假药：背景不变红（整屏红只留给诈骗），只把「Skip this」那张卡压成深酒红 */
@@ -159,7 +166,6 @@
   backdrop-filter: blur(10px);
   color: #fff1dc;
 }
-.clock__label { font-size: 17px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.7; }
 .clock__time { font-size: 28px; font-weight: 900; font-variant-numeric: tabular-nums; }
 
 /* 后端断开：只给队员看的小点 */
@@ -237,9 +243,13 @@
 .wake__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(28px) brightness(0.35); transform: scale(1.1); }
 
 /* 时钟跳天的过场卡 */
-.clock-jump { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(20, 15, 12, 0.55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); z-index: 4; }
-.clock-jump__card { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 34px 64px 38px; border-radius: 40px; background: #f6ecdc; color: #2a1f17; box-shadow: 0 8px 0 rgba(0, 0, 0, 0.3); }
-.clock-jump__day { font-size: 76px; line-height: 1; font-weight: 900; }
-.clock-jump__time { font-size: 40px; font-weight: 800; color: #6a5a4c; font-variant-numeric: tabular-nums; }
+.clock-jump { position: absolute; top: 34px; left: 50%; translate: -50% 0; z-index: 4; }
+.clock-jump__card { display: flex; align-items: baseline; gap: 18px; padding: 14px 34px 16px; border-radius: 999px; background: #f6ecdc; color: #2a1f17; white-space: nowrap; box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3); }
+.clock-jump__day { font-size: 44px; line-height: 1; font-weight: 900; }
+.clock-jump__time { font-size: 32px; font-weight: 800; color: #6a5a4c; font-variant-numeric: tabular-nums; }
 
 .clock--quiet { opacity: 0.72; transform: scale(0.86); transform-origin: top right; }
+
+/* 假药那幕下单以后：不要的那张缩小变淡，注意力回到买了的那张 */
+.card-stage--pair .card-stage__slot { transition: opacity 500ms ease, transform 500ms cubic-bezier(0.43, 0.195, 0.02, 1); }
+.card-stage--pair:has(.pcard--done) .card-stage__slot:first-child { opacity: 0.5; transform: scale(0.92); }

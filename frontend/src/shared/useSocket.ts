@@ -32,7 +32,11 @@ export function useSocket<In, Out>(role: 'elder' | 'guardian', onMessage: (msg: 
     return () => {
       closed = true
       window.clearTimeout(timer)
-      wsRef.current?.close()
+      const ws = wsRef.current
+      if (!ws) return
+      // 还在握手时直接 close 浏览器会报警告：等它连上再关
+      if (ws.readyState === WebSocket.CONNECTING) ws.onopen = () => ws.close()
+      else ws.close()
     }
   }, [role])
 

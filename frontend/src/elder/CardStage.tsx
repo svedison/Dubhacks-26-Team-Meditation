@@ -12,7 +12,8 @@ export default function CardStage({ card }: { card: CardView | null }) {
           key={key}
           className={`card-stage${card.alternative ? ' card-stage--pair' : ''}`}
           initial={{ opacity: 0, y: 40, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
+          // 字幕列从宽变窄要 0.6 秒，卡片等它让出位置再进来，不压住奶奶那句话
+          animate={{ opacity: 1, y: 0, scale: 1, transition: { delay: 0.45, type: 'spring', stiffness: 220, damping: 26 } }}
           exit={{ opacity: 0, y: 20, scale: 0.98 }}
           transition={{ type: 'spring', stiffness: 220, damping: 26 }}
         >
@@ -25,7 +26,7 @@ export default function CardStage({ card }: { card: CardView | null }) {
                 className="card-stage__slot"
                 initial={{ opacity: 0, x: 40 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.35, type: 'spring', stiffness: 200, damping: 24 }}
+                transition={{ delay: 0.8, type: 'spring', stiffness: 200, damping: 24 }}
               >
                 <ProductCard product={card.alternative} done={card.done} tag="Try this" />
               </motion.div>

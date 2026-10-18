@@ -38,16 +38,16 @@ export const FACE_PARAMS: Record<FaceState, FaceParams> = {
   idle: { ...base, ry: 0.03, drift: 0, blinkMin: 99, blinkMax: 99 },
   // 在听：拉成竖胶囊（借小智月球车的竖胶囊眼），跟着声音微微放大，眨眼间隔拉长
   listening: { ...base, rx: 0.5, ry: 0.6, drift: 0.4, hear: 1, blinkMin: 4, blinkMax: 8 },
-  // 在想：眯成两道缝、稍往上看，左右慢慢扫视（和「在听」的竖胶囊一眼分开）
-  thinking: { ...base, rx: 0.5, ry: 0.24, dy: -0.08, orbit: 1, drift: 0 },
+  // 在想：眼睛缩小成两颗圆、往上看，左右慢慢扫视（和待机的一条线、在听的竖胶囊都一眼分开）
+  thinking: { ...base, rx: 0.4, ry: 0.4, dy: -0.12, orbit: 1, drift: 0 },
   // 在说：眼睛略扁，嘴跟声音动
   speaking: { ...base, rx: 0.5, ry: 0.47, mouth: 1, mouthTalk: 1 },
   // 开心：下半部分咬成弯月，上下晃，腮红滑进来，外上角两颗小星点
   happy: { ...base, rx: 0.52, ry: 0.52, dy: -0.04, bot: -0.02, blush: 1, bounce: 1, drift: 0 },
   // 担心：眼睛小一点，上眼皮内高外低，眉毛内侧上挑，往下沉一点
   worried: { ...base, rx: 0.45, ry: 0.4, dy: 0.05, lidY: -0.22, lidA: 15, brow: 1, browA: 20, browGap: 0.3, blinkMin: 3, blinkMax: 5 },
-  // 警报：睁圆，眉毛平中带一点内侧上扬（「我替你着急」，不是「我在怪你」），嘴一条平线；不笑不晃
-  alert: { ...base, rx: 0.5, ry: 0.52, lidY: -0.36, lidA: 0, brow: 1, browA: 10, browGap: 0.24, mouth: 1, mouthW: 0.34, mouthH: 0.05, drift: 0, blinkMin: 5, blinkMax: 8 },
+  // 警报：眼睛睁大偏竖，眉毛抬高、内侧上扬（「我替你着急」，不是「我在怪你」），嘴一条平线；不笑不晃
+  alert: { ...base, rx: 0.5, ry: 0.57, lidY: -0.72, lidA: 0, brow: 1, browA: 16, browGap: 0.32, mouth: 1, mouthW: 0.34, mouthH: 0.05, drift: 0, blinkMin: 5, blinkMax: 8 },
 }
 
 export const PARAM_KEYS = Object.keys(base) as ParamKey[]

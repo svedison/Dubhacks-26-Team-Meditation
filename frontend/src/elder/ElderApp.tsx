@@ -124,6 +124,12 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       return
     }
     if (e.type === 'state' || e.type === 'ask' || e.type === 'transcript') pendingIdle.current = false
+    // 她开口说新的话：上一句留下的开心、担心表情立刻收起，脸回到后端当前的状态
+    if (e.type === 'transcript' && e.role === 'grandma' && !player.playing) {
+      window.clearTimeout(emotionTimer.current)
+      clearEmotionAfterTalk.current = false
+      setEmotion(null)
+    }
     if (e.type === 'ask' && lastFace.current === 'idle') {
       holdFullScreen()
       // 设备主动开口就算醒了，奶奶接着回答时不再当成刚醒
@@ -208,17 +214,17 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
 
   return (
     <Stage background="var(--elder-bg)">
-      {/* 照片层一直在后台轮播：待机时铺满；醒来后虚化压暗留在背景里，提醒这是家人的相框 */}
+      {/* 照片层一直在后台轮播：待机时铺满；醒来后轻轻虚化压暗，家人的样子还认得出，提醒这是家人的相框 */}
       <motion.div
         className="layer"
         initial={false}
-        animate={{ opacity: showFace ? 0.4 : 1, filter: showFace ? 'blur(24px) brightness(0.5) saturate(0.85)' : 'blur(0px) brightness(1) saturate(1)' }}
+        animate={{ opacity: showFace ? 0.8 : 1, filter: showFace ? 'blur(9px) brightness(0.5) saturate(0.9)' : 'blur(0px) brightness(1) saturate(1)' }}
         transition={{ duration: showFace ? 0.5 : 0.8 }}
       >
-        <PhotoFrame photos={photos} />
+        <PhotoFrame photos={photos} paused={showFace} />
       </motion.div>
       {/* 警报：深酒红，中间亮四周暗。整屏红只留给诈骗；有替代品的假药只把风险卡压红 */}
-      <motion.div className="layer alert-wash" initial={false} animate={{ opacity: face === 'alert' && !pair ? 1 : 0 }} transition={{ duration: 0.8, ease: [0.43, 0.195, 0.02, 1] }} />
+      <motion.div className="layer alert-wash" initial={false} animate={{ opacity: face === 'alert' && !pair ? 0.9 : 0 }} transition={{ duration: 0.8, ease: [0.43, 0.195, 0.02, 1] }} />
       <div className="mat" aria-hidden />
 
       <AnimatePresence>
@@ -227,10 +233,11 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
             key="face"
             layout
             className={`face-box ${corner ? 'face-box--corner' : 'face-box--full'}`}
+            // 照片先暗下去，眼睛再浮出来，不会有一瞬间两只半透明的眼睛压在家人脸上
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ layout: MOVE, opacity: { duration: 0.4 } }}
+            animate={{ opacity: 1, transition: { opacity: { duration: 0.4, delay: 0.3 } } }}
+            exit={{ opacity: 0, transition: { opacity: { duration: 0.4 } } }}
+            transition={{ layout: MOVE }}
           >
             <Face state={face} talking={playing} level={() => player.level()} hear={() => mic.level()} />
           </motion.div>
@@ -239,8 +246,8 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
 
       {corner && (
         <motion.div layout="position" className={`talk ${layoutCls}`} transition={{ layout: MOVE }} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          {/* 字幕区高 = 744 − 上沿 240 − 下边距 56；宽度和 elder.css 里 .talk 一致 */}
-          <Chat lines={view.lines} width={scam ? 1021 : pair ? 470 : 540} height={448} headline={scam} />
+          {/* 字幕区高 = 744 − 上沿 284 − 下边距 56；宽度和 elder.css 里 .talk 一致 */}
+          <Chat lines={view.lines} width={scam ? 1021 : pair ? 470 : view.card ? 540 : 860} height={404} headline={scam} />
         </motion.div>
       )}
       {corner && (
@@ -251,8 +258,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
 
       {/* 醒着时角上留着时钟；聊起来变小变淡，不抢字幕，但到货、提醒那几幕仍看得出是哪天几点 */}
       {view.clock && showFace && (
-        <div className={`clock${corner ? ' clock--quiet' : ''}`} aria-label="Demo clock">
-          <span className="clock__label">Demo clock</span>
+        <div className={`clock${corner ? ' clock--quiet' : ''}`}>
           <span className="clock__time">{clockLabel(view.clock)}</span>
         </div>
       )}
@@ -261,7 +267,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
         {!showFace && (
           <motion.div key="strip" className="wake-strip" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }} transition={{ duration: 0.5 }}>
             {wakeName && <span className="wake-strip__say">Say “{wakeName}”</span>}
-            {view.clock && <span className="wake-strip__clock">Demo clock · {clockLabel(view.clock)}</span>}
+            {view.clock && <span className="wake-strip__clock">{clockLabel(view.clock)}</span>}
           </motion.div>
         )}
       </AnimatePresence>

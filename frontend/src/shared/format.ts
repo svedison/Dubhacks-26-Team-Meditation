@@ -16,6 +16,27 @@ export function clockLabel(now: string): string {
   return parse(now).toFormat('ccc h:mm a')
 }
 
+// 本周回顾里的时间：和演示时钟同一天写 Today，前一天写 Yesterday，再早写星期几
+export function recentLabel(at: string, now: string): string {
+  const d = parse(at)
+  const days = parse(now).startOf('day').diff(d.startOf('day'), 'days').days
+  const day = days === 0 ? 'Today' : days === 1 ? 'Yesterday' : d.toFormat('ccc')
+  return `${day} ${d.toFormat('h:mm a')}`
+}
+
+// 最近 7 天（含今天），按演示时钟算：给用药卡画一周的圆点
+export function lastSevenDays(now: string): { key: string; letter: string }[] {
+  const today = parse(now).startOf('day')
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = today.minus({ days: 6 - i })
+    return { key: d.toISODate()!, letter: d.toFormat('ccccc') }
+  })
+}
+
+export function dayKey(at: string): string {
+  return parse(at).toISODate()!
+}
+
 export function dayLabel(date: string): string {
   return parse(date).toFormat('ccc, LLL d')
 }
@@ -42,4 +63,11 @@ export function dayAndTime(now: string): { day: string; time: string } {
 // 两个时间点之间相差多少小时（后一个减前一个）
 export function hoursBetween(from: string, to: string): number {
   return parse(to).diff(parse(from), 'hours').hours
+}
+
+// 名字按第一个逗号或括号断成两行：「Calcium 600mg」大字，「120 tablets」「as seen on TV」小一号（只是排版换行）
+export function splitName(name: string): [string, string | null] {
+  const m = name.match(/^(.*?)\s*(?:,\s*|\((.*)\)\s*$)(.*)$/)
+  if (!m) return [name, null]
+  return [m[1], (m[2] ?? m[3]).trim() || null]
 }
