@@ -12,13 +12,13 @@
   font-family: var(--font-ui);
 }
 
-/* 红级：中性深石板色，和老人端诈骗的红色分开 */
+/* 红级：暖深棕的中性色，和老人端诈骗的红色分开 */
 .acard--red {
-  --a-bg: #27303b;
+  --a-bg: #2b221c;
   --a-ink: #fbf5ec;
-  --a-sub: #c4c9d0;
-  --a-line: #27303b;
-  box-shadow: 0 22px 44px -22px rgba(30, 38, 48, 0.75);
+  --a-sub: #cfc3b6;
+  --a-line: #2b221c;
+  box-shadow: 0 6px 0 #120d0a;
 }
 /* 黄级：左边一条琥珀色 */
 .acard--yellow { box-shadow: inset 5px 0 0 #e2a23b; }
@@ -51,18 +51,13 @@
 .acard__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 27px; line-height: 1.15; letter-spacing: -0.01em; }
 .acard--normal .acard__title { font-size: 21px; }
 .acard__body { margin: 8px 0 0; font-size: 17px; line-height: 1.45; color: var(--a-sub); }
-.acard--red .acard__body { color: #e3e6ea; }
+.acard--red .acard__body { color: #e9dfd2; }
 
-.acard__note {
-  margin: 14px 0 0;
-  padding: 12px 14px;
-  border-radius: var(--radius-s);
-  background: rgba(127, 127, 127, 0.1);
-  font-size: 16px;
-  line-height: 1.4;
-}
-.acard--red .acard__note { background: rgba(255, 255, 255, 0.08); }
-.acard__note--empty { font-style: italic; color: var(--a-sub); }
+/* 奶奶的话：小标签加一条竖线的引语 */
+.acard__note { margin: 16px 0 0; padding: 0 0 0 14px; border-left: 2px solid #f4b860; }
+.acard__note-label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--a-sub); margin-bottom: 3px; }
+.acard__note p { margin: 0; font-size: 17px; line-height: 1.4; color: var(--a-ink); }
+.acard__note--empty p { color: var(--a-sub); }
 
 .acard__actions { display: flex; gap: 10px; margin-top: 16px; }
 

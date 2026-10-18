@@ -45,8 +45,8 @@ export const FACE_PARAMS: Record<FaceState, FaceParams> = {
   happy: { ...base, rx: 0.52, ry: 0.52, dy: -0.04, bot: -0.02, blush: 1, bounce: 1, drift: 0 },
   // 担心：眼睛小一点，上眼皮内高外低，眉毛内侧上挑，往下沉一点
   worried: { ...base, rx: 0.45, ry: 0.4, dy: 0.05, lidY: -0.22, lidA: 15, brow: 1, browA: 20, browGap: 0.3, blinkMin: 3, blinkMax: 5 },
-  // 警报：睁圆、眉毛平直抬高，嘴一条平线；警觉严肃但不凶，不笑不晃
-  alert: { ...base, rx: 0.5, ry: 0.52, lidY: -0.36, lidA: 0, brow: 1, browA: 0, browGap: 0.24, mouth: 1, mouthW: 0.34, mouthH: 0.05, drift: 0, blinkMin: 5, blinkMax: 8 },
+  // 警报：睁圆，眉毛平中带一点内侧上扬（「我替你着急」，不是「我在怪你」），嘴一条平线；不笑不晃
+  alert: { ...base, rx: 0.5, ry: 0.52, lidY: -0.36, lidA: 0, brow: 1, browA: 10, browGap: 0.24, mouth: 1, mouthW: 0.34, mouthH: 0.05, drift: 0, blinkMin: 5, blinkMax: 8 },
 }
 
 export const PARAM_KEYS = Object.keys(base) as ParamKey[]

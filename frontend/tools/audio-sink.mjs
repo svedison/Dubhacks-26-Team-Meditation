@@ -4,12 +4,14 @@
 //   node tools/audio-sink.mjs                       监听 8788
 //   AUDIO_SINK=http://localhost:8788 npm run dev    让 Vite 把 /api/audio 转过来
 //   curl localhost:8788/stats                       看统计
+//   DELAY_MS=400 node tools/audio-sink.mjs          每个请求晚 400 ms 才回，模拟慢网络
 
 import fs from 'node:fs'
 import http from 'node:http'
 import path from 'node:path'
 
 const PORT = Number(process.env.PORT ?? 8788)
+const DELAY_MS = Number(process.env.DELAY_MS ?? 0)
 const dir = path.resolve('.devdata/audio-sink', new Date().toISOString().replace(/[:.]/g, '-'))
 fs.mkdirSync(dir, { recursive: true })
 const logFile = fs.createWriteStream(path.join(dir, 'chunks.jsonl'))
@@ -62,7 +64,7 @@ http.createServer((req, res) => {
       chunks.push(c)
       logFile.write(JSON.stringify(c) + '\n')
       pcmFile.write(buf)
-      res.writeHead(204).end()
+      setTimeout(() => res.writeHead(204).end(), DELAY_MS)
     })
     return
   }

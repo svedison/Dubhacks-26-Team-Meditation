@@ -37,6 +37,7 @@ export default function ElderApp() {
   if (!live) {
     return (
       <Stage background="var(--elder-bg)">
+        <img className="wake__bg" src={SAMPLE_PHOTOS[0]} alt="" draggable={false} />
         <button className="wake" onClick={start}>
           <span className="wake__eyes" aria-hidden><i /><i /></span>
           <span className="wake__name">TrustTag</span>
@@ -52,6 +53,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
   const [view, dispatch] = useReducer(elderReducer, initialView)
   const [playing, setPlaying] = useState(false)
   const [photos, setPhotos] = useState<string[]>(SAMPLE_PHOTOS)
+  const [wakeName, setWakeName] = useState<string | null>(null)
   const lastFace = useRef<FaceState>('idle')
   const [emotion, setEmotion] = useState<FaceState | null>(null)
   const [fullHold, setFullHold] = useState(false)
@@ -126,7 +128,10 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
   useEffect(() => {
     fetch(api('/api/settings'))
       .then((r) => (r.ok ? (r.json() as Promise<Settings>) : Promise.reject(new Error(`settings HTTP ${r.status}`))))
-      .then((s) => { if (s.photos.length) setPhotos(s.photos) })
+      .then((s) => {
+        if (s.photos.length) setPhotos(s.photos)
+        setWakeName(s.wake_name)
+      })
       .catch((e: Error) => console.error('[elder] settings', e.message))
   }, [])
 
@@ -138,11 +143,19 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
   const layoutCls = view.card ? (pair ? 'is-pair' : 'is-single') : 'is-solo'
 
   return (
-    <Stage background={face === 'alert' ? 'var(--elder-bg-alert)' : 'var(--elder-bg)'}>
-      {/* 照片层一直在后台轮播，醒来时只是淡出，回待机时接着放下一张 */}
-      <motion.div className="layer" initial={false} animate={{ opacity: showFace ? 0 : 1 }} transition={{ duration: showFace ? 0.4 : 0.6 }}>
+    <Stage background="var(--elder-bg)">
+      {/* 照片层一直在后台轮播：待机时铺满；醒来后虚化压暗留在背景里，提醒这是家人的相框 */}
+      <motion.div
+        className="layer"
+        initial={false}
+        animate={{ opacity: showFace ? 0.16 : 1, filter: showFace ? 'blur(36px)' : 'blur(0px)' }}
+        transition={{ duration: showFace ? 0.5 : 0.8 }}
+      >
         <PhotoFrame photos={photos} />
       </motion.div>
+      {/* 警报：深酒红，中间亮四周暗；进出都慢慢来，不闪 */}
+      <motion.div className="layer alert-wash" initial={false} animate={{ opacity: face === 'alert' ? 1 : 0 }} transition={{ duration: 1.1, ease: [0.43, 0.195, 0.02, 1] }} />
+      <div className="mat" aria-hidden />
 
       <AnimatePresence>
         {showFace && (
@@ -171,12 +184,20 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
         </div>
       )}
 
-      {view.clock && (
+      {view.clock && showFace && (
         <div className="clock" aria-label="Demo clock">
           <span className="clock__label">Demo clock</span>
           <span className="clock__time">{clockLabel(view.clock)}</span>
         </div>
       )}
+      <AnimatePresence>
+        {!showFace && (
+          <motion.div key="strip" className="wake-strip" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }} transition={{ duration: 0.5 }}>
+            {wakeName && <span className="wake-strip__say">Say “{wakeName}” to talk</span>}
+            {view.clock && <span className="wake-strip__clock">Demo clock · {clockLabel(view.clock)}</span>}
+          </motion.div>
+        )}
+      </AnimatePresence>
       {status === 'down' && <div className="conn" title="Backend offline" />}
       <KeyboardFallback onSend={(text) => send({ type: 'utterance', text, source: 'keyboard' })} />
     </Stage>

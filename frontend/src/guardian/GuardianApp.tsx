@@ -53,9 +53,9 @@ function HomePage() {
   const name = settings?.elder_name ?? 'Mom'
   return (
     <section className="g-page">
-      <h1 className="g-h1">{red.length ? `${name} could use a call` : `${name} is doing fine`}</h1>
+      <h1 className="g-h1">{red.length ? 'One thing needs you today' : `All calm at ${name}'s`}</h1>
       <p className="g-lede">
-        {red.length ? 'TrustTag stopped something today. Here is what happened.' : 'Nothing needs you right now. Reminders and deliveries show up here.'}
+        {red.length ? 'TrustTag stopped something and told her first. A quick call helps.' : 'Nothing needs you right now. Reminders and deliveries show up here.'}
       </p>
       <div className="g-stack">
         <AnimatePresence initial={false}>

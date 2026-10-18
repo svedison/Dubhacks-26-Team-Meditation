@@ -37,7 +37,8 @@ export default function AlertCard({ alert, now, phone, fresh, onArchive }: Props
       <p className="acard__body">{alert.body}</p>
       {showNote && (
         <blockquote className={`acard__note${alert.grandma_note ? '' : ' acard__note--empty'}`}>
-          {alert.grandma_note ? <>Grandma said: “{alert.grandma_note}”</> : NO_NOTE}
+          <span className="acard__note-label">Her note</span>
+          <p>{alert.grandma_note ? `“${alert.grandma_note}”` : NO_NOTE}</p>
         </blockquote>
       )}
       {level !== 'normal' && (

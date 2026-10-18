@@ -51,7 +51,7 @@ export default function MicTest() {
             `ctx         ${s.ctxState}   track ${s.trackState}   wakeLock ${s.wakeLock}`,
             `frames      ${s.framesSeen}   speaking ${s.speaking}`,
             `chunks sent ${s.chunksSent}   ${(s.bytesSent / 1e6).toFixed(1)} MB   errors ${s.sendErrors}`,
-            `last send   ${stale === null ? '-' : `${(stale / 1000).toFixed(1)} s ago`}`,
+            `last send   ${stale === null ? '-' : `${(stale / 1000).toFixed(1)} s ago`}   queued ${(s.queueMs / 1000).toFixed(1)} s   dropped ${s.dropped}`,
             s.error ? `ERROR       ${s.error}` : '',
           ].join('\n')}</pre>
           <pre style={{ fontSize: 16, color: '#aaa' }}>{s.events.join('\n')}</pre>

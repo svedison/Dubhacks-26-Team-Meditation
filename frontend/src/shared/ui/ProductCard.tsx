@@ -1,13 +1,14 @@
-import { BadgeCheck, Check, ShieldAlert } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 import type { Product, RiskKind } from '../contracts'
 import { money } from '../format'
 import { productImage } from '../productImages'
 import './product-card.css'
 
-const RISK_LABEL: Record<RiskKind, string> = {
-  fda_fraud: 'FDA fraud warning',
-  recall: 'Recalled',
-  unverified: "Can't verify",
+// 有风险时不显示价格（划掉的价格在购物界面里会被读成「打折」），换成一句原因
+const RISK_LINE: Record<RiskKind, string> = {
+  fda_fraud: 'On the FDA fraud list',
+  recall: 'Recalled by the maker',
+  unverified: 'Not sold anywhere we trust',
 }
 
 type Props = {
@@ -19,31 +20,29 @@ type Props = {
 // 两端共用：老人端大卡、监护人端小卡是同一个组件
 export default function ProductCard({ product, size = 'elder', done = false }: Props) {
   const img = productImage(product.id)
-  const risky = product.risk !== null
+  const risk = product.risk
   return (
-    <article className={`pcard pcard--${size}${risky ? ' pcard--risk' : ''}${done ? ' pcard--done' : ''}`}>
+    <article className={`pcard pcard--${size}${risk ? ' pcard--risk' : ''}${done ? ' pcard--done' : ''}`}>
       <div className="pcard__media">
         {img ? <img src={img} alt="" draggable={false} /> : <span className="pcard__mono">{product.name.slice(0, 1)}</span>}
       </div>
       <div className="pcard__body">
-        {risky ? (
-          <span className="pcard__badge pcard__badge--risk">
-            <ShieldAlert aria-hidden strokeWidth={2.4} />
-            {RISK_LABEL[product.risk!.kind]}
+        <div className={`pcard__seal${risk ? ' pcard__seal--risk' : ''}`}>
+          <span className="pcard__seal-mark" aria-hidden>
+            {risk ? <X strokeWidth={3.2} /> : <Check strokeWidth={3.2} />}
           </span>
-        ) : (
-          <span className="pcard__badge pcard__badge--ok">
-            <BadgeCheck aria-hidden strokeWidth={2.4} />
-            Verified{product.certification ? ` · ${product.certification}` : ''}
+          <span className="pcard__seal-text">
+            <strong>{risk ? 'Not verified' : 'Verified'}</strong>
+            <span>{risk ? RISK_LINE[risk.kind] : product.certification ? `${product.certification} certified` : 'Trusted store'}</span>
           </span>
-        )}
+        </div>
         <h3 className="pcard__name">{product.name}</h3>
-        <div className="pcard__price">{money(product.price_cents)}</div>
-        {product.label_dose && <p className="pcard__meta">{product.label_dose}</p>}
+        {!risk && <div className="pcard__price">{money(product.price_cents)}</div>}
+        {!risk && product.label_dose && <p className="pcard__meta">{product.label_dose}</p>}
       </div>
       {done && (
         <div className="pcard__stamp" role="status">
-          <Check aria-hidden strokeWidth={3} />
+          <Check aria-hidden strokeWidth={3.4} />
           Ordered
         </div>
       )}

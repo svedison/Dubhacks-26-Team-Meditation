@@ -8,6 +8,7 @@ import { api } from '../config'
 const SAMPLE_RATE = 16000
 const FRAMES_PER_CHUNK = 8
 const PREROLL_FRAMES = 10
+const CHUNK_MS = FRAMES_PER_CHUNK * 32
 
 export type MicStatus = {
   phase: 'off' | 'starting' | 'on' | 'error'
@@ -23,6 +24,8 @@ export type MicStatus = {
   bytesSent: number
   sendErrors: number
   lastSendAt: number | null
+  queueMs: number // 排队还没发出去的音频
+  dropped: number // 积压超过 30 秒被丢掉的块
   events: string[]
 }
 
@@ -58,10 +61,11 @@ export class MicStream {
   private speaking = false
   private held = false
   private seq = 0
-  private sendChain: Promise<void> = Promise.resolve()
+  private queue: { pcm: ArrayBuffer; speech: boolean; end: boolean }[] = []
+  private inflight = false
   status: MicStatus = {
     phase: 'off', error: null, startedAt: null, ctxState: 'none', trackState: 'none', wakeLock: 'none',
-    speaking: false, speechProb: 0, framesSeen: 0, chunksSent: 0, bytesSent: 0, sendErrors: 0, lastSendAt: null, events: [],
+    speaking: false, speechProb: 0, framesSeen: 0, chunksSent: 0, bytesSent: 0, sendErrors: 0, lastSendAt: null, queueMs: 0, dropped: 0, events: [],
   }
 
   constructor(opts: Options) {
@@ -186,22 +190,42 @@ export class MicStream {
 
   private flush(end: boolean) {
     if (this.pending.length === 0) return
-    const body = toPcm16(this.pending)
+    this.queue.push({ pcm: toPcm16(this.pending), speech: this.speaking || end, end })
     this.pending = []
+    // 后端连不上时最多积 30 秒，再多就丢最早的
+    const max = Math.ceil(30000 / CHUNK_MS)
+    if (this.queue.length > max) {
+      const dropped = this.queue.splice(0, this.queue.length - max).length
+      this.emit({ dropped: this.status.dropped + dropped })
+    }
+    void this.pump()
+  }
+
+  // 同一时间只有一个请求在路上；回来以前新产生的块排队，下一次合并成一个 POST 发出去。
+  // 网络慢时每次多带一点，延迟不会越积越多。
+  private async pump() {
+    if (this.inflight || this.queue.length === 0) return
+    this.inflight = true
+    const batch = this.queue.splice(0)
+    const total = batch.reduce((n, b) => n + b.pcm.byteLength, 0)
+    const body = new Uint8Array(total)
+    let o = 0
+    for (const b of batch) { body.set(new Uint8Array(b.pcm), o); o += b.pcm.byteLength }
     const seq = this.seq++
-    const speech = this.speaking || end ? 1 : 0
+    const speech = batch.some((b) => b.speech) ? 1 : 0
+    const end = batch.at(-1)!.end
     const url = api(`/api/audio?seq=${seq}&sr=${SAMPLE_RATE}&speech=${speech}${end ? '&end=1' : ''}`)
-    this.sendChain = this.sendChain.then(async () => {
-      const res = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/octet-stream' }, body }).catch((e: Error) => e)
-      if (res instanceof Error || !res.ok) {
-        const why = res instanceof Error ? res.message : `HTTP ${res.status}`
-        console.error('[mic] upload failed', seq, why)
-        this.emit({ sendErrors: this.status.sendErrors + 1 })
-        if (this.status.sendErrors % 20 === 1) this.log(`upload failed: ${why}`)
-        return
-      }
-      this.emit({ chunksSent: this.status.chunksSent + 1, bytesSent: this.status.bytesSent + body.byteLength, lastSendAt: Date.now() })
-    })
+    const res = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/octet-stream' }, body }).catch((e: Error) => e)
+    this.inflight = false
+    if (res instanceof Error || !res.ok) {
+      const why = res instanceof Error ? res.message : `HTTP ${res.status}`
+      console.error('[mic] upload failed', seq, why)
+      this.emit({ sendErrors: this.status.sendErrors + 1 })
+      if (this.status.sendErrors % 20 === 1) this.log(`upload failed: ${why}`)
+    } else {
+      this.emit({ chunksSent: this.status.chunksSent + batch.length, bytesSent: this.status.bytesSent + total, lastSendAt: Date.now(), queueMs: this.queue.length * CHUNK_MS })
+    }
+    void this.pump()
   }
 
   async stop() {
