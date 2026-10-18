@@ -400,7 +400,7 @@
   },
   {
     "id": "miracle-joint",
-    "name": "Miracle Joint Pills (fictional TV product)",
+    "name": "Miracle Joint Pills",
     "price_cents": 8900,
     "category": "supplement",
     "certification": null,
@@ -428,7 +428,7 @@
   },
   {
     "id": "instant-memory",
-    "name": "Instant Memory Miracle (fictional)",
+    "name": "Instant Memory Miracle",
     "price_cents": 7900,
     "category": "supplement",
     "certification": null,
@@ -456,7 +456,7 @@
   },
   {
     "id": "detox-cure",
-    "name": "Seven-day Detox Cure (fictional)",
+    "name": "Seven-day Detox Cure",
     "price_cents": 6900,
     "category": "supplement",
     "certification": null,

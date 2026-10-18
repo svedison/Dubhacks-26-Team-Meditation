@@ -1,6 +1,6 @@
 # TrustTag Role D — Memory, anomaly rules and demo data
 
-Implements `.plans/role-d-memory-anomaly-data-spec.md` against `.plans/shared-contracts.md`. The repository currently contains the scripted `tools/mock-server`, not B's production backend. This package is an independently runnable TypeScript module with a persistent local integration harness. No frontend, payment, STT or LLM code is changed.
+Implements `.plans/role-d-memory-anomaly-data-spec.md` against `.plans/shared-contracts.md`. B's backend connects this package through `server/src/modules/memory.ts`. The package also provides an independently runnable TypeScript module with a persistent local integration harness.
 
 ## Run
 
@@ -22,7 +22,7 @@ This is a local synthetic-data harness. Its order/settings reads are fixtures, w
 ```sh
 curl -X POST localhost:8787/debug/reset
 curl -X POST localhost:8787/debug/orders -H 'Content-Type: application/json' \
-  -d '{"product_id":"calcium-120","deliver_on":"2026-10-22"}'
+  -d '{"product_id":"glucosamine-usp","deliver_on":"2026-10-22"}'
 curl -X POST localhost:8787/debug/clock -H 'Content-Type: application/json' \
   -d '{"now":"2026-10-22T09:00:00Z"}'
 curl -X POST localhost:8787/api/utterance -H 'Content-Type: application/json' \
@@ -36,7 +36,9 @@ curl -X POST localhost:8787/api/utterance -H 'Content-Type: application/json' \
 curl localhost:8787/api/memories
 ```
 
-Expected: `ask/received`, `ask/dose_confirm`, Memory with 120 units, `ask/reminder`, updated Memory with 119 units and a `taken` log. The next spoken response estimates **119 days**. The two Memory events render ordinary cards using the existing contract. Repeated receipts, ticks, backward clock jumps and process restarts do not repeat stock movements. Reset restores one historical calcium order (product alias `the purple bottle`), no memories/alerts, the demo clock and all five placeholder photo URLs.
+Expected: `ask/received` for the glucosamine bought in Scene 3, then `ask/dose_confirm`: “The label says 1 tablet daily. Starting tomorrow, I'll remind you every morning at eight. Okay?” Confirmation creates a Memory with 90 units, `start_date: "2026-10-23"` and `times: ["08:00"]`. The next morning emits `ask/reminder`; “Took it” updates the Memory to 89 units and a `taken` log. The next spoken response estimates **89 days**. The two Memory events render ordinary cards using the existing contract. Repeated receipts, ticks, backward clock jumps and process restarts do not repeat stock movements. Reset restores one historical calcium order (product alias `the purple bottle`), no memories/alerts, the demo clock and all five placeholder photo URLs.
+
+The calcium bought in Scene 2 is a refill: its delivery only asks “Did you get it?” and credits the received pack, without asking to start a regimen. Any previously received product is treated as replenishment; an existing Memory keeps its confirmed schedule. A new product's first reminder starts at 08:00 on the UTC day after the dose-confirmation question, even when the answer crosses midnight. No dose is assumed for the delivery day.
 
 `later` snoozes the same occurrence for 15 minutes, without changing `times` or deducting stock. `skipped` does not deduct. After 60 seconds without an answer the log says `unconfirmed`, and inventory conservatively deducts once. `answerReminder(memoryId, scheduledAt, 'skipped')` can correct a previous unconfirmed dose and refund exactly the amount that was deducted, even near zero inventory. Pausing/changing/deleting a Memory, including stock-only corrections, invalidates its outstanding prompts and snoozes. Recently expired prompts remain correlatable for five minutes (`lateReplyWindowMs`). Explicit product references route late answers to the matching prompt; ambiguous bare replies request clarification. B can bypass natural-language ambiguity with `handleAnswer(text, {kind, ref, at?})`, where `ref` is the order or Memory ID and `at` is the exact canonical scheduled timestamp for a reminder. Longer-delayed corrections use `receiveOrder`, `answerReminder`, or `answerAlert` with an explicit ID.
 
@@ -96,6 +98,7 @@ Local-only endpoints are `/health`, `/debug/orders` (safe simulated-order fixtur
 ## Data and assets
 
 - `data/products.json`: 20 **synthetic demo** products, brand/merchant/ingredients/price/certification-source metadata, and 3 fictional risky products with matching demo alternatives. `miracle-joint` aliases `miracle joint pills` and pairs to `glucosamine-usp`.
+- Display names contain no demo annotations; `demo_only` carries that metadata. B loads this catalog when seeding its database. To replace an already seeded demo catalog, restart B and use Reset demo (which clears the current demo's orders, memories and alerts).
 - **Certification labels, label doses, FDA/recall risk kinds and alternative marketing themes are fixtures, not verified real certifications, medical recommendations, real regulatory findings or equivalent efficacy claims.** Every record carries `demo_only: true` and a source-status explanation. Replace with verified real product records before real shopping.
 - `data/orders.json`: one received historical calcium order; its product has `the purple bottle` alias. Historical stock is deliberately not inferred into a new Memory.
 - `assets/sounds/*.wav`: seven original royalty-free short cues named for contract states.
@@ -106,4 +109,4 @@ The harness serves these allowlisted files at `/assets/...`; it cannot resolve a
 
 ## Validation
 
-`pnpm test`: 30 tests covering inventory, persistence, all eight rules, notification gating, real HTTP/WS Scene 2/4 flows, late-answer correlation, timer expiry and malformed input. `pnpm typecheck`: passes. A separate reviewer identified six issues; all six have RED→GREEN regression coverage, including a malformed WebSocket upgrade that previously crashed the server. WAV format/duration, SVG parsing and HTTP asset serving were also checked. Real B/C integration and device/TTS latency remain to be verified.
+`pnpm test`: 35 tests covering inventory, persistence, all eight rules, notification gating, real HTTP/WS Scene 2/4 flows, late-answer correlation, timer expiry and malformed input. Delivery coverage includes calcium replenishment, new glucosamine reminders starting tomorrow, and replies across midnight/month boundaries. `pnpm typecheck` checks the module. `server/test/memory-flow.test.ts` also exercises the glucosamine flow through B's bridge. Device/TTS latency remains to be verified.

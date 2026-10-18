@@ -89,7 +89,7 @@ export class MemoryService {
       const product = PRODUCTS.find(p => p.id === order.product_id)!;
       text = prompt.kind === 'received'
         ? `Your ${product.name} is due to arrive. Did you get it?`
-        : `The label says ${product.label_dose}. Start today, and remind you every morning at eight. Okay?`;
+        : `The label says ${product.label_dose}. Starting tomorrow, I'll remind you every morning at eight. Okay?`;
     } else {
       const memory = this.state.memories.find(m => m.id === prompt.ref)!;
       const product = PRODUCTS.find(p => p.id === memory.product_id)!;
@@ -104,6 +104,8 @@ export class MemoryService {
     if (order.status === 'blocked') throw new Error('Blocked order cannot be received');
     if (this.state.receivedOrders.includes(id)) return structuredClone(order);
     const product = PRODUCTS.find(p => p.id === order.product_id)!;
+    const isRefill = this.state.orders.some(previous => previous.id !== id
+      && previous.product_id === product.id && previous.received && previous.status !== 'blocked');
     order.received = true; this.state.receivedOrders.push(id);
     this.state.prompts = this.state.prompts.filter(p => !(p.ref === id && p.kind === 'received'));
     const memory = this.state.memories.find(m => m.product_id === order.product_id);
@@ -112,16 +114,20 @@ export class MemoryService {
       this.publish('guardian', {type: 'memory', ...memory});
     } else {
       this.state.inventory[product.id] = (this.state.inventory[product.id] ?? 0) + product.units;
-      if (product.label_dose && !product.risk) this.queue({kind: 'dose_confirm', ref: id, readyAt: this.now()});
+      // A historical receipt (e.g. the purple calcium bottle) is replenishment,
+      // even when its existing regimen has not been imported as a Memory.
+      if (!isRefill && product.label_dose && !product.risk) this.queue({kind: 'dose_confirm', ref: id, readyAt: this.now()});
     }
     this.publish('guardian', {type: 'order', ...order}); this.dispatch(); return structuredClone(order);
   }
-  private confirmDose(orderId: string): void {
+  private confirmDose(orderId: string, askedAt: string): void {
     const order = this.state.orders.find(o => o.id === orderId)!;
     const product = PRODUCTS.find(p => p.id === order.product_id)!;
     if (this.state.memories.some(m => m.product_id === product.id)) return;
+    // Anchor "tomorrow" to the spoken question, including replies across midnight.
+    const startDate = new Date(Date.parse(askedAt) + DAY).toISOString().slice(0, 10);
     const memory: Memory = {id: `mem_${randomUUID()}`, product_id: product.id,
-      dose_text: product.label_dose!, times: ['08:00'], start_date: this.now().slice(0, 10), end_date: null,
+      dose_text: product.label_dose!, times: ['08:00'], start_date: startDate, end_date: null,
       stock_units: this.state.inventory[product.id] ?? 0, units_per_dose: product.units_per_dose,
       paused: false, log: []};
     delete this.state.inventory[product.id];
@@ -178,7 +184,7 @@ export class MemoryService {
     this.state.expiredPrompts = this.state.expiredPrompts.filter(p => p !== prompt);
     if (yes.test(text.trim())) {
       if (prompt.kind === 'received') this.receiveOrder(prompt.ref);
-      else this.confirmDose(prompt.ref);
+      else this.confirmDose(prompt.ref, prompt.askedAt!);
     } else if (prompt.kind === 'received') {
       this.state.deliveryAsked[prompt.ref] = this.now().slice(0, 10);
       this.say("Okay. I'll ask again tomorrow.");

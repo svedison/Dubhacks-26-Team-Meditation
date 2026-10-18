@@ -32,16 +32,18 @@ test('real HTTP + two WebSocket clients complete Scene 4 and replay after reset'
     const elder = await h.connect('elder'), guardian = await h.connect('guardian');
     for (let round = 0; round < 2; round++) {
       await h.post('/debug/reset');
-      const r = await h.post('/debug/orders', {product_id: 'calcium-120', deliver_on: '2026-10-22'}); assert.equal(r.status, 201);
+      const r = await h.post('/debug/orders', {product_id: 'glucosamine-usp', deliver_on: '2026-10-22'}); assert.equal(r.status, 201);
       await h.post('/debug/clock', {now: '2026-10-22T09:00:00Z'});
       await waitFor(() => elder.events.filter(e => e.kind === 'received').length === round + 1);
       await h.post('/api/utterance', {text: 'Yes, got it.', source: 'keyboard'});
       await h.post('/api/utterance', {text: 'Okay.', source: 'keyboard'});
       await h.post('/debug/clock', {now: '2026-10-23T08:00:00Z'});
       elder.ws.send(JSON.stringify({type: 'utterance', text: 'Took it.', source: 'keyboard'}));
-      await waitFor(() => guardian.events.filter(e => e.type === 'memory' && e.stock_units === 119).length === round + 1);
+      await waitFor(() => guardian.events.filter(e => e.type === 'memory' && e.stock_units === 89).length === round + 1);
       const memories = await (await fetch(h.url + '/api/memories')).json();
-      assert.equal(memories[0].stock_units, 119);
+      assert.equal(memories[0].product_id, 'glucosamine-usp');
+      assert.equal(memories[0].start_date, '2026-10-23');
+      assert.equal(memories[0].stock_units, 89);
       assert.equal(memories[0].log[0].answer, 'taken');
     }
     assert.ok(guardian.events.some(e => e.type === 'clock'));

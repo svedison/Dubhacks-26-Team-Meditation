@@ -12,7 +12,7 @@ function fixture() {
   function order(id: string, product_id='calcium-120') {
     app.addOrder({id,product_id,price_cents:1800,status:'simulated_paid',block_reason:null,created_at:app.now(),deliver_on:'2026-10-22',received:false});
   }
-  function memory() { order('calcium');app.setClock('2026-10-22T09:00:00Z');app.handleAnswer('yes');app.handleAnswer('okay');return app.snapshot().memories[0]; }
+  function memory() { order('joint','glucosamine-usp');app.setClock('2026-10-22T09:00:00Z');app.handleAnswer('yes');app.handleAnswer('okay');return app.snapshot().memories[0]; }
   return {app,events,store,order,memory};
 }
 test('unanswered red explanation expires and releases next-day reminders without inventing a note', () => {
@@ -42,21 +42,21 @@ test('ambiguous yes after question rollover does not credit the next order', () 
   assert.equal(app.snapshot().orders.find(o=>o.id==='tea')!.received,true);
   store.close();
 });
-test('late named reminder answer corrects calcium without consuming glucosamine reminder', () => {
-  const {app,store,order,memory}=fixture();const calcium=memory();order('joint','glucosamine-usp');app.receiveOrder('joint');app.handleAnswer('okay');
-  const joint=app.snapshot().memories.find(m=>m.product_id==='glucosamine-usp')!;
-  app.updateMemory(joint.id,{times:['08:01']});
+test('late named reminder answer corrects glucosamine without consuming vitamin reminder', () => {
+  const {app,store,order,memory}=fixture();const joint=memory();order('vitamin','vitamin-d3');app.receiveOrder('vitamin');app.handleAnswer('okay');
+  const vitamin=app.snapshot().memories.find(m=>m.product_id==='vitamin-d3')!;
+  app.updateMemory(vitamin.id,{times:['08:01']});
   app.setClock('2026-10-23T08:00:00Z');app.setClock('2026-10-23T08:01:00Z');
-  app.handleAnswer('I took the calcium.');
-  assert.equal(app.snapshot().memories.find(m=>m.id===calcium.id)!.log[0].answer,'taken');
-  assert.equal(app.snapshot().memories.find(m=>m.id===joint.id)!.log.length,0);
+  app.handleAnswer('I took the glucosamine.');
+  assert.equal(app.snapshot().memories.find(m=>m.id===joint.id)!.log[0].answer,'taken');
+  assert.equal(app.snapshot().memories.find(m=>m.id===vitamin.id)!.log.length,0);
   store.close();
 });
 test('zero-stock timeout correction does not debit a subsequently delivered pack', () => {
   const {app,store,order,memory}=fixture();const m=memory();app.updateMemory(m.id,{stock_units:0});
-  app.setClock('2026-10-23T08:00:00Z');app.setClock('2026-10-23T08:01:00Z');order('refill');app.receiveOrder('refill');
+  app.setClock('2026-10-23T08:00:00Z');app.setClock('2026-10-23T08:01:00Z');order('refill','glucosamine-usp');app.receiveOrder('refill');
   app.answerReminder(m.id,'2026-10-23T08:00:00Z','taken');
-  assert.equal(app.snapshot().memories[0].stock_units,120);store.close();
+  assert.equal(app.snapshot().memories[0].stock_units,90);store.close();
 });
 test('stock-only edits invalidate snoozes just like schedule edits', () => {
   const {app,store,events,memory}=fixture();const m=memory();
