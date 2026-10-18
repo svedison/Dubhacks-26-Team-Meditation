@@ -1,5 +1,7 @@
 # Four-scene verification — 2026-10-18
 
+Follow-up: `live-data-followup-qa.md` records the additional real Visa calls, hosted data inspection, archive-request fix, and updated frontend result (14 tests).
+
 ## Fixes verified
 
 - Guardian monthly total refreshes every five seconds while visible and connected, on focus, and after reconnect. Default sharing still shows no ordinary order details; minimum still hides the total.

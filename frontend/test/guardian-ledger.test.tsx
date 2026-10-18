@@ -139,6 +139,27 @@ test('a failed reminder save does not pretend the reminder was paused', async ()
   expect(store.memories[0].paused).toBe(false)
 })
 
+test('an alert stays active until archive succeeds, including after a failed attempt', async () => {
+  const alert = { type: 'alert', id: 'alert_scam', level: 'red', rule: 7, title: 'Check this request', body: 'Gift card request', grandma_note: null, created_at: '2026-10-17T18:00:00Z', archived: false }
+  await flush(() => Socket.instances[0].onmessage?.({ data: JSON.stringify(alert) }))
+  let finish!: (response: Response) => void
+  fetchMock.mockImplementationOnce(() => new Promise<Response>(resolve => { finish = resolve }))
+  let pending!: Promise<void>
+  await flush(() => { pending = store.archive(alert.id) })
+  expect(store.alerts[0].archived).toBe(false)
+  await flush(async () => {
+    finish(new Response('', { status: 503 }))
+    await expect(pending).rejects.toThrow('HTTP 503')
+  })
+  expect(store.alerts[0].archived).toBe(false)
+  fetchMock.mockResolvedValueOnce(json({ ok: true }))
+  await flush(() => store.archive(alert.id))
+  const request = fetchMock.mock.calls.find(([url]) => String(url).endsWith(`/api/alerts/${alert.id}/archive`))!
+  expect(new Headers(request[1].headers).has('content-type')).toBe(false)
+  expect(request[1].body).toBeUndefined()
+  expect(store.alerts[0].archived).toBe(true)
+})
+
 test('overlapping sharing changes stay private until all writes settle in user order', async () => {
   const writes: { level: string; finish: () => void }[] = []
   const normalFetch = fetchMock.getMockImplementation()!

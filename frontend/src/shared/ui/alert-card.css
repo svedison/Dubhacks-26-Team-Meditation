@@ -61,6 +61,8 @@
 .acard__note--empty p { color: var(--a-sub); }
 
 .acard__actions { display: flex; gap: 10px; margin-top: 16px; }
+.acard__error { margin: 12px 0 0; color: var(--a-ink); font-weight: 700; }
+.acard .btn:disabled { opacity: 0.6; cursor: wait; }
 
 .btn {
   flex: 1;

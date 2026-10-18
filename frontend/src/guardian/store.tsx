@@ -29,7 +29,11 @@ async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
 }
 
 async function send(path: string, method: 'POST' | 'PUT', body?: unknown) {
-  const r = await fetch(api(path), { method, headers: { 'content-type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) })
+  const r = await fetch(api(path), {
+    method,
+    // Fastify rejects an empty body labelled as JSON (e.g. archive POST).
+    ...(body === undefined ? {} : { headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }),
+  })
   if (!r.ok) throw new Error(`${method} ${path} HTTP ${r.status}`)
   return r.json() as Promise<unknown>
 }
@@ -126,8 +130,8 @@ export function GuardianProvider({ children }: { children: ReactNode }) {
   }, [status, loadAll, loadLedger, cancelLedger])
 
   const archive = async (id: string) => {
-    setAlerts((a) => a.map((x) => (x.id === id ? { ...x, archived: true } : x)))
     await send(`/api/alerts/${encodeURIComponent(id)}/archive`, 'POST')
+    setAlerts((a) => a.map((x) => (x.id === id ? { ...x, archived: true } : x)))
   }
 
   const saveSettings = async (patch: Partial<Settings>) => {

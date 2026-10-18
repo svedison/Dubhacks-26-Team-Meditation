@@ -88,7 +88,7 @@ function HomePage() {
         {/* 收走的卡片不再占位，下面的内容直接到位，不会等它消失后再往上跳 */}
         <AnimatePresence initial={false} mode="popLayout">
           {[...red, ...rest].map((a) => (
-            <AlertCard key={a.id} alert={a} now={clock} phone={settings?.phone ?? null} fresh={freshIds.has(a.id)} onArchive={(id) => void archive(id).catch((e: Error) => console.error(e))} />
+            <AlertCard key={a.id} alert={a} now={clock} phone={settings?.phone ?? null} fresh={freshIds.has(a.id)} onArchive={archive} />
           ))}
         </AnimatePresence>
         {open.length === 0 && (
