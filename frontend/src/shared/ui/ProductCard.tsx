@@ -12,6 +12,9 @@ const RISK_LINE: Record<RiskKind, string> = {
   unverified: "Not on Milo's list",
 }
 
+// 超过这个长度的名字，和大号价格并排时每行只放得下一两个词
+const LONG_TITLE = 18
+
 type Props = {
   product: Product
   size?: 'elder' | 'compact'
@@ -27,10 +30,13 @@ export default function ProductCard({ product, size = 'elder', orderStatus, tag,
   const img = product.image_url ?? productImage(product.id)
   const risk = product.risk
   const [title, sub] = splitName(product.name)
+  // 商品目录里的真实商品名常有四五十个字符：名字长时价格挪到名字下面，名字独占一整行宽度
+  const long = title.length > LONG_TITLE
   return (
-    <article className={`pcard pcard--${size}${risk ? ' pcard--risk' : ''}${done ? ' pcard--done' : ''}`}>
+    <article className={`pcard pcard--${size}${risk ? ' pcard--risk' : ''}${done ? ' pcard--done' : ''}${long ? ' pcard--long' : ''}`}>
       {tag && <span className="pcard__tag">{tag}</span>}
-      <div className="pcard__media">
+      {/* 商店的商品照片是白底包装图，整张放进来不裁；我们自己出的场景图铺满 */}
+      <div className={`pcard__media${product.image_url ? ' pcard__media--photo' : ''}`}>
         {img ? <img src={img} alt="" draggable={false} /> : <span className="pcard__mono">{title.slice(0, 1)}</span>}
         {done && (
           <div className="pcard__stamp" role="status">
