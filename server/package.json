@@ -9,7 +9,7 @@
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",
-    "test": "VISA_SANDBOX_PREFLIGHT=0 tsx --test test/*.test.ts",
+    "test": "VISA_SANDBOX_PREFLIGHT=0 DEMO_CLOCK_START=2026-10-17T18:00:00Z tsx --test test/*.test.ts",
     "visa:check": "tsx src/visa-check.ts",
     "smoke": "bash test/smoke.sh"
   },
