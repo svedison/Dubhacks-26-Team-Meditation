@@ -84,9 +84,11 @@ export default function Face({ state, talking, level, hear, gaze }: Props) {
 
   useEffect(() => {
     let raf = 0
+    // 每帧复用同一个参数对象：一秒 60 次新建对象会让 iPad 频繁回收内存，出现细小的顿挫
+    const p = { ...FACE_PARAMS.listening }
     const tick = () => {
       const t = performance.now() / 1000
-      const p = Object.fromEntries(PARAM_KEYS.map((k) => [k, mv[k].get()])) as FaceParams
+      for (const k of PARAM_KEYS) p[k] = mv[k].get()
 
       // 随机眨眼：间隔 blinkMin..blinkMax 秒，偶尔连眨两下；合 70ms、停 30ms、睁 90ms
       const b = blink.current

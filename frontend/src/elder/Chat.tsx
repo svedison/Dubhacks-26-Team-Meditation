@@ -22,20 +22,15 @@ function emphasize(text: string, counter: { word: number }): ReactNode[] {
   return parts.flatMap((part, i) => {
     if (!part) return []
     const em = i % 2 === 1
-    // 新的一句按词逐个点亮，老人能跟着读（参照 Serve Robotics 的逐字渐显）
+    // 新的一句按词逐个点亮，老人能跟着读（参照 Serve Robotics 的逐字渐显）。用 CSS 动画加逐词延迟（elder.css 的 chat__w）：
+    // 一段几十个词时不用同时跑几十个 JS 动画，iPad 上 Milo 说话时脸和字幕都不卡
     const words = em ? [part] : part.split(/(\s+)/)
     return words.map((w, j) => {
       if (/^\s+$/.test(w)) return w
       return (
-        <motion.span
-          key={`${i}-${j}`}
-          className={em ? 'chat__em' : undefined}
-          initial={{ opacity: 0.35 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: counter.word++ * 0.06, duration: 0.25 }}
-        >
+        <span key={`${i}-${j}`} className={em ? 'chat__w chat__em' : 'chat__w'} style={{ animationDelay: `${counter.word++ * 60}ms` }}>
           {w}
-        </motion.span>
+        </span>
       )
     })
   })

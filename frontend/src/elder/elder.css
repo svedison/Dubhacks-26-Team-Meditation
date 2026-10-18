@@ -122,6 +122,9 @@
 /* 她说了一长段、下面还有 Milo 的回答时：她那句最多三行，位置留给回答 */
 .chat__row--grandma:not(:last-child) .chat__bubble { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
 /* 价格、日期这些要记住的词：琥珀色加粗，底下垫一条淡琥珀色（不用下划线，免得像能点的链接） */
+.chat__w { animation: chat-word 250ms ease both; }
+@keyframes chat-word { from { opacity: 0.35; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .chat__w { animation: none; } }
 .chat__em {
   font-weight: 900;
   color: #f6c37a;
