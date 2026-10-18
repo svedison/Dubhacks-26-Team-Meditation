@@ -52,10 +52,16 @@ function provider(): Provider | null {
   return null;
 }
 
+/** What the voice reads: the caption keeps "911", but MiniMax reads the digits as "one hundred eleven". */
+export function speechText(text: string): string {
+  return text.replace(/\b911\b/g, 'nine one one');
+}
+
 const inFlight = new Map<string, Promise<string | null>>();
-export async function synthesize(text: string): Promise<string | null> {
+export async function synthesize(caption: string): Promise<string | null> {
   const tts = provider();
-  if (!tts || !text.trim()) return null;
+  if (!tts || !caption.trim()) return null;
+  const text = speechText(caption);
   const hash = createHash('sha256').update(`${tts.cacheKey}:${text}`).digest('hex');
   const file = resolve(audioDir, `${hash}.mp3`);
   // Render sets RENDER_EXTERNAL_URL to the service's https URL, so audio links work there without extra config.

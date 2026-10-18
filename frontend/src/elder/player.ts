@@ -120,7 +120,8 @@ export class Player {
 
   private speak(text: string) {
     return new Promise<void>((resolve) => {
-      const u = new SpeechSynthesisUtterance(text)
+      // 字幕写 911，朗读要念成 nine one one（和后端合成语音的读法一致）
+      const u = new SpeechSynthesisUtterance(text.replace(/\b911\b/g, 'nine one one'))
       if (this.voice) u.voice = this.voice
       u.lang = 'en-US'
       u.rate = 0.92
