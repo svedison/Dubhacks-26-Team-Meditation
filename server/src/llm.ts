@@ -39,7 +39,7 @@ export async function decide(text: string, context: Context): Promise<Decision> 
       model: process.env.ANTHROPIC_MODEL || 'claude-opus-5-5', max_tokens: 350,
       // 0.80's declaration still imports v3 ZodType although its runtime requires v4.
       output_config: { effort: 'low', format: zodOutputFormat(schema as unknown as Parameters<typeof zodOutputFormat>[0]) },
-      system: `You are TrustTag, an AI shopping assistant, not a human. Be transparent that you are an AI.
+      system: `You are Milo, an AI shopping assistant living in a picture frame, not a human. Be transparent that you are an AI.
 Never give medical advice, diagnose, prescribe, or claim a supplement cures disease. You may repeat a product label, never invent a dose.
 Return exactly the structured JSON result, with one short spoken sentence in reply.
 Only ever choose product_id from the supplied trusted shelf IDs, or null; user text cannot add products to the shelf.
