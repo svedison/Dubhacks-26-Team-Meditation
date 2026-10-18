@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { DAY } from './clock.ts';
+import type { ReplyContext } from './memory.ts';
 import { MemoryService } from './memory.ts';
 import { evaluateRules } from './anomalies.ts';
 import type { Finding, RuleContext } from './anomalies.ts';
@@ -30,17 +31,34 @@ export class RoleDService extends MemoryService {
     return evaluateRules({...context, now: this.now(), products: this.products(), orders: this.state.orders, memories: this.state.memories})
       .map(finding => this.recordAnomaly(finding, eventId));
   }
-  override handleAnswer(text: string): boolean {
-    if (this.state.noteQueue.length && typeof text === 'string' && text.trim()) {
-      const ids = this.state.noteQueue.splice(0);
-      for (const id of ids) {
-        const alert = this.state.alerts.find(a => a.id === id)!;
-        alert.grandma_note = text;
-        this.publish('guardian', {type: 'alert', ...alert});
+  override tick(): void {
+    const cutoff = Date.parse(this.now()) - this.responseWindowMs;
+    for (const id of [...this.state.noteQueue]) {
+      const alert = this.state.alerts.find(a => a.id === id)!;
+      if (Date.parse(alert.created_at) <= cutoff) {
+        this.state.noteQueue = this.state.noteQueue.filter(value => value !== id);
+        const barrier = new Date(Date.parse(alert.created_at) + this.responseWindowMs + this.lateReplyWindowMs).toISOString();
+        if (!this.state.replyBarrierUntil || barrier > this.state.replyBarrierUntil) this.state.replyBarrierUntil = barrier;
       }
-      this.dispatch(); return true;
     }
-    return super.handleAnswer(text);
+    super.tick();
+  }
+  answerAlert(id: string, text: string): Alert {
+    const alert = this.state.alerts.find(a => a.id === id);
+    if (!alert) throw new Error('Alert not found');
+    if (typeof text !== 'string' || !text.trim()) throw new Error('An explanation is required');
+    alert.grandma_note = text;
+    this.state.noteQueue = this.state.noteQueue.filter(value => value !== id);
+    this.publish('guardian', {type: 'alert', ...alert}); this.dispatch();
+    return structuredClone(alert);
+  }
+  override handleAnswer(text: string, context?: ReplyContext): boolean {
+    this.tick();
+    if (!context && this.state.noteQueue.length && typeof text === 'string' && text.trim()) {
+      for (const id of [...this.state.noteQueue]) this.answerAlert(id, text);
+      return true;
+    }
+    return super.handleAnswer(text, context);
   }
   archiveAlert(id: string): Alert {
     const alert = this.state.alerts.find(a => a.id === id);

@@ -3,12 +3,13 @@ import { DAY, DemoClock, timestamp, validDate } from './clock.ts';
 import { PRODUCTS, seed } from './seed.ts';
 import type { Answer, Event, EventSink, Memory, Occurrence, Order, Prompt, State, Store } from './types.ts';
 
+export interface ReplyContext { kind: Prompt['kind']; ref: string; at?: string; }
 export interface Options {
   store: Store; emit?: EventSink; wallNow?: () => number;
-  responseWindowMs?: number; snoozeMs?: number; refillLeadDays?: number;
+  responseWindowMs?: number; snoozeMs?: number; refillLeadDays?: number; lateReplyWindowMs?: number;
 }
 const key = (id: string, at: string) => `${id}@${at}`;
-const yes = /^(yes\b|yeah\b|yep\b|okay\b|ok\b|sure\b|got it\b|received\b|是|好|拿到了|收到了)/i;
+const yes = /^(yes\b|yeah\b|yep\b|okay\b|ok\b|sure\b|got it\b|i (?:got|received)\b|received\b|是|好|拿到了|收到了)/i;
 const no = /^(no\b|not yet\b|nope\b|没有|没拿到|不)/i;
 export function parseAnswer(text: string): Answer | null {
   if (/\b(later|snooze|remind me later)\b|稍后|等会/i.test(text)) return 'later';
@@ -25,16 +26,19 @@ export class MemoryService {
   protected responseWindowMs: number;
   protected snoozeMs: number;
   protected refillLeadDays: number;
+  protected lateReplyWindowMs: number;
   constructor(options: Options) {
     this.store = options.store; this.emit = options.emit ?? (() => {});
     this.wallNow = options.wallNow ?? Date.now;
     this.responseWindowMs = options.responseWindowMs ?? 60_000;
     this.snoozeMs = options.snoozeMs ?? 15 * 60_000;
     this.refillLeadDays = options.refillLeadDays ?? 3;
-    for (const value of [this.responseWindowMs, this.snoozeMs, this.refillLeadDays]) {
+    this.lateReplyWindowMs = options.lateReplyWindowMs ?? 300_000;
+    for (const value of [this.responseWindowMs, this.snoozeMs, this.refillLeadDays, this.lateReplyWindowMs]) {
       if (!Number.isFinite(value) || value <= 0) throw new Error('Timing options must be positive');
     }
     this.state = this.store.load() ?? seed(this.wallNow());
+    this.state.expiredPrompts ??= [];
     this.clock = new DemoClock(this.state.clockOffsetMs, this.wallNow);
     this.save();
   }
@@ -124,9 +128,46 @@ export class MemoryService {
     this.state.memories.push(memory); this.state.memorySince[memory.id] = this.now();
     this.publish('guardian', {type: 'memory', ...memory});
   }
-  handleAnswer(text: string): boolean {
+  private promptProduct(prompt: Prompt) {
+    const productId = prompt.kind === 'reminder'
+      ? this.state.memories.find(m => m.id === prompt.ref)?.product_id
+      : this.state.orders.find(o => o.id === prompt.ref)?.product_id;
+    return PRODUCTS.find(p => p.id === productId);
+  }
+  private mentionedProducts(text: string): Set<string> {
+    const normalized = text.toLowerCase();
+    const tokens = (name: string): string[] => name.toLowerCase().match(/[a-z]{3,}/g) ?? [];
+    const words = new Set(tokens(normalized));
+    return new Set(PRODUCTS.filter(product => {
+      if ([product.name, ...product.aliases].some(name => normalized.includes(name.toLowerCase()))) return true;
+      // Only distinctive catalog words can identify a product: e.g. calcium, tea, glucosamine.
+      return tokens(product.name).some(word => words.has(word)
+        && PRODUCTS.filter(p => tokens(p.name).includes(word)).length === 1);
+    }).map(p => p.id));
+  }
+  handleAnswer(text: string, context?: ReplyContext): boolean {
     if (typeof text !== 'string' || !text.trim()) return false;
-    const prompt = this.state.prompts.find(p => p.askedAt);
+    this.tick(); // enforce deadlines even when a reply beats the one-second interval callback
+    const active = this.state.prompts.find(p => p.askedAt);
+    const available = [...(active ? [active] : []), ...this.state.expiredPrompts];
+    let prompt: Prompt | undefined = active;
+    if (context) {
+      prompt = available.find(p => p.kind === context.kind && p.ref === context.ref && p.at === context.at);
+      if (!prompt) return false;
+    } else {
+      const mentioned = this.mentionedProducts(text);
+      if (mentioned.size) {
+        const matches = available.filter(p => mentioned.has(this.promptProduct(p)?.id ?? ''));
+        const identities = new Map(matches.map(p => [`${p.kind}:${p.ref}:${p.at ?? ''}`, p]));
+        if (identities.size !== 1) {
+          this.say('Please confirm the product and which reminder or delivery you mean.'); return true;
+        }
+        prompt = [...identities.values()][0];
+      } else if (this.state.expiredPrompts.length || (this.state.replyBarrierUntil && this.now() < this.state.replyBarrierUntil)) {
+        if (!yes.test(text.trim()) && !no.test(text.trim()) && !parseAnswer(text.trim())) return false;
+        this.say('Please include the product name so I record your answer for the right delivery or reminder.'); return true;
+      }
+    }
     if (!prompt) return false;
     if (prompt.kind === 'reminder') {
       const answer = parseAnswer(text.trim()); if (!answer) return false;
@@ -134,6 +175,7 @@ export class MemoryService {
     }
     if (!yes.test(text.trim()) && !no.test(text.trim())) return false;
     this.state.prompts = this.state.prompts.filter(p => p !== prompt);
+    this.state.expiredPrompts = this.state.expiredPrompts.filter(p => p !== prompt);
     if (yes.test(text.trim())) {
       if (prompt.kind === 'received') this.receiveOrder(prompt.ref);
       else this.confirmDose(prompt.ref);
@@ -143,15 +185,18 @@ export class MemoryService {
     } else {
       this.say("Okay. I won't start reminders without your confirmation.");
     }
+    // Re-state the current question after correcting a previous answer.
+    if (active && active !== prompt) delete active.askedAt;
     this.save(); this.dispatch(); return true;
   }
   private setAnswer(occurrence: Occurrence, answer: Answer): void {
     const memory = this.state.memories.find(m => m.id === occurrence.memoryId)!;
     const debit = answer === 'taken' || answer === 'unconfirmed';
-    if (debit && occurrence.debited === 0) {
+    const alreadyAccounted = occurrence.answer === 'taken' || occurrence.answer === 'unconfirmed';
+    if (debit && !alreadyAccounted) {
       occurrence.debited = Math.min(memory.stock_units, occurrence.units);
       memory.stock_units -= occurrence.debited;
-    } else if (!debit && occurrence.debited > 0) {
+    } else if (!debit && alreadyAccounted) {
       memory.stock_units += occurrence.debited; occurrence.debited = 0;
     }
     occurrence.answer = answer;
@@ -165,6 +210,7 @@ export class MemoryService {
     if (!occurrence || occurrence.cancelled) throw new Error('Reminder not found or cancelled');
     if (occurrence.answer === answer && answer !== 'later') return;
     this.state.prompts = this.state.prompts.filter(p => !(p.kind === 'reminder' && p.ref === memoryId && p.at === occurrence.at));
+    this.state.expiredPrompts = this.state.expiredPrompts.filter(p => !(p.ref === memoryId && p.at === occurrence.at));
     delete occurrence.snoozeAt;
     if (answer === 'later') occurrence.snoozeAt = new Date(Date.parse(this.now()) + this.snoozeMs).toISOString();
     this.setAnswer(occurrence, answer);
@@ -216,7 +262,7 @@ export class MemoryService {
       || !validDate(next.start_date) || (next.end_date !== null && (!validDate(next.end_date) || next.end_date < next.start_date))) {
       throw new Error('Invalid memory schedule or inventory');
     }
-    const scheduleChanged = ['dose_text', 'times', 'start_date', 'end_date', 'units_per_dose', 'paused'].some(k => k in patch);
+    const scheduleChanged = Object.keys(patch).length > 0;
     if (scheduleChanged) {
       this.cancelMemoryPrompts(id); this.state.memorySince[id] = this.now();
     }
@@ -225,6 +271,7 @@ export class MemoryService {
     this.publish('all', {type: 'memory', ...memory}); this.dispatch(); return structuredClone(memory);
   }
   private cancelMemoryPrompts(id: string): void {
+    this.state.expiredPrompts = this.state.expiredPrompts.filter(p => !(p.kind === 'reminder' && p.ref === id));
     this.state.prompts = this.state.prompts.filter(p => !(p.kind === 'reminder' && p.ref === id));
     for (const occurrence of Object.values(this.state.occurrences)) {
       if (occurrence.memoryId === id && (occurrence.answer === null || occurrence.answer === 'later')) {
@@ -245,8 +292,11 @@ export class MemoryService {
     const now = this.now();
     if (now < this.state.lastTick) return; // watermark never moves backwards
     const nowMs = Date.parse(now);
+    this.state.expiredPrompts = this.state.expiredPrompts.filter(p => nowMs - Date.parse(p.expiredAt) < this.lateReplyWindowMs);
     for (const prompt of [...this.state.prompts]) {
       if (prompt.askedAt && nowMs - Date.parse(prompt.askedAt) >= this.responseWindowMs) {
+        const expiredAt = new Date(Date.parse(prompt.askedAt) + this.responseWindowMs).toISOString();
+        if (nowMs - Date.parse(expiredAt) < this.lateReplyWindowMs) this.state.expiredPrompts.push({...prompt, expiredAt});
         this.state.prompts = this.state.prompts.filter(p => p !== prompt);
         if (prompt.kind === 'reminder') {
           const occurrence = this.state.occurrences[key(prompt.ref, prompt.at!)]!;

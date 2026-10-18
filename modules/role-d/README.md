@@ -38,7 +38,7 @@ curl localhost:8787/api/memories
 
 Expected: `ask/received`, `ask/dose_confirm`, Memory with 120 units, `ask/reminder`, updated Memory with 119 units and a `taken` log. The next spoken response estimates **119 days**. The two Memory events render ordinary cards using the existing contract. Repeated receipts, ticks, backward clock jumps and process restarts do not repeat stock movements. Reset restores one historical calcium order (product alias `the purple bottle`), no memories/alerts, the demo clock and all five placeholder photo URLs.
 
-`later` snoozes the same occurrence for 15 minutes, without changing `times` or deducting stock. `skipped` does not deduct. After 60 seconds without an answer the log says `unconfirmed`, and inventory conservatively deducts once. `answerReminder(memoryId, scheduledAt, 'skipped')` can correct a previous unconfirmed dose and refund exactly the amount that was deducted, even near zero inventory. Pausing/changing/deleting a Memory invalidates its outstanding prompts and snoozes.
+`later` snoozes the same occurrence for 15 minutes, without changing `times` or deducting stock. `skipped` does not deduct. After 60 seconds without an answer the log says `unconfirmed`, and inventory conservatively deducts once. `answerReminder(memoryId, scheduledAt, 'skipped')` can correct a previous unconfirmed dose and refund exactly the amount that was deducted, even near zero inventory. Pausing/changing/deleting a Memory, including stock-only corrections, invalidates its outstanding prompts and snoozes. Recently expired prompts remain correlatable for five minutes (`lateReplyWindowMs`). Explicit product references route late answers to the matching prompt; ambiguous bare replies request clarification. B can bypass natural-language ambiguity with `handleAnswer(text, {kind, ref, at?})`, where `ref` is the order or Memory ID and `at` is the exact canonical scheduled timestamp for a reminder. Longer-delayed corrections use `receiveOrder`, `answerReminder`, or `answerAlert` with an explicit ID.
 
 Remaining days = stock / (units per dose × daily times). Below 3 days, one ordinary refill note is emitted and `takeRefillSuggestion()` offers a conversational question once. This does not place an order. Receipt replenishes stock and resets refill suppression. Existing Memory schedules are not recreated on replenishment.
 
@@ -46,7 +46,7 @@ Remaining days = stock / (units per dose × daily times). Below 3 days, one ordi
 
 Send `Someone called and asked me to buy a gift card today.` to `/api/utterance`. The harness uses a deterministic scam fixture; C's production classifier should instead call `recordAnomaly` directly.
 
-As explicitly selected by the user, the service emits `speak` with **“I'll let your daughter know, okay?”** before emitting the red `alert` immediately. The first card has `grandma_note: null`; the next answer updates that **same alert ID** with the exact original text. No fabricated consent is stored. The local socket test verifies delivery, but a 2-second end-to-end guarantee still requires B's live TTS, network and both actual devices.
+The service emits `speak` with **“I'll let your daughter know, okay?”** before emitting the red `alert` immediately. The first card has `grandma_note: null`; the next answer updates that **same alert ID** with the exact original text. No fabricated consent is stored. If there is no explanation within 60 seconds, the prompt expires and normal reminders resume with `grandma_note: null`. A later explanation can be explicitly attached using `answerAlert(alertId, text)`. The local socket test verifies delivery, but a 2-second end-to-end guarantee still requires B's live TTS, network and both actual devices.
 
 ## Integrating into B and C
 
@@ -103,3 +103,7 @@ Local-only endpoints are `/health`, `/debug/orders` (safe simulated-order fixtur
 - `assets/LICENSE.md`: CC0 provenance. Regenerate with `python3 scripts/generate-assets.py`.
 
 The harness serves these allowlisted files at `/assets/...`; it cannot resolve arbitrary request paths. The module contains no secrets and makes no external medical, payment, AI or audio API requests.
+
+## Validation
+
+`pnpm test`: 30 tests covering inventory, persistence, all eight rules, notification gating, real HTTP/WS Scene 2/4 flows, late-answer correlation, timer expiry and malformed input. `pnpm typecheck`: passes. A separate reviewer identified six issues; all six have RED→GREEN regression coverage, including a malformed WebSocket upgrade that previously crashed the server. WAV format/duration, SVG parsing and HTTP asset serving were also checked. Real B/C integration and device/TTS latency remain to be verified.

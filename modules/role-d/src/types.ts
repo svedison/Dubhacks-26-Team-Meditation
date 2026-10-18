@@ -41,7 +41,7 @@ export interface Occurrence {
 export interface State {
   version: 1; clockOffsetMs: number; lastTick: string;
   orders: Order[]; memories: Memory[]; alerts: Alert[]; settings: Settings;
-  prompts: Prompt[]; occurrences: Record<string, Occurrence>;
+  prompts: Prompt[]; expiredPrompts: (Prompt & {expiredAt: string})[]; replyBarrierUntil?: string; occurrences: Record<string, Occurrence>;
   receivedOrders: string[]; inventory: Record<string, number>;
   deliveryAsked: Record<string, string>; memorySince: Record<string, string>;
   refills: Record<string, {alertId: string; offered: boolean}>;

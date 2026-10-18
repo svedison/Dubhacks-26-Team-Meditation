@@ -27,7 +27,7 @@ export function createServer(options: Options & {scheduler?: boolean; allowedOri
   }});
   const allowedOrigins = options.allowedOrigins ?? ['http://localhost:5173', 'http://127.0.0.1:5173'];
   function utterance(input: Record<string, unknown>) {
-    if (typeof input.text !== 'string' || !input.text.trim() || input.text.length > 8000 || !['voice', 'keyboard'].includes(String(input.source))) throw new RequestError('Expected text and source voice|keyboard');
+    if (typeof input.text !== 'string' || !input.text.trim() || input.text.length > 8000 || (typeof input.source !== 'string' || !['voice', 'keyboard'].includes(input.source))) throw new RequestError('Expected text and source voice|keyboard');
     replies = [];
     const text = input.text;
     let state = 'listening';
@@ -104,7 +104,9 @@ export function createServer(options: Options & {scheduler?: boolean; allowedOri
   });
   const wss = new WebSocketServer({noServer: true, maxPayload: MAX_BODY});
   server.on('upgrade', (req, socket, head) => {
-    const url = new URL(req.url ?? '/', 'http://localhost'), role = url.searchParams.get('role') ?? 'elder';
+    let url: URL;
+    try { url = new URL(req.url ?? '/', 'http://localhost'); } catch { socket.destroy(); return; }
+    const role = url.searchParams.get('role') ?? 'elder';
     if (url.pathname !== '/ws' || !['elder', 'guardian'].includes(role) || (req.headers.origin && !allowedOrigins.includes(req.headers.origin))) { socket.destroy(); return; }
     wss.handleUpgrade(req, socket, head, ws => {
       clients.set(ws, role as 'elder' | 'guardian');

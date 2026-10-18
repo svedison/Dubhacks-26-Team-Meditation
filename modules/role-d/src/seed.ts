@@ -9,6 +9,6 @@ export function seed(wallNow: number): State {
     settings: {elder_name: 'Grandma', address: '123 Demo Lane', phone: '555-0100', card_last4: '4242',
       card_owner: 'guardian', monthly_baseline_cents: 15000, share_level: 'default', wake_name: 'Lily',
       photos: Array.from({length: 5}, (_, i) => `/assets/photos/family-${i + 1}.svg`)},
-    prompts: [], occurrences: {}, receivedOrders: ['ord_00'], inventory: {}, deliveryAsked: {}, memorySince: {},
+    prompts: [], expiredPrompts: [], occurrences: {}, receivedOrders: ['ord_00'], inventory: {}, deliveryAsked: {}, memorySince: {},
     refills: {}, alertEvents: {}, pushedAlerts: [], noteQueue: []};
 }
