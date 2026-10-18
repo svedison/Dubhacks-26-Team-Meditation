@@ -240,8 +240,8 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
 
       {corner && (
         <motion.div layout="position" className={`talk ${layoutCls}`} transition={{ layout: MOVE }} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          {/* 字幕区高 = 744 − 上沿 272 − 下边距 56；宽度和 elder.css 里 .talk 一致 */}
-          <Chat lines={view.lines} width={scam ? 1021 : pair ? 470 : view.card ? 540 : 860} height={416} headline={scam} />
+          {/* 字幕区高 = 744 − 上沿 284 − 下边距 56；宽度和 elder.css 里 .talk 一致 */}
+          <Chat lines={view.lines} width={scam ? 1021 : pair ? 470 : view.card ? 540 : 860} height={404} headline={scam} />
         </motion.div>
       )}
       {corner && (
