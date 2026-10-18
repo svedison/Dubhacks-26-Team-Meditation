@@ -298,6 +298,8 @@ export class ConversationPipeline {
   }
 
   private async respond(plan: ReplyPlan, job: Job): Promise<UtteranceResult> {
+    // A superseded turn (reset, or she already said something newer) says nothing: skip TTS too, e.g. confirm()'s empty plan.
+    if (this.dead(job)) return this.silent();
     this.setStage(job, 'responding');
     const started = Date.now();
     const audio_url = await this.bounded(`turn #${job.id} TTS`, () => this.dependencies.synthesize(plan.text), () => null);
@@ -387,7 +389,8 @@ export class ConversationPipeline {
   private async confirm(job: Job): Promise<ReplyPlan> {
     const pending = this.pending;
     this.pending = null; // Consume before awaiting payment; duplicate yes cannot charge twice.
-    if (!pending) return { text: 'What would you like me to order?', emotion: 'worried' };
+    // A plain question, nothing went wrong: a friendly face, not a worried one.
+    if (!pending) return { text: 'What would you like me to order?', emotion: 'happy' };
     const product = get('products', pending.productId);
     const qty = pending.quantity;
     if (!product || !risk.check(product.id, '').ok) return this.offer(pending.productId, '', qty);
@@ -527,7 +530,7 @@ export class ConversationPipeline {
       case 'refill': case 'new_request': case 'risky_product':
         this.chatRounds = 0; plan = this.offer(decision.product_id, text, decision.quantity ?? parseQuantity(text) ?? 1); break;
       case 'confirm_yes':
-        if (/\b(if|unless|maybe|not|don't)\b/i.test(text)) plan = { text: 'Would you like me to place this order?', emotion: 'worried' };
+        if (/\b(if|unless|maybe|not|don't)\b/i.test(text)) plan = { text: 'Would you like me to place this order?', emotion: 'happy' };
         else { job.committed = true; plan = await this.confirm(job); }
         break;
       case 'confirm_no': this.pending = null; plan = { text: "Okay, I won't order it.", emotion: 'happy' }; break;
