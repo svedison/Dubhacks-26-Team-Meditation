@@ -1,13 +1,14 @@
 import { MicVAD } from '@ricky0123/vad-web'
+import { WaveFile } from 'wavefile'
 import { api } from '../config'
 
-// 麦克风常开：Silero VAD 自带的 AudioWorklet 取流并重采样到 16 kHz，
-// 这里把每帧（512 样本 = 32 ms）转成 PCM16，按 8 帧一块 POST 到 /api/audio。
-// uploadAll=false 时只在 VAD 判定有人说话时上传（带 320 ms 预录）；uploadAll=true 用于 30 分钟连续测试。
+// 麦克风常开：Silero VAD 自带的 AudioWorklet 取流并重采样到 16 kHz，有两种上传方式：
+// - utterance（老人端）：VAD 判定一句话说完，把这一整句（含 400 ms 预录）打包成 WAV，POST /api/audio 一次。
+//   后端 B 的 /api/audio 每个请求按一整句转写（server/README.md「对接规则」）。
+// - stream（/mic-test 长测）：每帧转 PCM16，按 8 帧一块连续上传，用来验证 30 分钟不断。
 
 const SAMPLE_RATE = 16000
 const FRAMES_PER_CHUNK = 8
-const PREROLL_FRAMES = 10
 const CHUNK_MS = FRAMES_PER_CHUNK * 32
 
 export type MicStatus = {
@@ -30,13 +31,13 @@ export type MicStatus = {
 }
 
 type Options = {
-  uploadAll: boolean
+  mode: 'utterance' | 'stream'
   onStatus: (s: MicStatus) => void
   onSpeechStart?: () => void
   onSpeechEnd?: () => void
 }
 
-function toPcm16(frames: Float32Array[]): ArrayBuffer {
+function toPcm16(frames: Float32Array[]): Int16Array<ArrayBuffer> {
   const total = frames.reduce((n, f) => n + f.length, 0)
   const out = new Int16Array(total)
   let i = 0
@@ -46,7 +47,13 @@ function toPcm16(frames: Float32Array[]): ArrayBuffer {
       out[i++] = s < 0 ? s * 0x8000 : s * 0x7fff
     }
   }
-  return out.buffer
+  return out
+}
+
+function toWav(audio: Float32Array): Uint8Array<ArrayBuffer> {
+  const wav = new WaveFile()
+  wav.fromScratch(1, SAMPLE_RATE, '16', toPcm16([audio]))
+  return new Uint8Array(wav.toBuffer())
 }
 
 export class MicStream {
@@ -56,12 +63,11 @@ export class MicStream {
   private stream: MediaStream | null = null
   private silence: HTMLAudioElement | null = null
   private wakeLock: WakeLockSentinel | null = null
-  private ring: Float32Array[] = []
   private pending: Float32Array[] = []
   private speaking = false
   private held = false
   private seq = 0
-  private queue: { pcm: ArrayBuffer; speech: boolean; end: boolean }[] = []
+  private queue: { pcm: ArrayBuffer; speech: boolean }[] = []
   private inflight = false
   status: MicStatus = {
     phase: 'off', error: null, startedAt: null, ctxState: 'none', trackState: 'none', wakeLock: 'none',
@@ -124,16 +130,17 @@ export class MicStream {
       negativeSpeechThreshold: 0.35,
       redemptionMs: 600,
       minSpeechMs: 250,
+      preSpeechPadMs: 400,
       onFrameProcessed: (probs, frame) => this.onFrame(probs.isSpeech, frame),
       onSpeechStart: () => this.onSpeechStart(),
-      onSpeechEnd: () => this.onSpeechEnd(),
-      onVADMisfire: () => this.onSpeechEnd(),
+      onSpeechEnd: (audio) => this.onSpeechEnd(audio),
+      onVADMisfire: () => this.onSpeechEnd(null),
     })
     await this.vad.start()
     document.addEventListener('visibilitychange', this.onVisibility)
 
     this.emit({ phase: 'on', startedAt: Date.now(), ctxState: ctx.state, trackState: track.readyState })
-    this.log(`mic on, ctx ${ctx.sampleRate} Hz, uploadAll=${this.opts.uploadAll}`)
+    this.log(`mic on, ctx ${ctx.sampleRate} Hz, mode=${this.opts.mode}`)
   }
 
   private onVisibility = () => {
@@ -154,20 +161,16 @@ export class MicStream {
   // 设备自己在说话时调用 hold(true)：这段时间不上传，避免把自己的声音当成奶奶的话
   hold(on: boolean) {
     this.held = on
-    if (on) { this.pending = []; this.ring = []; this.speaking = false }
+    if (on) this.speaking = false
   }
 
   private onFrame(prob: number, frame: Float32Array) {
     const copy = new Float32Array(frame)
     this.status.framesSeen++
     this.status.speechProb = prob
-    if (this.held) return
-    if (this.opts.uploadAll || this.speaking) {
+    if (this.opts.mode === 'stream') {
       this.pending.push(copy)
-      if (this.pending.length >= FRAMES_PER_CHUNK) this.flush(false)
-    } else {
-      this.ring.push(copy)
-      if (this.ring.length > PREROLL_FRAMES) this.ring.shift()
+      if (this.pending.length >= FRAMES_PER_CHUNK) this.flush()
     }
     if (this.status.framesSeen % 8 === 0) this.emit({})
   }
@@ -175,22 +178,35 @@ export class MicStream {
   private onSpeechStart() {
     if (this.held) return
     this.speaking = true
-    if (!this.opts.uploadAll) { this.pending.push(...this.ring); this.ring = [] }
     this.emit({ speaking: true })
     this.opts.onSpeechStart?.()
   }
 
-  private onSpeechEnd() {
+  private onSpeechEnd(audio: Float32Array | null) {
     if (!this.speaking) return
     this.speaking = false
-    if (!this.opts.uploadAll) this.flush(true)
     this.emit({ speaking: false })
+    // 设备自己在说话时听到的不算奶奶的话
+    if (audio && !this.held && this.opts.mode === 'utterance') void this.sendUtterance(audio)
     this.opts.onSpeechEnd?.()
   }
 
-  private flush(end: boolean) {
+  private async sendUtterance(audio: Float32Array) {
+    const body = toWav(audio)
+    const res = await fetch(api('/api/audio'), { method: 'POST', headers: { 'content-type': 'audio/wav' }, body }).catch((e: Error) => e)
+    if (res instanceof Error || !res.ok) {
+      const why = res instanceof Error ? res.message : `HTTP ${res.status}`
+      console.error('[mic] utterance upload failed', why)
+      this.emit({ sendErrors: this.status.sendErrors + 1 })
+      this.log(`upload failed: ${why}`)
+      return
+    }
+    this.emit({ chunksSent: this.status.chunksSent + 1, bytesSent: this.status.bytesSent + body.byteLength, lastSendAt: Date.now() })
+  }
+
+  private flush() {
     if (this.pending.length === 0) return
-    this.queue.push({ pcm: toPcm16(this.pending), speech: this.speaking || end, end })
+    this.queue.push({ pcm: toPcm16(this.pending).buffer, speech: this.speaking })
     this.pending = []
     // 后端连不上时最多积 30 秒，再多就丢最早的
     const max = Math.ceil(30000 / CHUNK_MS)
@@ -213,8 +229,7 @@ export class MicStream {
     for (const b of batch) { body.set(new Uint8Array(b.pcm), o); o += b.pcm.byteLength }
     const seq = this.seq++
     const speech = batch.some((b) => b.speech) ? 1 : 0
-    const end = batch.at(-1)!.end
-    const url = api(`/api/audio?seq=${seq}&sr=${SAMPLE_RATE}&speech=${speech}${end ? '&end=1' : ''}`)
+    const url = api(`/api/audio?seq=${seq}&sr=${SAMPLE_RATE}&speech=${speech}`)
     const res = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/octet-stream' }, body }).catch((e: Error) => e)
     this.inflight = false
     if (res instanceof Error || !res.ok) {

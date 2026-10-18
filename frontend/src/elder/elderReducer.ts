@@ -48,5 +48,8 @@ export function elderReducer(v: ElderView, e: ElderEvent | { type: 'socket_down'
       return { ...v, clock: e.now }
     case 'speak':
       return v
+    default:
+      // 契约之外的事件（比如后端的 connected）不影响画面
+      return v
   }
 }

@@ -36,7 +36,7 @@ export default function ElderApp() {
     if (root.requestFullscreen && !document.fullscreenElement) {
       root.requestFullscreen({ navigationUI: 'hide' }).catch((e: Error) => console.warn('[elder] fullscreen', e.message))
     }
-    const mic = new MicStream({ uploadAll: false, onStatus: () => {} })
+    const mic = new MicStream({ mode: 'utterance', onStatus: () => {} })
     const started = mic.start()
     const player = new Player(mic.ctx!)
     player.unlock()
@@ -71,6 +71,16 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
   const [fullHold, setFullHold] = useState(false)
   const clearEmotionAfterTalk = useRef(false)
   const pendingIdle = useRef(false)
+  const emotionAt = useRef(0)
+  const emotionTimer = useRef<number | undefined>(undefined)
+
+  // 开心、担心、警报至少保持 3 秒：后端常在说完话以后才发结果状态，紧接着就切回在听，不保持的话只会闪一下
+  const clearEmotion = () => {
+    window.clearTimeout(emotionTimer.current)
+    const left = 3000 - (Date.now() - emotionAt.current)
+    if (left <= 0) setEmotion(null)
+    else emotionTimer.current = window.setTimeout(() => setEmotion(null), left)
+  }
 
   // 从待机醒来（或设备主动开口）：全屏大眼睛至少停 1 秒，再缩到左上角
   const holdFullScreen = () => {
@@ -96,14 +106,16 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       // 开心、担心、警报在接下来说话时保持，直到下一次在听、在想或待机
       if (e.state === 'happy' || e.state === 'worried' || e.state === 'alert') {
         clearEmotionAfterTalk.current = false
+        window.clearTimeout(emotionTimer.current)
+        emotionAt.current = Date.now()
         setEmotion(e.state)
       } else if (e.state === 'idle') {
         clearEmotionAfterTalk.current = false
-        setEmotion(null)
+        clearEmotion()
       } else if (e.state !== 'speaking') {
         // AI 还在说就先不换脸，说完再换
         if (player.playing) clearEmotionAfterTalk.current = true
-        else setEmotion(null)
+        else clearEmotion()
       }
     }
   })
@@ -127,7 +139,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       setPlaying(busy)
       if (!busy && clearEmotionAfterTalk.current) {
         clearEmotionAfterTalk.current = false
-        setEmotion(null)
+        clearEmotion()
       }
       if (!busy && pendingIdle.current) {
         pendingIdle.current = false
@@ -153,7 +165,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
   }, [])
 
   const base: FaceState = view.face === 'idle' && playing ? 'speaking' : view.face
-  const face: FaceState = base === 'speaking' && emotion ? emotion : base
+  const face: FaceState = emotion && (base === 'speaking' || base === 'listening') ? emotion : base
   const showFace = view.awake || playing
   const corner = view.conversing && !fullHold
   const pair = !!view.card?.alternative
