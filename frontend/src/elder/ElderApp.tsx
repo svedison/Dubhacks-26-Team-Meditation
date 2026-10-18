@@ -36,7 +36,7 @@ export default function ElderApp() {
     if (root.requestFullscreen && !document.fullscreenElement) {
       root.requestFullscreen({ navigationUI: 'hide' }).catch((e: Error) => console.warn('[elder] fullscreen', e.message))
     }
-    const mic = new MicStream({ mode: 'utterance', onStatus: () => {} })
+    const mic = new MicStream({ mode: 'speech', onStatus: () => {} })
     const started = mic.start()
     const player = new Player(mic.ctx!)
     player.unlock()
