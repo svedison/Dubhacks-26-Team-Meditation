@@ -94,11 +94,23 @@ export class Player {
       u.lang = 'en-US'
       u.rate = 0.92
       u.pitch = 1.05
+      // Safari 的 speechSynthesis 偶尔不触发 onend（已知问题）：按字数估一个最长时长，到点就当说完，并记一条警告
+      const words = text.split(/\s+/).length
+      let done = false
+      const finish = (why: string) => {
+        if (done) return
+        done = true
+        window.clearTimeout(watchdog)
+        this.ttsLevel = 0
+        if (why !== 'end') console.warn(`[player] speech ${why}: "${text.slice(0, 40)}"`)
+        resolve()
+      }
+      const watchdog = window.setTimeout(() => { speechSynthesis.cancel(); finish('timed out') }, 2000 + words * 550)
       // speechSynthesis 拿不到音频数据：每读到一个词给嘴型一个脉冲
       u.onboundary = () => { this.ttsLevel = 0.75 + Math.random() * 0.25 }
       u.onstart = () => { this.ttsLevel = 0.8 }
-      u.onend = () => { this.ttsLevel = 0; resolve() }
-      u.onerror = () => { this.ttsLevel = 0; resolve() }
+      u.onend = () => finish('end')
+      u.onerror = (e) => finish(`error ${e.error}`)
       speechSynthesis.speak(u)
     })
   }

@@ -56,22 +56,36 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
   const [emotion, setEmotion] = useState<FaceState | null>(null)
   const [fullHold, setFullHold] = useState(false)
   const clearEmotionAfterTalk = useRef(false)
+  const pendingIdle = useRef(false)
+
+  // 从待机醒来（或设备主动开口）：全屏大眼睛至少停 1 秒，再缩到左上角
+  const holdFullScreen = () => {
+    setFullHold(true)
+    window.setTimeout(() => setFullHold(false), 1000)
+  }
 
   const { status, send } = useSocket<ElderEvent, ElderOutgoing>('elder', (e) => {
+    if (e.type === 'state' && e.state === 'idle' && player.playing) {
+      // 还在说的话说完再回待机
+      pendingIdle.current = true
+      lastFace.current = 'idle'
+      return
+    }
+    if (e.type === 'state' || e.type === 'ask' || e.type === 'transcript') pendingIdle.current = false
+    if (e.type === 'ask' && lastFace.current === 'idle') holdFullScreen()
     dispatch(e)
     if (e.type === 'speak' || e.type === 'ask') player.enqueue({ text: e.text, audio_url: e.audio_url })
     if (e.type === 'state' && e.state !== lastFace.current) {
-      // 从待机醒来：全屏大眼睛至少停 1 秒，再缩到左上角
-      if (lastFace.current === 'idle') {
-        setFullHold(true)
-        window.setTimeout(() => setFullHold(false), 1000)
-      }
+      if (lastFace.current === 'idle') holdFullScreen()
       lastFace.current = e.state
       playCue(mic.ctx!, e.state)
       // 开心、担心、警报在接下来说话时保持，直到下一次在听、在想或待机
       if (e.state === 'happy' || e.state === 'worried' || e.state === 'alert') {
         clearEmotionAfterTalk.current = false
         setEmotion(e.state)
+      } else if (e.state === 'idle') {
+        clearEmotionAfterTalk.current = false
+        setEmotion(null)
       } else if (e.state !== 'speaking') {
         // AI 还在说就先不换脸，说完再换
         if (player.playing) clearEmotionAfterTalk.current = true
@@ -97,6 +111,11 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
         clearEmotionAfterTalk.current = false
         setEmotion(null)
       }
+      if (!busy && pendingIdle.current) {
+        pendingIdle.current = false
+        setEmotion(null)
+        dispatch({ type: 'state', state: 'idle' })
+      }
       window.clearTimeout(release)
       // 设备自己说话时不上传麦克风，说完再等 300 ms 余音
       if (busy) mic.hold(true)
@@ -120,13 +139,10 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
 
   return (
     <Stage background={face === 'alert' ? 'var(--elder-bg-alert)' : 'var(--elder-bg)'}>
-      <AnimatePresence>
-        {!showFace && (
-          <motion.div key="photos" className="layer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.6 }}>
-            <PhotoFrame photos={photos} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* 照片层一直在后台轮播，醒来时只是淡出，回待机时接着放下一张 */}
+      <motion.div className="layer" initial={false} animate={{ opacity: showFace ? 0 : 1 }} transition={{ duration: showFace ? 0.4 : 0.6 }}>
+        <PhotoFrame photos={photos} />
+      </motion.div>
 
       <AnimatePresence>
         {showFace && (
