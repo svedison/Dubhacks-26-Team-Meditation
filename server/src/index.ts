@@ -4,7 +4,7 @@ import cors from '@fastify/cors';
 import websocket from '@fastify/websocket';
 import staticFiles from '@fastify/static';
 import { mkdir } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { z } from 'zod';
@@ -183,7 +183,10 @@ export async function buildServer() {
       try { await visaSandbox.hello(); hello = { ok: true, detail: 'sandbox.api.visa.com answered helloworld over mTLS' }; }
       catch (error) { hello = { ok: false, detail: error instanceof Error ? error.message : 'error' }; }
     }
-    return { mode, ...files, hello };
+    // Names only (never contents) of whatever Render mounted: shows a wrong filename or folder at a glance.
+    let secret_files: string[] | null = null;
+    try { secret_files = readdirSync('/etc/secrets'); } catch { secret_files = null; }
+    return { mode, ...files, secret_files, env: { VISA_SANDBOX_DIR: process.env.VISA_SANDBOX_DIR ?? null, VISA_SANDBOX_PREFLIGHT: process.env.VISA_SANDBOX_PREFLIGHT ?? null }, hello };
   });
   // What Deepgram actually delivered lately and whether it woke the device: the thing to look at when "Milo" is missed.
   app.get('/debug/heard', async () => ({ wake_name: getSettings().wake_name, heard: pipeline.recentlyHeard() }));
