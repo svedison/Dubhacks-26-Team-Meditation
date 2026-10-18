@@ -52,7 +52,7 @@ export default function MemoryPage() {
               <button
                   className="g-icon-btn"
                   aria-label={m.paused ? 'Resume reminder' : 'Pause reminder'}
-                  onClick={() => void saveMemory({ ...m, paused: !m.paused }).catch((e: Error) => console.error(e))}
+                  onClick={() => void saveMemory(m.id, { paused: !m.paused }).catch((e: Error) => console.error(e))}
                 >
                   {m.paused ? <Play strokeWidth={2.4} /> : <Pause strokeWidth={2.4} />}
                   <span>{m.paused ? 'Resume' : 'Pause'}</span>

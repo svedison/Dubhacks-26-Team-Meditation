@@ -66,24 +66,27 @@ function TopBar() {
 }
 
 function HomePage() {
-  const { alerts, clock, settings, freshIds, archive } = useGuardian()
-  const open = alerts.filter((a) => !a.archived)
-  // 红卡置顶，其余按后端给的顺序；前端不重新判断级别
+  const { alerts, clock, loaded, settings, freshIds, archive } = useGuardian()
+  // 新的在上：推送来的和拉取来的卡片排序一致，重连后卡片不换位置
+  const open = alerts.filter((a) => !a.archived).sort((x, y) => hoursBetween(x.created_at, y.created_at))
+  // 红卡置顶，其余按时间；级别只按后端给的，前端不重新判断
   const red = open.filter((a) => a.level === 'red')
   const rest = open.filter((a) => a.level !== 'red')
+  const yellow = rest.some((a) => a.level === 'yellow')
   const name = settings?.elder_name ?? 'Mom'
-  // 页面刚打开时已有的记录不播进场动画；之后新收进「This week」的那一行要亮一下
+  // 页面刚打开时已有的记录不播进场动画；数据拉完以后新收进「This week」的那一行才亮一下
   const [settled, setSettled] = useState(false)
   useEffect(() => {
+    if (!loaded) return
     const t = window.setTimeout(() => setSettled(true), 600)
     return () => window.clearTimeout(t)
-  }, [])
+  }, [loaded])
   return (
     // 电脑宽度时分两栏：左边是要处理的卡，右边是本周回顾
     <section className="g-page g-home">
       <div className="g-home__main">
-      <h1 className="g-h1">{red.length ? `Call ${name} today` : 'All good'}</h1>
-      <p className="g-lede">{red.length ? 'Milo noticed something.' : 'Nothing needs you right now.'}</p>
+      <h1 className="g-h1">{red.length ? `Call ${name} today` : yellow ? 'Take a look' : 'All good'}</h1>
+      <p className="g-lede">{red.length || yellow ? 'Milo noticed something.' : 'Nothing needs you right now.'}</p>
       <div className="g-stack">
         {/* 收走的卡片不再占位，下面的内容直接到位，不会等它消失后再往上跳 */}
         <AnimatePresence initial={false} mode="popLayout">
@@ -109,7 +112,8 @@ function ThisWeek({ animateIn }: { animateIn: boolean }) {
   const { alerts, clock } = useGuardian()
   const now = clock ?? new Date().toISOString()
   const week = alerts.filter((a) => hoursBetween(a.created_at, now) <= 24 * 7)
-  const seen = week.filter((a) => a.archived).sort((x, y) => hoursBetween(y.created_at, x.created_at))
+  // 新的在上
+  const seen = week.filter((a) => a.archived).sort((x, y) => hoursBetween(x.created_at, y.created_at))
   const [openId, setOpenId] = useState<string | null>(null)
   if (week.length > 0 && seen.length === 0) return null
   return (

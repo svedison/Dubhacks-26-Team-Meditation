@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import ProductCard from '../shared/ui/ProductCard'
 import { dayLabel, money } from '../shared/format'
 import { useGuardian } from './store'
@@ -13,7 +14,11 @@ const STATUS_TEXT = { paid: 'Paid', simulated_paid: 'Simulated', blocked: 'Block
 
 // 后端已按分享层级过滤，这里返回什么就显示什么
 export default function LedgerPage() {
-  const { ledger, products, settings } = useGuardian()
+  const { ledger, products, settings, loadLedger } = useGuardian()
+  // 「月度总额」档后端不推每一单，打开这一页时按当前数据重新拉，总额不会停在旧的数
+  useEffect(() => {
+    loadLedger().catch((e: Error) => console.error('[guardian] ledger', e.message))
+  }, [loadLedger])
   if (!ledger) return <section className="g-page"><h1 className="g-h1">Money</h1><p className="g-lede">Loading…</p></section>
   return (
     <section className="g-page g-ledger">

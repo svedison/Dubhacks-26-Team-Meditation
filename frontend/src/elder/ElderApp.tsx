@@ -4,6 +4,7 @@ import { MicStream } from '../shared/audio/micStream'
 import { api } from '../shared/config'
 import type { ElderEvent, ElderOutgoing, FaceState, Settings } from '../shared/contracts'
 import { clockLabel } from '../shared/format'
+import { useDemoNow } from '../shared/useDemoNow'
 import { useSocket } from '../shared/useSocket'
 import CardStage from './CardStage'
 import ClockJump from './ClockJump'
@@ -62,7 +63,19 @@ export default function ElderApp() {
     if (live || starting) return
     setStarting(true)
     setError(null)
-    const mic = new MicStream({ mode: 'speech', onStatus: () => {} })
+    // 用着用着麦克风被系统收走（来电、别的 App 占用）：设备已经听不见了，回到开机页，让人点一下重新开麦
+    let ended = false
+    const shutDown = (why: string) => {
+      if (ended) return
+      ended = true
+      console.error('[elder] mic stopped', why)
+      player.stop()
+      void mic.stop()
+      setLive(null)
+      setStarting(false)
+      setError(why)
+    }
+    const mic = new MicStream({ mode: 'speech', onStatus: (s) => { if (s.phase === 'error') shutDown(s.error ?? 'microphone error') } })
     const started = mic.start()
     const player = new Player(mic.ctx!)
     player.unlock()
@@ -70,7 +83,7 @@ export default function ElderApp() {
     if (micPermission.current === 'granted') enterFullscreen()
     started
       .then(() => setLive({ mic, player }))
-      .catch((e: Error) => { console.error(e); setError(`${e.name}: ${e.message}`); setStarting(false) })
+      .catch((e: Error) => shutDown(`${e.name}: ${e.message}`))
   }
 
   if (!live) {
@@ -90,6 +103,8 @@ export default function ElderApp() {
 
 function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
   const [view, dispatch] = useReducer(elderReducer, initialView)
+  // 角上的时间跟着演示时钟往前走（后端只在设时间、重置时推一次）
+  const now = useDemoNow(view.clock)
   const [playing, setPlaying] = useState(false)
   const [photos, setPhotos] = useState<string[]>(SAMPLE_PHOTOS)
   const [wakeName, setWakeName] = useState<string | null>(null)
@@ -189,6 +204,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       if (busy) mic.hold(true)
       else release = window.setTimeout(() => mic.hold(false), 300)
     }
+    return () => window.clearTimeout(release)
   }, [player, mic, send])
 
   useEffect(() => {
@@ -257,9 +273,9 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       )}
 
       {/* 醒着时角上留着时钟；聊起来变小变淡，不抢字幕，但到货、提醒那几幕仍看得出是哪天几点 */}
-      {view.clock && showFace && (
+      {now && showFace && (
         <div className={`clock${corner ? ' clock--quiet' : ''}`}>
-          <span className="clock__time">{clockLabel(view.clock)}</span>
+          <span className="clock__time">{clockLabel(now)}</span>
         </div>
       )}
       <ClockJump clock={view.clock} />
@@ -267,7 +283,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
         {!showFace && (
           <motion.div key="strip" className="wake-strip" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }} transition={{ duration: 0.5 }}>
             {wakeName && <span className="wake-strip__say">Say “{wakeName}”</span>}
-            {view.clock && <span className="wake-strip__clock">{clockLabel(view.clock)}</span>}
+            {now && <span className="wake-strip__clock">{clockLabel(now)}</span>}
           </motion.div>
         )}
       </AnimatePresence>

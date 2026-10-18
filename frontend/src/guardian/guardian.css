@@ -74,7 +74,7 @@
 .g-mem__facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 14px 0 0; }
 .g-mem__facts div { padding: 10px; border-radius: var(--radius-s); background: var(--g-bg); }
 .g-mem__facts dt { white-space: nowrap; font-size: 13px; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; color: var(--g-sub); }
-.g-mem__facts dd { margin: 2px 0 0; font-size: 18px; font-weight: 900; white-space: nowrap; }
+.g-mem__facts dd { margin: 2px 0 0; font-size: 18px; line-height: 1.2; font-weight: 900; }
 .g-mem .g-icon-btn { width: 100%; justify-content: center; margin-top: 14px; }
 .g-icon-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 50px; padding: 0 16px; border-radius: 999px; border: 2px solid var(--g-line); background: #fff; font-weight: 900; font-size: 17px; cursor: pointer; }
 .g-icon-btn svg { width: 16px; height: 16px; }
