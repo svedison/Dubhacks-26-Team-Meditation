@@ -116,6 +116,7 @@ export class ConversationPipeline {
       status: 'simulated_paid', block_reason: null, created_at, deliver_on: delivery.toISOString().slice(0, 10), received: false };
     const order = await placeOrder(draft, () => version === this.generation);
     if (!order) return { text: '', emotion: 'worried' };
+    registerOrder(order); // D schedules the delivery question and, once received, the dose reminders.
     const text = order.status === 'simulated_paid'
       ? "Your simulated order is placed; I'll let you know when it arrives."
       : "Your order is placed; I'll let you know when it arrives.";
@@ -136,10 +137,19 @@ export class ConversationPipeline {
       pendingProductId: this.pending?.productId || null, awaitingName: this.awaitingName, history: [...this.history] };
     this.history.push({ role: 'user', content: text });
 
-    // The next answer to the notification question is a note, never purchase consent.
+    // The next answer to the notification question is a note, never purchase consent. A new shopping request
+    // (or another scam) right after the warning is routed normally instead of being swallowed as the note.
+    let decided: Decision | null = null;
     if (this.noteFor) {
-      saveGrandmaNote(this.noteFor, text); this.noteFor = null;
-      return this.respond({ text: "Thank you; I've added your words to the message for your daughter.", emotion: 'worried' }, version);
+      const alertId = this.noteFor; this.noteFor = null;
+      if (!risk.isScam(text)) {
+        decided = await this.dependencies.decide(text, context);
+        if (version !== this.generation) return this.silent();
+        if (!['refill', 'new_request', 'risky_product', 'scam'].includes(decided.intent)) {
+          saveGrandmaNote(alertId, text);
+          return this.respond({ text: "Thank you; I've added your words to the message for your daughter.", emotion: 'worried' }, version);
+        }
+      }
     }
     // Answers to D's prompts (got the parcel? start reminders? taken it?) never go to the shopping router.
     const memoryReply = memoryAnswer(text);
@@ -163,7 +173,8 @@ export class ConversationPipeline {
     }
     const normalized = normalize(text);
     let decision: Decision;
-    if (this.pending && /^(yes|yes please|yeah|yep|okay|ok|sure|please do|order it|go ahead|yes order it)$/.test(normalized)) {
+    if (decided) decision = decided;
+    else if (this.pending && /^(yes|yes please|yeah|yep|okay|ok|sure|please do|order it|go ahead|yes order it)$/.test(normalized)) {
       decision = { intent: 'confirm_yes', product_id: null, reply: '', elder_name: null };
     } else if (this.pending && /^(no|no thanks|no thank you|cancel|cancel it|never mind|nope)$/.test(normalized)) {
       decision = { intent: 'confirm_no', product_id: null, reply: '', elder_name: null };
