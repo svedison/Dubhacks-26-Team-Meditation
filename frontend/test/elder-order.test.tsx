@@ -8,6 +8,16 @@ const product: Product = { id: 'calcium-120', name: 'Calcium', price_cents: 1800
 const order: Order = { id: 'ord_demo', product_id: product.id, price_cents: 1800, status: 'simulated_paid', block_reason: null, created_at: '2026-10-17T18:00:00Z', deliver_on: '2026-10-22', received: false }
 const offer = () => elderReducer(initialView, { type: 'card', product })
 
+test('idle chatter stays off screen, while a backend wake restores the last utterance', () => {
+  const heard = elderReducer(initialView, { type: 'transcript', role: 'grandma', text: 'Milo, I need calcium' })
+  expect(heard.awake).toBe(false)
+  expect(heard.lines).toEqual([])
+  const awake = elderReducer(heard, { type: 'state', state: 'listening' })
+  expect(awake.awake).toBe(true)
+  expect(awake.lines.map(line => line.text)).toEqual(['Milo, I need calcium'])
+  expect(awake.heardWhileIdle).toBeNull()
+})
+
 test('a happy offer is not a completed order', () => {
   const view = elderReducer(offer(), { type: 'state', state: 'happy' })
   expect(view.card?.done).toBe(false)
