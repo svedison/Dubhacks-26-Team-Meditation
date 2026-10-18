@@ -89,12 +89,13 @@ export function GuardianProvider({ children }: { children: ReactNode }) {
   }, [cancelLedger])
   const loadMemories = useCallback(() => getJson<Memory[]>('/api/memories').then(setMemories), [])
 
-  const loadAll = useCallback(() => {
+  // withProducts：商品目录（100 个商品）不随演示时间变化，只在连上时拉；时间变了只重拉提醒、设置、订单和用药
+  const loadAll = useCallback((withProducts: boolean) => {
     // 后端没起来时这里会报错：页面照样渲染空状态，WebSocket 连上后会再拉一次
     Promise.all([
       getJson<Alert[]>('/api/alerts').then(setAlerts),
       getJson<Settings>('/api/settings').then(setSettings),
-      getJson<Product[]>('/api/products').then((ps) => setProducts(Object.fromEntries(ps.map((p) => [p.id, p])))),
+      ...(withProducts ? [getJson<Product[]>('/api/products').then((ps) => setProducts(Object.fromEntries(ps.map((p) => [p.id, p]))))] : []),
       loadLedger(),
       loadMemories(),
     ])
@@ -104,7 +105,7 @@ export function GuardianProvider({ children }: { children: ReactNode }) {
 
   const { status } = useSocket<GuardianEvent, never>('guardian', (e) => {
     // 后端只在连上、设时间、重置时推 clock：重置会清空订单、警报和用药，所以每次都把数据重新拉一遍
-    if (e.type === 'clock') { setClock(e.now); loadAll(); return }
+    if (e.type === 'clock') { setClock(e.now); loadAll(false); return }
     if (e.type === 'alert') {
       const { type: _t, ...alert } = e
       setAlerts((a) => upsert(a, alert))
@@ -118,7 +119,7 @@ export function GuardianProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (status !== 'open') return
-    loadAll()
+    loadAll(true)
     // Default sharing deliberately has no ordinary-order WS event. Refresh the
     // filtered REST ledger without changing what the family is allowed to see.
     const refresh = () => {

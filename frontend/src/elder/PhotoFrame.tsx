@@ -15,6 +15,13 @@ export default function PhotoFrame({ photos, paused, day }: { photos: string[]; 
     const t = setInterval(() => setI((n) => (n + 1) % photos.length), 5000)
     return () => clearInterval(t)
   }, [photos.length, paused])
+  // 下一张先解码好：iPad 上换图时不用当场解码一张几百 KB 的大照片，交叉淡入不顿
+  useEffect(() => {
+    if (photos.length < 2) return
+    const next = new Image()
+    next.src = photos[(i + 1) % photos.length]
+    void next.decode()
+  }, [i, photos])
   const src = photos[i % photos.length]
   return (
     <div className={`photo-frame${paused ? ' is-paused' : ''}`}>
