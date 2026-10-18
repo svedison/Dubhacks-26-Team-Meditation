@@ -29,6 +29,12 @@ export default function LedgerPage() {
         <div className="g-total">
           <span className="g-total__label">This month</span>
           <span className="g-total__value">{money(ledger.month_total_cents)}</span>
+          {settings && (
+            // 这个月花了多少，对着她平常一个月的量：一眼看出是多还是少
+            <span className="g-total__bar" aria-hidden>
+              <i style={{ width: `${Math.min(100, (ledger.month_total_cents / Math.max(1, settings.monthly_baseline_cents)) * 100)}%` }} />
+            </span>
+          )}
           {settings && <span className="g-total__base">Usually about {money(settings.monthly_baseline_cents)}</span>}
         </div>
       )}

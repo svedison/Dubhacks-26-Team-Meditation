@@ -36,15 +36,15 @@ export default function MemoryPage() {
                 <div><dt>Left</dt><dd>{days} days</dd></div>
                 <div><dt>Last dose</dt><dd>{m.log.length ? ANSWER_TEXT[m.log.at(-1)!.answer] : 'Not yet'}</dd></div>
               </dl>
-              {/* 最近 7 天：吃了是实心，没吃或说晚点是空心圈，还没有记录是浅灰 */}
+              {/* 最近 7 天：吃了是实心，没吃或说晚点是空心圈，还没有记录是浅灰；开始吃之前的日子是虚线圈，今天外面加一圈 */}
               <ol className="g-mem__week" aria-label="Last 7 days">
                 {week.map((d) => {
                   const answers = m.log.filter((l) => dayKey(l.at) === d.key).map((l) => l.answer)
-                  const cls = answers.includes('taken') ? 'is-taken' : answers.length ? 'is-missed' : ''
+                  const cls = answers.includes('taken') ? 'is-taken' : answers.length ? 'is-missed' : d.key < m.start_date ? 'is-before' : ''
                   return (
                     <li key={d.key} className={cls} aria-label={`${d.key}: ${cls ? (cls === 'is-taken' ? ANSWER_TEXT.taken : ANSWER_TEXT[answers.at(-1)!]) : 'no record'}`}>
                       <i aria-hidden />
-                      <span aria-hidden>{d.letter}</span>
+                      <span aria-hidden>{d.date}</span>
                     </li>
                   )
                 })}

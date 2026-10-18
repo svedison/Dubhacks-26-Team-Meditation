@@ -112,10 +112,13 @@
   font-size: 30px;
   line-height: 1.25;
   font-weight: 700;
-  color: rgba(255, 241, 220, 0.78);
-  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.7), 0 0 2px rgba(0, 0, 0, 0.6);
-  padding: 4px 0 4px 22px;
-  border-left: 4px solid rgba(255, 241, 220, 0.32);
+  color: rgba(255, 241, 220, 0.9);
+  padding: 8px 18px 9px 20px;
+  border-left: 4px solid rgba(255, 241, 220, 0.4);
+  border-radius: 4px 18px 18px 4px;
+  background: rgba(26, 19, 15, 0.5);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 .chat__em {
   font-weight: 700;
@@ -253,3 +256,7 @@
 /* 假药那幕下单以后：不要的那张缩小变淡，注意力回到买了的那张 */
 .card-stage--pair .card-stage__slot { transition: opacity 500ms ease, transform 500ms cubic-bezier(0.43, 0.195, 0.02, 1); }
 .card-stage--pair:has(.pcard--done) .card-stage__slot:first-child { opacity: 0.5; transform: scale(0.92); }
+
+/* 顶部时间条出来的那 2.6 秒里，右上角的小时钟先藏起来，同一个时间不出现两遍 */
+.stage:has(.clock-jump) .clock { opacity: 0; }
+.clock { transition: opacity 300ms ease, transform 300ms ease; }

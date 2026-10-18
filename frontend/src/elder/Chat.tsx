@@ -30,7 +30,7 @@ function emphasize(text: string, counter: { word: number }): ReactNode[] {
         <motion.span
           key={`${i}-${j}`}
           className={em ? 'chat__em' : undefined}
-          initial={{ opacity: 0.12 }}
+          initial={{ opacity: 0.35 }}
           animate={{ opacity: 1 }}
           transition={{ delay: counter.word++ * 0.06, duration: 0.25 }}
         >

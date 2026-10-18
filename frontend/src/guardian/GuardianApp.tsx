@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import AlertCard from '../shared/ui/AlertCard'
 import { clockLabel, hoursBetween, recentLabel } from '../shared/format'
+import { SAMPLE_PHOTOS } from '../shared/samplePhotos'
 import LedgerPage from './LedgerPage'
 import MemoryPage from './MemoryPage'
 import SettingsPage from './SettingsPage'
@@ -84,6 +85,7 @@ function HomePage() {
   return (
     // 电脑宽度时分两栏：左边是要处理的卡，右边是本周回顾
     <section className="g-page g-home">
+      <FrameNow photo={settings?.photos[0] ?? SAMPLE_PHOTOS[0]} worried={red.length > 0} />
       <div className="g-home__main">
       <h1 className="g-h1">{red.length ? `Call ${name} today` : yellow ? 'Take a look' : 'All good'}</h1>
       <p className="g-lede">{red.length || yellow ? 'Milo noticed something.' : 'Nothing needs you right now.'}</p>
@@ -96,7 +98,7 @@ function HomePage() {
         </AnimatePresence>
         {open.length === 0 && (
           <motion.div className="g-empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.3 }}>
-            <span className="g-empty__eyes" aria-hidden><i /><i /></span>
+            {/* 眼睛已经在上面的相框里了，这里只留一句话 */}
             <p>If Milo needs you, it shows here.</p>
           </motion.div>
         )}
@@ -104,6 +106,17 @@ function HomePage() {
       </div>
       <ThisWeek animateIn={settled} />
     </section>
+  )
+}
+
+// 首页顶上一小块「她那边的相框此刻」：和相框里同一张家庭照片、同一双眼睛。平时眼睛闭成两条线、轻轻呼吸，
+// 和相框待机时一样；有没处理的红色警报时照片压上一层酒红，眼睛睁开、是担心的样子
+function FrameNow({ photo, worried }: { photo: string; worried: boolean }) {
+  return (
+    <div className={`g-frame${worried ? ' is-worried' : ''}`} aria-hidden>
+      <img className="g-frame__photo" src={photo} alt="" draggable={false} />
+      <span className="g-frame__eyes"><i /><i /></span>
+    </div>
   )
 }
 
