@@ -10,6 +10,7 @@ export interface Product {
   certification_source: {status: 'demo_only' | 'not_verified' | 'store_listing' | 'typical_listing' | 'usp_verified_program' | 'fda_enforcement' | 'demo_scripted'; url: string | null; note: string};
   demo_only: boolean;
   price_source?: {kind: 'store' | 'typical'; store?: string; location_id?: string; fetched_at: string};
+  image_url?: string | null; // store front image; the elder page falls back to its local pictures by id
 }
 export interface Order {
   id: string; product_id: string; price_cents: number;

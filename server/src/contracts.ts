@@ -5,6 +5,7 @@ export const productSchema = z.object({
   category: z.string(), certification: z.string().nullable(), aliases: z.array(z.string()),
   label_dose: z.string().nullable(), units: z.number().int().positive(), units_per_dose: z.number().positive(),
   risk: z.object({ kind: z.enum(['fda_fraud', 'recall', 'unverified']), alternative_id: z.string() }).nullable(),
+  image_url: z.string().url().nullable().optional(), // store photo (QFC listing); the elder page falls back to its local images by id
 });
 export const orderSchema = z.object({
   id: z.string(), product_id: z.string(), price_cents: z.number().int().nonnegative(),

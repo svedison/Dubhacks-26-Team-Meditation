@@ -23,7 +23,7 @@ interface Product {
   id: string; name: string; price_cents: number; category: string; certification: string | null; aliases: string[]; label_dose: string | null;
   units: number; units_per_dose: number; risk: { kind: 'fda_fraud' | 'recall' | 'unverified'; alternative_id: string } | null;
   brand: string; merchant: string; ingredients: string[];
-  certification_source: { status: string; url: string | null; note: string }; demo_only: boolean;
+  certification_source: { status: string; url: string | null; note: string }; demo_only: boolean; image_url: string | null;
   price_source?: { kind: 'store' | 'typical'; store?: string; location_id?: string; fetched_at: string };
 }
 const catalogue = JSON.parse(readFileSync(resolve(here, 'catalogue.json'), 'utf8')) as { items: CatalogueItem[]; risk_samples_kept_from_demo: string[] };
@@ -57,7 +57,13 @@ function storeName(hit: KrogerProduct): string {
 }
 
 // ---------- Kroger ----------
-interface KrogerProduct { productId: string; upc?: string; brand?: string; description: string; items?: { size?: string; price?: { regular?: number; promo?: number }; inventory?: { stockLevel?: string } }[] }
+interface KrogerProduct { productId: string; upc?: string; brand?: string; description: string; items?: { size?: string; price?: { regular?: number; promo?: number }; inventory?: { stockLevel?: string } }[];
+  images?: { perspective?: string; featured?: boolean; sizes?: { size?: string; url?: string }[] }[] }
+function storeImage(hit: KrogerProduct): string | null {
+  const image = hit.images?.find(i => i.perspective === 'front') ?? hit.images?.find(i => i.featured) ?? hit.images?.[0];
+  const sizes = image?.sizes ?? [];
+  return (sizes.find(s => s.size === 'large') ?? sizes.find(s => s.size === 'medium') ?? sizes[0])?.url ?? null;
+}
 async function kroger(): Promise<{ store: string; locationId: string; search: (term: string) => Promise<KrogerProduct | null> } | null> {
   const id = process.env.KROGER_CLIENT_ID, secret = process.env.KROGER_CLIENT_SECRET;
   if (!id || !secret) { console.log('Kroger: no KROGER_CLIENT_ID/SECRET, using typical prices'); return null; }
@@ -113,7 +119,7 @@ async function recalls(limit: number): Promise<Product[]> {
     out.push({
       id: `recall-${rec.recall_number.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`, name, price_cents: 2999, category: 'supplement', certification: null,
       aliases: [name.toLowerCase()], label_dose: null, units: 60, units_per_dose: 1,
-      risk: { kind: 'recall', alternative_id: 'multivitamin' }, brand: title(rec.recalling_firm), merchant: 'Not sold: FDA recall in progress', ingredients: [],
+      risk: { kind: 'recall', alternative_id: 'multivitamin' }, brand: title(rec.recalling_firm), merchant: 'Not sold: FDA recall in progress', ingredients: [], image_url: null,
       certification_source: { status: 'fda_enforcement', url: 'https://open.fda.gov/apis/food/enforcement/', note: `FDA recall ${rec.recall_number} (${rec.recall_initiation_date}): ${rec.reason_for_recall.slice(0, 200)}` },
       demo_only: false, price_source: { kind: 'typical', fetched_at: now },
     });
@@ -149,6 +155,8 @@ for (const item of catalogue.items) {
       : { status: hit ? 'store_listing' : 'typical_listing', url: null, note: hit ? `Listed at ${store!.store} on ${now.slice(0, 10)}` : 'Curated everyday item; price is a typical US price, not a live quote' },
     demo_only: false,
     price_source: hit ? { kind: 'store', store: store!.store, location_id: store!.locationId, fetched_at: now } : { kind: 'typical', fetched_at: now },
+    // Pinned demo records keep the elder page's own local photo (null here); everything else shows the store's front image.
+    image_url: hit ? storeImage(hit) : null,
   };
   if (hit) priced++;
   if (item.dsld) {
@@ -171,7 +179,7 @@ for (const item of catalogue.items) {
   }
   products.push(product);
 }
-for (const id of catalogue.risk_samples_kept_from_demo) { const sample = byId.get(id); if (sample) products.push(sample); }
+for (const id of catalogue.risk_samples_kept_from_demo) { const sample = byId.get(id); if (sample) products.push({ ...sample, image_url: null }); }
 // Real FDA recalls are opt-in (--recalls): the scripted scene counts on exactly the three demo risk items.
 if (args.includes('--recalls')) products.push(...await recalls(2));
 const ids = new Set<string>();

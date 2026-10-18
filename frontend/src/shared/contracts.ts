@@ -13,6 +13,7 @@ export type Product = {
   units: number
   units_per_dose: number
   risk: null | { kind: RiskKind; alternative_id: string }
+  image_url?: string | null // 门店正面图（QFC 商品）；没有时老人端按 id 用本地图
 }
 
 export type Order = {

@@ -5,8 +5,8 @@ import { now } from './clock.js';
 import { toElder } from './bus.js';
 import { state } from './state.js';
 import { extractWakeName, isOnlyWakeName, matchesWakeName, normalize } from './wake.js';
-import { shortlist } from './shelf.js';
-import { decide, fallbackDecision, FALLBACK_REPLY, type Context, type Decision } from './llm.js';
+import { shelfMatches, shortlist } from './shelf.js';
+import { decide, fallbackDecision, FALLBACK_REPLY, type Context, type Decision, type RecentOrder } from './llm.js';
 import { synthesize } from './tts.js';
 import * as risk from './modules/risk.js';
 import { placeOrder } from './modules/orders.js';
@@ -184,6 +184,13 @@ export class ConversationPipeline {
     console.info(`[pipeline] turn #${job.id} dropped while ${job.stage}: ${why}`);
   }
   private silent(): UtteranceResult { return { reply_text: '', audio_url: null, state: state.current }; }
+  /** The last few orders, named, so the model can answer "what did I buy today?" from facts. */
+  private recentOrders(shelf: { id: string; name: string }[]): RecentOrder[] {
+    return all('orders').slice(-6).map(order => ({
+      product: shelf.find(p => p.id === order.product_id)?.name ?? order.product_id, price_cents: order.price_cents,
+      ordered_on: order.created_at.slice(0, 10), deliver_on: order.deliver_on, status: order.status, received: order.received,
+    }));
+  }
 
   /** One turn with a watchdog: whatever stalls inside, the queue moves on and the elder hears something. */
   private async run(job: Job): Promise<UtteranceResult> {
@@ -349,8 +356,12 @@ export class ConversationPipeline {
     this.setStage(job, 'thinking');
     state.think();
     const text = job.text;
-    const context: Context = { products: shortlist(text, all('products'), this.pending?.productId ?? null), settings, chatRounds: this.chatRounds,
-      pendingProductId: this.pending?.productId || null, awaitingName: this.awaitingName, history: [...this.history] };
+    const shelf = all('products');
+    // Talking about food, shopping or anything on the shelf is never "small talk", so it is not counted or steered.
+    const shopping = shelfMatches(text, shelf) || /\b(buy|bought|order(?:ed|s)?|purchase[sd]?|shop(?:ping)?|get me|food|eat|hungry|snack|drink|groceries)\b/i.test(text);
+    const context: Context = { products: shortlist(text, shelf, this.pending?.productId ?? null), settings, chatRounds: this.chatRounds,
+      pendingProductId: this.pending?.productId || null, awaitingName: this.awaitingName, history: [...this.history],
+      now: now(), recentOrders: this.recentOrders(shelf) };
     job.historyEntry = { role: 'user', content: text };
     this.history.push(job.historyEntry);
 
@@ -420,10 +431,10 @@ export class ConversationPipeline {
       case 'scam': plan = this.scam(text); break;
       case 'emergency': plan = this.startEmergency(text); break;
       case 'unwell': {
-        // Everyday discomfort: stay with her, no shelf, no disclaimer loop. Claude's sentence, unless it slipped into refusing.
+        // Everyday discomfort: stay with her as a friend, no shelf, no disclaimer loop. Claude's sentence, unless it slipped into refusing.
         this.pending = null;
-        const warm = decision.reply !== FALLBACK_REPLY && !/medical advice|can'?t help|cannot help|unable to help/i.test(decision.reply);
-        plan = { text: warm ? decision.reply : "I'm sorry you're not feeling well. I'm right here with you; tell me if anything feels worse.", emotion: 'worried' };
+        const warm = decision.reply !== FALLBACK_REPLY && !/medical advice|can'?t help|cannot help|unable to help|I'?m an AI|as an AI/i.test(decision.reply);
+        plan = { text: warm ? decision.reply : "I'm sorry you're not feeling well. I'm your friend and I'm right here with you; tell me if anything feels worse.", emotion: 'worried' };
         break;
       }
       case 'refill': case 'new_request': case 'risky_product':
@@ -442,8 +453,10 @@ export class ConversationPipeline {
       }
       default: {
         this.pending = null;
-        if (decision.reply !== FALLBACK_REPLY) this.chatRounds++;
-        plan = { text: decision.reply === FALLBACK_REPLY ? FALLBACK_REPLY : this.chatRounds > 2 ? 'What would you like to find on our shopping shelf?' : decision.reply, emotion: decision.reply === FALLBACK_REPLY ? 'worried' : 'happy' };
+        if (shopping) this.chatRounds = 0; // "I want some food", "what did I buy" are the point of the conversation, not a detour
+        else if (decision.reply !== FALLBACK_REPLY) this.chatRounds++;
+        const steer = !shopping && this.chatRounds > 2;
+        plan = { text: decision.reply === FALLBACK_REPLY ? FALLBACK_REPLY : steer ? "Is there anything you'd like me to get for you today?" : decision.reply, emotion: decision.reply === FALLBACK_REPLY ? 'worried' : 'happy' };
         // Refill note from D: ask once, in passing, and let a plain "yes" order it.
         const refill = decision.reply === FALLBACK_REPLY ? null : takeRefillSuggestion();
         if (refill) {

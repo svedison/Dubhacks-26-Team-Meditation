@@ -21,7 +21,7 @@ type Props = {
 // 两端共用：老人端大卡、监护人端小卡是同一个组件
 export default function ProductCard({ product, size = 'elder', orderStatus, tag }: Props) {
   const done = orderStatus === 'paid' || orderStatus === 'simulated_paid'
-  const img = productImage(product.id)
+  const img = product.image_url ?? productImage(product.id)
   const risk = product.risk
   const [title, sub] = splitName(product.name)
   return (

@@ -28,8 +28,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003000001020"
   },
   {
     "id": "bread",
@@ -59,8 +60,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0007294576615"
   },
   {
     "id": "eggs",
@@ -87,8 +89,9 @@
     "demo_only": false,
     "price_source": {
       "kind": "typical",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": null
   },
   {
     "id": "milk",
@@ -117,8 +120,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111042902"
   },
   {
     "id": "bananas",
@@ -148,8 +152,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0000000004011"
   },
   {
     "id": "apples",
@@ -177,8 +182,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111091825"
   },
   {
     "id": "oranges",
@@ -206,8 +212,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111063563"
   },
   {
     "id": "yogurt",
@@ -236,8 +243,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0005215900001"
   },
   {
     "id": "butter",
@@ -265,8 +273,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111010080"
   },
   {
     "id": "jam",
@@ -296,8 +305,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0005150001229"
   },
   {
     "id": "peanut-butter",
@@ -325,8 +335,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0005150025516"
   },
   {
     "id": "honey",
@@ -354,8 +365,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111086170"
   },
   {
     "id": "chicken-soup",
@@ -385,8 +397,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0005100002457"
   },
   {
     "id": "tomato-soup",
@@ -414,8 +427,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0005100000011"
   },
   {
     "id": "chicken-broth",
@@ -445,8 +459,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0005260305445"
   },
   {
     "id": "rice",
@@ -475,8 +490,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111089875"
   },
   {
     "id": "pasta",
@@ -506,8 +522,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0007680828008"
   },
   {
     "id": "pasta-sauce",
@@ -537,8 +554,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003620043068"
   },
   {
     "id": "tuna",
@@ -567,8 +585,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111089084"
   },
   {
     "id": "frozen-vegetables",
@@ -598,8 +617,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111084962"
   },
   {
     "id": "frozen-peas",
@@ -627,8 +647,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001450002100"
   },
   {
     "id": "potatoes",
@@ -656,8 +677,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111091760"
   },
   {
     "id": "onions",
@@ -685,8 +707,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111091682"
   },
   {
     "id": "carrots",
@@ -714,8 +737,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111091622"
   },
   {
     "id": "crackers",
@@ -744,8 +768,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111009090"
   },
   {
     "id": "cheese",
@@ -775,8 +800,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111058718"
   },
   {
     "id": "cookies",
@@ -805,8 +831,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111062628"
   },
   {
     "id": "applesauce",
@@ -835,8 +862,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001480000010"
   },
   {
     "id": "prunes",
@@ -865,8 +893,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0007102253111"
   },
   {
     "id": "almonds",
@@ -895,8 +924,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111014325"
   },
   {
     "id": "chocolate",
@@ -926,8 +956,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003400017414"
   },
   {
     "id": "hard-candy",
@@ -957,8 +988,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0007279900861"
   },
   {
     "id": "orange-juice",
@@ -988,8 +1020,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0002500013678"
   },
   {
     "id": "prune-juice",
@@ -1017,8 +1050,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0080276316864"
   },
   {
     "id": "water",
@@ -1047,8 +1081,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0004900003165"
   },
   {
     "id": "ensure",
@@ -1079,8 +1114,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0007007440711"
   },
   {
     "id": "electrolyte",
@@ -1110,8 +1146,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0007007453984"
   },
   {
     "id": "coffee",
@@ -1139,8 +1176,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0076211120605"
   },
   {
     "id": "tea",
@@ -1170,8 +1208,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0007231000041"
   },
   {
     "id": "sugar",
@@ -1199,8 +1238,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111011888"
   },
   {
     "id": "salt",
@@ -1228,8 +1268,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111004808"
   },
   {
     "id": "flour",
@@ -1257,8 +1298,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111086116"
   },
   {
     "id": "olive-oil",
@@ -1287,8 +1329,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0007040400278"
   },
   {
     "id": "toothpaste",
@@ -1316,8 +1359,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003500051406"
   },
   {
     "id": "toothbrush",
@@ -1345,8 +1389,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003500055676"
   },
   {
     "id": "denture-cleanser",
@@ -1376,8 +1421,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0031015836020"
   },
   {
     "id": "denture-adhesive",
@@ -1407,8 +1453,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0031015805455"
   },
   {
     "id": "soap",
@@ -1437,8 +1484,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111161120"
   },
   {
     "id": "shampoo",
@@ -1466,8 +1514,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0084079711222"
   },
   {
     "id": "lotion",
@@ -1497,8 +1546,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0030299024135"
   },
   {
     "id": "lip-balm",
@@ -1527,8 +1577,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0083299201267"
   },
   {
     "id": "incontinence-pads",
@@ -1558,8 +1609,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003600019586"
   },
   {
     "id": "reading-glasses",
@@ -1589,8 +1641,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0019303354903"
   },
   {
     "id": "hearing-aid-batteries",
@@ -1619,8 +1672,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003980014482"
   },
   {
     "id": "cotton-swabs",
@@ -1649,8 +1703,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0004126002512"
   },
   {
     "id": "nail-clippers",
@@ -1678,8 +1733,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0007528002558"
   },
   {
     "id": "tissues",
@@ -1708,8 +1764,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003600054308"
   },
   {
     "id": "toilet-paper",
@@ -1739,8 +1796,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003077216561"
   },
   {
     "id": "paper-towels",
@@ -1769,8 +1827,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003077215703"
   },
   {
     "id": "dish-soap",
@@ -1800,8 +1859,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003077209403"
   },
   {
     "id": "laundry-detergent",
@@ -1831,8 +1891,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003077212104"
   },
   {
     "id": "trash-bags",
@@ -1861,8 +1922,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001258778459"
   },
   {
     "id": "aa-batteries",
@@ -1892,8 +1954,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003980014519"
   },
   {
     "id": "aaa-batteries",
@@ -1923,8 +1986,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003980014515"
   },
   {
     "id": "led-bulbs",
@@ -1954,8 +2018,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0004667756545"
   },
   {
     "id": "night-light",
@@ -1981,8 +2046,9 @@
     "demo_only": false,
     "price_source": {
       "kind": "typical",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": null
   },
   {
     "id": "sponges",
@@ -2010,8 +2076,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0002120057235"
   },
   {
     "id": "disinfecting-wipes",
@@ -2041,8 +2108,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0004460001628"
   },
   {
     "id": "food-storage-bags",
@@ -2072,8 +2140,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0002570001357"
   },
   {
     "id": "aluminum-foil",
@@ -2102,8 +2171,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111089970"
   },
   {
     "id": "acetaminophen",
@@ -2134,8 +2204,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0030045040690"
   },
   {
     "id": "ibuprofen",
@@ -2164,8 +2235,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0030573015475"
   },
   {
     "id": "antacid",
@@ -2195,8 +2267,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0030766073966"
   },
   {
     "id": "allergy",
@@ -2226,8 +2299,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0004110008016"
   },
   {
     "id": "eye-drops",
@@ -2256,8 +2330,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0031011902003"
   },
   {
     "id": "cough-drops",
@@ -2287,8 +2362,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0031254662749"
   },
   {
     "id": "bandages",
@@ -2318,8 +2394,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0038137115078"
   },
   {
     "id": "antiseptic-wipes",
@@ -2348,8 +2425,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111079449"
   },
   {
     "id": "hydrocortisone",
@@ -2379,8 +2457,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0004126000296"
   },
   {
     "id": "thermometer",
@@ -2408,8 +2487,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0004126038091"
   },
   {
     "id": "calcium-120",
@@ -2444,8 +2524,9 @@
     "demo_only": false,
     "price_source": {
       "kind": "typical",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": null
   },
   {
     "id": "glucosamine-usp",
@@ -2480,8 +2561,9 @@
     "demo_only": false,
     "price_source": {
       "kind": "typical",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": null
   },
   {
     "id": "vitamin-d3",
@@ -2511,8 +2593,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003160402585"
   },
   {
     "id": "fiber-capsules",
@@ -2549,8 +2632,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003700040511"
   },
   {
     "id": "multivitamin",
@@ -2580,8 +2664,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0030573446391"
   },
   {
     "id": "vitamin-c",
@@ -2616,8 +2701,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003160401489"
   },
   {
     "id": "b12",
@@ -2654,8 +2740,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003160402732"
   },
   {
     "id": "magnesium",
@@ -2690,8 +2777,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003160402896"
   },
   {
     "id": "omega-3",
@@ -2728,8 +2816,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003160401328"
   },
   {
     "id": "lutein",
@@ -2759,8 +2848,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0032420869760"
   },
   {
     "id": "probiotic",
@@ -2797,8 +2887,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003700014343"
   },
   {
     "id": "iron",
@@ -2834,8 +2925,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0003160402612"
   },
   {
     "id": "cat-food",
@@ -2865,8 +2957,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0005000042994"
   },
   {
     "id": "dog-food",
@@ -2893,8 +2986,9 @@
     "demo_only": false,
     "price_source": {
       "kind": "typical",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": null
   },
   {
     "id": "bird-seed",
@@ -2923,8 +3017,9 @@
       "kind": "store",
       "store": "QFC Quality Food Center - University Village, 2746 NE 45th St, Seattle",
       "location_id": "70500807",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": "https://www.kroger.com/product/images/large/front/0001111088079"
   },
   {
     "id": "stamps",
@@ -2951,8 +3046,9 @@
     "demo_only": false,
     "price_source": {
       "kind": "typical",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": null
   },
   {
     "id": "puzzle-book",
@@ -2980,8 +3076,9 @@
     "demo_only": false,
     "price_source": {
       "kind": "typical",
-      "fetched_at": "2026-10-18T10:18:13.702Z"
-    }
+      "fetched_at": "2026-10-18T10:50:40.457Z"
+    },
+    "image_url": null
   },
   {
     "id": "miracle-joint",
@@ -3009,7 +3106,8 @@
       "url": null,
       "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
     },
-    "demo_only": true
+    "demo_only": true,
+    "image_url": null
   },
   {
     "id": "instant-memory",
@@ -3037,7 +3135,8 @@
       "url": null,
       "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
     },
-    "demo_only": true
+    "demo_only": true,
+    "image_url": null
   },
   {
     "id": "detox-cure",
@@ -3065,6 +3164,7 @@
       "url": null,
       "note": "Synthetic test fixture; no real certification, recall, fraud finding or efficacy claim. Alternatives match demo marketing themes only."
     },
-    "demo_only": true
+    "demo_only": true,
+    "image_url": null
   }
 ]

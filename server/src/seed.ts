@@ -22,7 +22,8 @@ function loadShelf(): Product[] {
   try {
     const raw = JSON.parse(readFileSync(file, 'utf8')) as Array<Product & Record<string, unknown>>;
     return raw.map(p => ({ id: p.id, name: p.name, price_cents: p.price_cents, category: p.category, certification: p.certification,
-      aliases: p.aliases, label_dose: p.label_dose, units: p.units, units_per_dose: p.units_per_dose, risk: p.risk }));
+      aliases: p.aliases, label_dose: p.label_dose, units: p.units, units_per_dose: p.units_per_dose, risk: p.risk,
+      image_url: typeof p.image_url === 'string' ? p.image_url : null }));
   } catch { return fallbackShelf; }
 }
 export const shelfSeed: Product[] = loadShelf();

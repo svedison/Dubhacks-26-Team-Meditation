@@ -119,6 +119,13 @@ npx tsx ../tools/shelf/build-shelf.mts --write --recalls
 - 新商品的图片：老人端按 id 找本地图，找不到显示首字母，A 有空可以给常用的几个补图。
 - 服务端进 Claude 的只是 `src/shelf.ts` 挑出的最多 12 个候选，货架再扩也不拖慢。
 
+## 说话的口气、"我今天买了什么"、商品图（2026-10-18 第一次 iPad 实测后）
+
+- **不再每句 "I'm Milo, an AI"**：起名那一次已经说明过自己是 AI，之后直接说事；她不舒服、累、孤单时按朋友的口吻说 *"I'm your friend and I'm right here with you"*；只有她问"你是真人吗"才老实回答是 AI。提示词改了，另外 `tidyReply` 会把模型偶尔还带的 "I'm Milo, an AI helper, and" 开头剥掉（单独一句 "I'm an AI." 回答"你是人吗"时保留）。
+- **"What did I buy today?"**：Claude 的上下文里现在带演示时钟的今天和最近 6 笔订单（商品、价格、下单日、到货日、是否签收），它照事实回答；没有就说今天没买并问要不要帮忙。
+- **"I want some food" 不再被顶回 "What would you like to find on our shopping shelf?"**：话里有购物词或点到货架上的东西（别名、品名；单独一个 "night"、"dog" 这种常见词不算）就不算闲聊、不计轮数。纯闲聊两轮后的提醒改成 *"Is there anything you'd like me to get for you today?"*。
+- **商品图**：QFC 的 90 个真货带门店正面图（`image_url`，Kroger 公开图片地址），老人端商品卡优先用它，没有的（五条演示记录、7 个典型价商品）仍按 id 用本地图或首字母。契约里 `image_url` 是可选字段。
+
 ## 奶奶说身体不舒服：紧急就打 911，一般不舒服就陪着（2026-10-18）
 
 以前 "I'm not feeling well" 得到的是 "As an AI I can't give medical advice, please contact your doctor"，第三轮还会被转去购物。现在分两种：
