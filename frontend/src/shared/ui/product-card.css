@@ -15,24 +15,32 @@
   /* 实色硬阴影，和手机端按钮同一种手感 */
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.32);
 }
+/* 图片区默认按 4:3 的高度排；卡片放不下时（名字长、说明长、下单后多了 Visa 条）只有图片区让出高度，文字不被挤掉 */
 .pcard__media {
-  aspect-ratio: 4 / 3;
+  flex: 0 1 300px;
+  min-height: 120px;
   background: #f3ece1;
   display: grid;
   place-items: center;
   overflow: hidden;
 }
+/* 图片区会缩高：图片跟着图片区的实际大小排，不按自己的原始比例撑出去被裁掉 */
 .pcard__media img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
+.pcard__media--photo { background: #fff; }
+.pcard__media--photo img { object-fit: contain; padding: 12px; box-sizing: border-box; }
 .pcard__mono {
   font-family: var(--font-display);
   font-size: 72px;
   color: var(--card-sub);
 }
 .pcard__body {
+  flex: none;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -41,9 +49,16 @@
 
 /* 标题两行 + 价格在右：几个字一行，不挤 */
 .pcard__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.pcard__name { margin: 0; display: flex; flex-direction: column; gap: 2px; text-wrap: balance; }
-.pcard__title { font-size: 34px; line-height: 1.05; font-weight: 900; }
-.pcard__sub { font-size: 23px; line-height: 1.15; font-weight: 700; color: var(--card-sub); }
+.pcard__name { flex: 1 1 auto; min-width: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; text-wrap: balance; }
+/* 名字最多三行，规格一行，再长就省略：卡片高度有上限 */
+.pcard__title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; font-size: 34px; line-height: 1.08; font-weight: 900; }
+.pcard__sub { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 23px; line-height: 1.15; font-weight: 700; color: var(--card-sub); }
+.pcard__price { flex: none; }
+/* 长名字：名字占满一行宽，价格放到名字下面 */
+.pcard--long .pcard__head { flex-direction: column; gap: 6px; }
+.pcard--long .pcard__name { align-self: stretch; }
+.pcard--long .pcard__title { font-size: 28px; }
+.pcard--long .pcard__price { font-size: 46px; }
 .pcard__price {
   font-family: var(--font-display);
   font-size: 58px;
@@ -75,7 +90,8 @@
 .pcard__point.is-risk strong { color: var(--risk); }
 .pcard__point.is-risk span { color: #5b4a3f; }
 .pcard__point.is-dose .pcard__mark { color: var(--card-sub); }
-.pcard__point.is-dose span { color: var(--card-ink); font-size: 21px; }
+/* 药品说明书原文可能有一百多字：最多两行，完整内容由 Milo 念 */
+.pcard__point.is-dose span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; color: var(--card-ink); font-size: 20px; }
 
 /* 有风险的商品：灰褐底，图片褪色压暗，安全那张自然更亮 */
 .pcard--risk { --card-bg: #d9d1c7; }
@@ -116,11 +132,16 @@
 
 /* 监护人端的小卡：横排，只留名字和价格 */
 .pcard--compact { flex-direction: row; border-radius: var(--radius-m); box-shadow: none; border: 1px solid #e8dfd3; }
-.pcard--compact .pcard__media { width: 92px; aspect-ratio: 1; flex: none; }
+.pcard--compact .pcard__media { width: 92px; aspect-ratio: 1; flex: none; min-height: 0; }
+.pcard--compact .pcard__media--photo img { padding: 6px; }
+.pcard--compact .pcard__title { -webkit-line-clamp: 2; }
 .pcard--compact .pcard__body { padding: 12px 16px; justify-content: center; flex: 1; }
 .pcard--compact .pcard__title { font-size: 20px; }
 .pcard--compact .pcard__sub { font-size: 16px; }
 .pcard--compact .pcard__price { font-size: 26px; }
+.pcard--compact.pcard--long .pcard__head { flex-direction: row; gap: 12px; }
+.pcard--compact.pcard--long .pcard__title { font-size: 20px; }
+.pcard--compact.pcard--long .pcard__price { font-size: 26px; }
 .pcard--compact .pcard__points, .pcard--compact .pcard__stamp { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -131,7 +152,9 @@
 /* 下单以后这张卡的重点变成「用哪张卡付的」：用法那一行先收起来，卡片不变高、不顶到右上角的时间 */
 .pcard--done .pcard__point.is-dose { display: none; }
 .pcard__pay { display: flex; align-items: center; gap: 14px; margin-top: 10px; padding: 12px 16px; border-radius: 12px; background: #fff; box-shadow: inset 0 0 0 1.5px #e3dacd; animation: pcard-pay-in 420ms cubic-bezier(0.34, 1.4, 0.64, 1) 520ms both; }
-.pcard__pay-num { flex: 1; font-size: 24px; font-weight: 900; letter-spacing: 0.04em; color: var(--card-ink); font-variant-numeric: tabular-nums; }
+.pcard__pay-text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pcard__pay-note { font-size: 15px; font-weight: 800; line-height: 1.2; white-space: nowrap; color: #1a1f71; }
+.pcard__pay-num { font-size: 24px; font-weight: 900; letter-spacing: 0.04em; color: var(--card-ink); font-variant-numeric: tabular-nums; }
 .pcard__pay-ok { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--ok); color: #fff; animation: pcard-pay-ok 360ms cubic-bezier(0.34, 1.56, 0.64, 1) 860ms both; }
 .pcard__pay-ok svg { width: 20px; height: 20px; }
 @keyframes pcard-pay-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }

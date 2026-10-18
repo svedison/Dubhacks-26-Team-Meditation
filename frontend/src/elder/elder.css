@@ -134,10 +134,14 @@
 .cards.is-solo { width: 0; }
 .cards.is-single { width: 461px; }
 .cards.is-pair { width: 511px; }
-.card-stage { display: flex; gap: 20px; align-items: stretch; width: 100%; justify-content: flex-end; }
-.card-stage__slot > .pcard { flex: 1; }
+/* 卡片区高度到顶为止：卡片比这高时由图片区缩短，不顶出屏幕 */
+.card-stage { display: flex; gap: 20px; align-items: stretch; width: 100%; max-height: 100%; justify-content: flex-end; }
+.card-stage__slot > .pcard { flex: 1; min-height: 0; }
 .card-stage__slot { display: flex; flex-direction: column; gap: 10px; width: 400px; }
 .card-stage--pair .card-stage__slot { width: 245px; }
+.card-stage--pair .pcard__media { flex-basis: 184px; }
+.card-stage--pair .pcard--long .pcard__title { font-size: 23px; }
+.card-stage--pair .pcard--long .pcard__price { font-size: 40px; }
 /* 并排时卡窄：价格放到名字下面 */
 .card-stage--pair .pcard__head { flex-direction: column; gap: 8px; }
 .card-stage--pair .pcard__title { font-size: 25px; }

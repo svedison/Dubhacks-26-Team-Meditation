@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react'
 import { useEffect } from 'react'
 import ProductCard from '../shared/ui/ProductCard'
 import VisaMark from '../shared/ui/VisaMark'
@@ -48,9 +49,12 @@ export default function LedgerPage() {
               <div className="g-order__meta">
                 <span className={`g-pill g-pill--${o.status}`}>{STATUS_TEXT[o.status]}</span>
                 {o.quantity && o.quantity > 1 && <span className="g-qty">× {o.quantity}</span>}
-                {/* 付成功的单写上用的哪张卡：Visa 标志加尾号 */}
+                {/* 付成功的单写上用的哪张卡：Visa 标志加尾号；下单前 Visa 沙盒校验过这张卡就再加一个勾 */}
                 {o.status !== 'blocked' && settings && (
                   <span className="g-order__card"><VisaMark height={16} /> ••{settings.card_last4}</span>
+                )}
+                {o.payment_check?.approved && (
+                  <span className="g-order__checked"><Check aria-hidden strokeWidth={3.2} />Visa card checked</span>
                 )}
                 {/* 每一单前面写下单那天，两单同一个东西也分得清 */}
                 <span>{shortDay(o.created_at)} · {o.status === 'blocked' ? o.block_reason : o.received ? 'Received' : `Arrives ${dayLabel(o.deliver_on)}`}</span>
@@ -61,6 +65,8 @@ export default function LedgerPage() {
       ) : (
         <p className="g-note">Details stay with her.</p>
       )}
+      {/* 演示里的订单走 Visa 沙盒，不真扣钱：全页只在底部说一次 */}
+      <p className="g-ledger__demo"><VisaMark height={13} /> Demo build: orders are placed in the Visa sandbox, no real charge.</p>
     </section>
   )
 }
