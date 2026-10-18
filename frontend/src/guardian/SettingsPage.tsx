@@ -23,6 +23,8 @@ export default function SettingsPage() {
 
   // 后端只收 4 位数字的卡尾号（shared-contracts.md），不满 4 位时不让保存
   const cardOk = /^\d{4}$/.test(draft.card_last4)
+  // 没改过就是描边的空按钮，改了才变成实心，不和上面的分享选项抢眼
+  const dirty = draft.card_last4 !== settings.card_last4 || draft.card_owner !== settings.card_owner || draft.monthly_baseline_cents !== settings.monthly_baseline_cents
   const saveCard = () => {
     setSaveError(false)
     void saveSettings(draft)
@@ -80,7 +82,7 @@ export default function SettingsPage() {
             <input inputMode="numeric" value={Math.round(draft.monthly_baseline_cents / 100)} onChange={(e) => setDraft({ ...draft, monthly_baseline_cents: Number(e.target.value.replace(/\D/g, '') || 0) * 100 })} />
           </div>
         </label>
-        <button className="g-save" onClick={saveCard} disabled={!cardOk}>{saved ? 'Saved' : 'Save'}</button>
+        <button className={`g-save${dirty ? ' is-dirty' : ''}`} onClick={saveCard} disabled={!cardOk || !dirty}>{saved ? 'Saved' : 'Save'}</button>
         {saveError && <p className="g-error">Didn't save. Try again.</p>}
       </div>
 

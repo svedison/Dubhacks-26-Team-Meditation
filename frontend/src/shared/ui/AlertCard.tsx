@@ -24,7 +24,8 @@ export default function AlertCard({ alert, now, phone, fresh, onArchive }: Props
       className={`acard acard--${level}`}
       initial={fresh ? { opacity: 0, y: -28, scale: 0.97 } : false}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 80, transition: { duration: 0.28 } }}
+      // 点 Got it 后卡片往上收走；「This week」里同时亮起新的一行，看得出它去了哪里
+      exit={{ opacity: 0, y: -16, scale: 0.96, transition: { duration: 0.22 } }}
       transition={{ type: 'spring', stiffness: 320, damping: 28 }}
     >
       <header className="acard__head">
