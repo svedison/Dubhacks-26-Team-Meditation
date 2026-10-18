@@ -53,11 +53,11 @@ export default function LedgerPage() {
                 {o.status !== 'blocked' && settings && (
                   <span className="g-order__card"><VisaMark height={16} /> ••{settings.card_last4}</span>
                 )}
-                {o.payment_check?.approved && (
+                {o.status !== 'blocked' && o.payment_check?.approved && (
                   <span className="g-order__checked"><Check aria-hidden strokeWidth={3.2} />Visa card checked</span>
                 )}
                 {/* 每一单前面写下单那天，两单同一个东西也分得清 */}
-                <span>{shortDay(o.created_at)} · {o.status === 'blocked' ? o.block_reason : o.received ? 'Received' : `Arrives ${dayLabel(o.deliver_on)}`}</span>
+                <span className="g-order__when">{shortDay(o.created_at)} · {o.status === 'blocked' ? o.block_reason : o.received ? 'Received' : `Arrives ${dayLabel(o.deliver_on)}`}</span>
               </div>
             </li>
           ))}
