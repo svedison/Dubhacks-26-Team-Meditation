@@ -95,6 +95,18 @@ curl -X POST localhost:8787/api/utterance -H 'content-type: application/json' -d
 - **等她说完**：`/api/audio` 的 `speech=1` 块每 0.25 秒一来就说明奶奶还在说话。第一段文本到了但麦克风还在送 `speech=1`，先不问 Claude（状态留在 listening），等 `end=1` 和 Deepgram 的下一段文本到了再合并；Claude 已经答了但她在这期间又开口，同样等她说完让后半句接管。最多等 6 秒。她没在说话时这一步零延迟。
 - 单元测试在 `test/recovery.test.ts`；本地用 `ANTHROPIC_API_KEY=` 置空也能跑。
 
+## 数量：按她说的买，超过平常先问原因（2026-10-18）
+
+- "I want three boxes of tissues" 就买三盒：Claude 的结构化输出多了 `quantity`，本地 `src/quantity.ts` 再兜底解析（"three boxes"、"2 packs"、"a couple of"；"2% milk"、"600 mg"、"100 tablets"、"a dozen eggs" 这类规格不算数量）。报价 *"Three packs of X come to $26.97; would you like me to order them?"*，卡片显示总价和 "3 × 单价"，订单带 `quantity`，`price_cents` 是总价，账本行显示 "× 3"，到货时 D 按包数加库存。
+- **超过平常的量**先问原因：保健品和非处方药超过 2 包、日用食品超过 6 包，Milo 用 worried 脸说 *"Six packs of X is more than usual. Is there a reason you need that many?"*，这时不下单。她的下一句按这样分流：
+  - 说了原因 → 收下原因，按上限封顶（保健品和药最多 3 包，日用最多 12 包）：*"Thank you. I can order up to three at a time, so let's make it three: $54.00. Shall I order them?"*；她说 yes 才下单，下单后女儿收一张普通卡 "A bigger order than usual"，正文带数量、金额和她的原话（是知会，不是审批）。
+  - 说 "no / no reason / I'm not sure" → 从一包开始：*"Then let's start with one… I'll remind you when it runs low. Shall I order it?"*
+  - 换了个数字（"make it two"）→ 按新数量重新报价（仍超平常会再问一次）。
+  - "never mind / cancel" → 不买。
+  - 只说 "yes" → 追问 *"Could you tell me why you need that many?"*
+  - 原因里有诈骗特征（"someone called and said I must buy them today"）→ 走防诈骗流程，红脸红卡，不下单。
+- 测试在 `test/quantity.test.ts`。
+
 ## 货架之外的东西：Milo 去找，不让她去问女儿（2026-10-18）
 
 - 以前货架上没有的东西一律红脸说 "I can only order from our trusted shelf"。现在是 happy 脸说 *"I don't have that on my shelf yet. Let me find a trusted one for you; I'll have it ready by tomorrow."*，女儿手机上多一张普通卡（标题 "A new wish"，正文带她的原话），是心愿记录不是审批。原则：自由是默认，家人只在风险（诈骗、召回、异常花费）时介入，"没见过"不是风险。
@@ -123,6 +135,7 @@ npx tsx ../tools/shelf/build-shelf.mts --write --recalls
 
 - **唤醒**：Deepgram 连接带上 nova-3 的 `keyterm=<唤醒名>`，专门提高这个词的识别率；后端匹配兼容 "my low"、"me low"、"mellow"、"Milow" 这些常见误听（`wake.ts`）；一个字的唤醒常在连接握手完成前就说完，Finalize 以前会被丢掉，现在排队到连上再发；麦克风会话 90 秒空闲断开改成 10 分钟（KeepAlive 维持），演示里每次开口不用再付重连延迟。iPad 端 VAD 阈值 0.5/250 ms 放到 0.4/150 ms（`micStream.ts`），轻声一个 "Milo" 也会上传。
 - **查实际听到了什么**：`GET /debug/heard`（带口令）列出最近 30 句 Deepgram 交出的文字、来源、有没有唤醒、判成什么意图。唤醒不稳先看这里，再决定是调匹配还是换名字。
+- **只喊一声 "Milo" 也要醒（2026-10-18 第三次实测："单说 Milo 不醒，带 Milo 的整句才醒"）**：Deepgram 文档写明，Finalize 之后的最终结果*不保证*——缓冲区里音频太少时（一个词 0.4 s 加 iPad 送来的 1.2 s 静音）可能什么都不回，这个词就留在 Deepgram 里，直到下一句话把它一起顶出来，所以看起来是下一句才唤醒。现在三处一起改（`stt.ts`、`pipeline.ts`）：① 每个 `end=1` 在 Finalize 之前先补 1.5 s 静音（只对裸 PCM），静音总长超过 Deepgram 自己的 1.5 s endpointing，这个词当场被收尾送回；② 待机时 Deepgram 的 interim（中间结果）只要匹配唤醒名就直接开窗（`pipeline.heardInterim`），不等 final——开窗无害，脸也早一秒反应；interim 永远不进购物流程，final 到了照常走原来的路（只有名字就静默保持在听）；③ `GET /debug/heard` 多了 `deepgram` 字段：最近 40 条 Deepgram 原始消息（interim / final / 我们发的 finalize，带文字和时间）。再有"喊了没醒"，先看这里：没有 interim 和 final 是 iPad 没传或 Deepgram 没认出；有 interim 没 final 是 Finalize 没回；文字歪了是匹配要调。
 - **后半句**：以前只有 Claude 还在想的时候，后半句才会并进同一轮；现在直到语音真正发出去之前都可以并（多了 TTS 那一秒多）。已经下单、报警、答过 Memory 问题的轮次例外，不会被替换。
 - 名字换不换：改拼写（Millo）没用，发音一样；要换就换 Hazel 或 Daisy 这种辅音清楚、没有常见词同音的名字，需要同时改 A 的文案和后端警报正文。
 
@@ -169,7 +182,7 @@ voice 在 idle 时需要模糊唤醒名；keyboard 视为主动操作，直接�
 
 二进制 WS 帧直接传 MediaRecorder 的容器音频（如 WebM/Opus、MP4），每个 elder 连接独立连接 Deepgram；关闭连接时清理。裸 PCM 需要补充 Deepgram encoding/sample_rate 参数。仅 final 转写拼接成一句进入对话流程；不处理 interim 为购物请求。整段音频可 POST `/api/audio`，Content-Type 使用 `audio/webm`、`audio/mp4` 或 `application/octet-stream`，最大 10 MB，不使用 multipart。
 
-`POST /debug/clock {now}` 设置 UTC ISO 演示基点，之后叠加真实经过时间。每秒及手动跳时钟均调用同一组 tick handler 并广播 clock。`POST /debug/reset` 复原种子、时钟、对话、待确认订单及音频连接；旧异步回答不再写入新一轮演示。
+`POST /debug/clock {now}` 设置 ISO 演示基点，之后叠加真实经过时间。**时钟默认是西雅图当前的墙上时间**（启动和 `/debug/reset` 时取 America/Los_Angeles 的当前时刻，自动分 PDT/PST）：字符串末尾虽然写 Z，数字就是西雅图的钟面，两端照字面显示，D 的 "08:00" 提醒就是早上 8 点，到货日、账本月份都按这个日期算，没有任何地方拿它和真实时刻比。测试用 `DEMO_CLOCK_START=2026-10-17T18:00:00Z` 钉死（`npm test` 里已带）；线上想钉死也可以在 Render 加同名环境变量。**跳表目标按屏幕上的日期算**：到货日 = 下单日 + 5 天，比如周日 10-18 下的单，第四幕要跳到 `2026-10-23T09:00:00Z`（到货）和 `2026-10-24T08:00:00Z`（提醒），不是写死的 10-22 / 10-23。不想算日期就用**演示遥控页** `https://trusttag.onrender.com/debug/remote?token=口令`（手机、电脑浏览器都行，放在一边）：三个按钮「到货当天 9:00 AM」「下一次吃药提醒」「回到西雅图现在」加一个「重置演示」，到货日取最早一笔没签收的订单，提醒取 Memory 里下一次吃药时间加 5 秒（在 D 的 60 秒应答窗口内），没有 Memory 时取明早 8:00。按钮背后是 `GET /debug/clock?to=delivery|next-reminder|seattle&token=口令`，也可以直接收藏成书签；`GET /debug/clock?now=2026-10-24T08:00:00Z&token=口令` 等同 POST。每秒及手动跳时钟均调用同一组 tick handler 并广播 clock。`POST /debug/reset` 复原种子、时钟、对话、待确认订单及音频连接；旧异步回答不再写入新一轮演示。
 
 ## curl 验收
 

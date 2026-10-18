@@ -15,7 +15,8 @@ afterEach(() => {
   globalThis.fetch = fetchOriginal;
   for (const [key, value] of Object.entries(originalEnv)) { if (value === undefined) delete process.env[key]; else process.env[key] = value; }
 });
-const result = { intent: 'refill', product_id: 'calcium-120', reply: 'Would you like another bottle?', elder_name: null };
+// quantity is part of the structured output the model must return (null when she said no number)
+const result = { intent: 'refill', product_id: 'calcium-120', reply: 'Would you like another bottle?', elder_name: null, quantity: null };
 const context: Context = { products: shelfSeed, settings: defaultSettings, chatRounds: 0, pendingProductId: null, awaitingName: false, history: [] };
 const content = (text: string) => [{ type: 'text' as const, text, citations: null }];
 
