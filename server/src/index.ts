@@ -83,7 +83,12 @@ export async function buildServer() {
   await app.register(cors, { origin: '*' });
   await app.register(websocket, { options: { maxPayload: 2 * 1024 * 1024 } });
   await mkdir(audioDir, { recursive: true });
-  await app.register(staticFiles, { root: audioDir, prefix: '/audio/', index: false });
+  // Audio files are named by the hash of their text and voice: they never change, so the iPad keeps them. This plugin's
+  // reply.sendFile also serves the SPA fallback (index.html), which must always be revalidated.
+  await app.register(staticFiles, {
+    root: audioDir, prefix: '/audio/', index: false, cacheControl: false,
+    setHeaders(res, path) { res.setHeader('cache-control', path.endsWith('.mp3') ? 'public, max-age=31536000, immutable' : 'no-cache'); },
+  });
   for (const contentType of ['application/octet-stream', /^audio\//, /^video\/webm/]) {
     app.addContentTypeParser(contentType, { parseAs: 'buffer' }, (_request, body, done) => done(null, body));
   }
@@ -259,7 +264,15 @@ export async function buildServer() {
     return { ok: true };
   });
   if (existsSync(resolve(frontendDist, 'index.html'))) {
-    await app.register(staticFiles, { root: frontendDist, prefix: '/', decorateReply: false, wildcard: false, index: ['index.html'] });
+    await app.register(staticFiles, {
+      root: frontendDist, prefix: '/', decorateReply: false, wildcard: false, index: ['index.html'], cacheControl: false,
+      // Cold start on the iPad: hashed bundles never change; the 16 MB voice-detection runtime and model change only with a
+      // library upgrade. Keep both instead of re-asking the server on every open. Everything else (index.html) is revalidated.
+      setHeaders(res, path) {
+        const assets = /[\\/]assets[\\/]/.test(path), vad = /[\\/]vad[\\/]/.test(path);
+        res.setHeader('cache-control', assets ? 'public, max-age=31536000, immutable' : vad ? 'public, max-age=86400' : 'no-cache');
+      },
+    });
     // SPA fallback: /elder, /guardian/* etc. render index.html; API-looking paths still 404 as JSON.
     app.setNotFoundHandler((request, reply) => {
       const path = request.url.split('?')[0];

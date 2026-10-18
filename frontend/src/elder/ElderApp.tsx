@@ -131,6 +131,11 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
     window.setTimeout(() => setFullHold(false), 1000)
   }
 
+  // 点「Tap to start」后语音检测要先下载运行库和模型（共约 16MB）：页面一打开就在后台先下载进浏览器缓存，点开始时不用再等
+  useEffect(() => {
+    for (const file of ['/vad/ort-wasm-simd-threaded.wasm', '/vad/silero_vad_v5.onnx']) void fetch(file).then((r) => r.arrayBuffer())
+  }, [])
+
   const { status, send } = useSocket<ElderEvent, ElderOutgoing>('elder', (e) => {
     if (e.type === 'state' && e.state === 'idle' && player.playing) {
       // 还在说的话说完再回待机
