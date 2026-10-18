@@ -13,7 +13,7 @@ export default function ClockJump({ clock }: { clock: string | null }) {
     prev.current = clock
     if (!last || hoursBetween(last, clock) < 1) return
     setShown({ ...dayAndTime(clock), key: clock })
-    const t = window.setTimeout(() => setShown(null), 1800)
+    const t = window.setTimeout(() => setShown(null), 2600)
     return () => window.clearTimeout(t)
   }, [clock])
 

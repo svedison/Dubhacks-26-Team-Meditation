@@ -20,6 +20,10 @@ export function dayLabel(date: string): string {
   return parse(date).toFormat('ccc, LLL d')
 }
 
+export function shortDay(date: string): string {
+  return parse(date).toFormat('LLL d')
+}
+
 export function timeAgo(iso: string, now: string | null): string {
   const t = parse(iso)
   const n = now ? parse(now) : DateTime.now()

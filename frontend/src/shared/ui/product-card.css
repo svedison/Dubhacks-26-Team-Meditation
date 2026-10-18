@@ -26,7 +26,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.18);
 }
 .pcard__mono {
   font-family: var(--font-display);
@@ -42,7 +41,7 @@
 
 /* 标题两行 + 价格在右：几个字一行，不挤 */
 .pcard__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.pcard__name { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.pcard__name { margin: 0; display: flex; flex-direction: column; gap: 2px; text-wrap: balance; }
 .pcard__title { font-size: 34px; line-height: 1.05; font-weight: 900; }
 .pcard__sub { font-size: 23px; line-height: 1.15; font-weight: 700; color: var(--card-sub); }
 .pcard__price {
@@ -82,6 +81,10 @@
 .pcard--risk { --card-bg: #d9d1c7; }
 .pcard--risk .pcard__media { background: #cfc6bb; }
 .pcard--risk .pcard__media img { filter: grayscale(0.7) brightness(0.8) contrast(0.92); }
+
+/* 并排时卡片顶部的小标签，用卡片自己的颜色 */
+.pcard__tag { position: absolute; top: 12px; left: 12px; z-index: 1; padding: 6px 12px; border-radius: 999px; font-size: 18px; font-weight: 900; background: rgba(251, 247, 239, 0.94); color: var(--ok); }
+.pcard--risk .pcard__tag { background: #fbefe4; color: #8c2b25; }
 
 /* 「Ordered」橡皮章：斜着盖下去 */
 .pcard__stamp {

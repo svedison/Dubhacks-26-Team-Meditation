@@ -1,5 +1,5 @@
 import { Pause, Play } from 'lucide-react'
-import { dayLabel } from '../shared/format'
+import { shortDay } from '../shared/format'
 import { useGuardian } from './store'
 
 const ANSWER_TEXT = { taken: 'Taken', skipped: 'Skipped', later: 'Later', unconfirmed: 'No answer' } as const
@@ -22,7 +22,7 @@ export default function MemoryPage() {
                 <p className="g-mem__dose">{m.dose_text} · {m.times.join(', ')}</p>
               </div>
               <dl className="g-mem__facts">
-                <div><dt>Since</dt><dd>{dayLabel(m.start_date)}</dd></div>
+                <div><dt>Since</dt><dd>{shortDay(m.start_date)}</dd></div>
                 <div><dt>Left</dt><dd>{days} days</dd></div>
                 <div><dt>Last dose</dt><dd>{m.log.length ? ANSWER_TEXT[m.log.at(-1)!.answer] : 'Not yet'}</dd></div>
               </dl>

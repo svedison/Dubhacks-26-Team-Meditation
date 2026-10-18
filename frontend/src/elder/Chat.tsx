@@ -64,9 +64,25 @@ function visible(lines: Line[]): Line[] {
   return prev && prev.role !== last.role ? [prev, last] : [last]
 }
 
-type Props = { lines: Line[]; width: number; height: number }
+type Props = { lines: Line[]; width: number; height: number; headline: boolean }
 
-export default function Chat({ lines, width, height }: Props) {
+// 诈骗时（整屏红、没有商品卡）：AI 那段话的第一句单独放大成标题，其余照常；文字还是后端的原话
+function HeadlineThenRest({ text, width, height }: { text: string; width: number; height: number }) {
+  const [head, ...rest] = sentences(text)
+  const counter = { word: 0 }
+  return (
+    <>
+      <span className="chat__headline">{emphasize(head, counter)}</span>
+      {rest.length > 0 && (
+        <span className="chat__rest" style={{ fontSize: fitSize(rest.join(' '), width, height - 190) }}>
+          {rest.map((sent, i) => <span key={i} className="chat__sent">{emphasize(sent, counter)}</span>)}
+        </span>
+      )}
+    </>
+  )
+}
+
+export default function Chat({ lines, width, height, headline }: Props) {
   const shown = visible(lines)
   // 上面还有奶奶那一句时，给它留出约两行的高度
   const room = shown.length > 1 ? height - 110 : height
@@ -80,13 +96,19 @@ export default function Chat({ lines, width, height }: Props) {
             className={`chat__row chat__row--${l.role}`}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, transition: { duration: 0.15 } }}
-            // 奶奶那句先出；AI 那句等它站稳再进来，两句不会同时动
-            transition={{ duration: 0.45, delay: l.role === 'ai' ? 0.3 : 0.1, ease: [0.43, 0.195, 0.02, 1] }}
+            exit={{ opacity: 0, transition: { duration: 0.1 } }}
+            // 旧的一句先退场；奶奶那句随后出；AI 那句等它站稳再进来，任何时候两段字都不会叠在一起
+            transition={{ duration: 0.45, delay: l.role === 'ai' ? 0.35 : 0.18, ease: [0.43, 0.195, 0.02, 1] }}
           >
-            <div className="chat__bubble" style={l.role === 'ai' ? { fontSize: fitSize(l.text, width, room) } : undefined}>
-              {l.role === 'ai' ? speak(l.text) : l.text}
-            </div>
+            {l.role === 'ai' && headline && l === shown.at(-1) ? (
+              <div className="chat__bubble chat__bubble--headline">
+                <HeadlineThenRest text={l.text} width={width} height={room} />
+              </div>
+            ) : (
+              <div className="chat__bubble" style={l.role === 'ai' ? { fontSize: fitSize(l.text, width, room) } : undefined}>
+                {l.role === 'ai' ? speak(l.text) : l.text}
+              </div>
+            )}
           </motion.div>
         ))}
       </AnimatePresence>

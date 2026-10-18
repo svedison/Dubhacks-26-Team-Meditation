@@ -177,7 +177,9 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
   const showFace = view.awake || playing
   const corner = view.conversing && !fullHold
   const pair = !!view.card?.alternative
-  const layoutCls = view.card ? (pair ? 'is-pair' : 'is-single') : 'is-solo'
+  // 诈骗：整屏红、没有商品卡时，字幕区放宽到整屏，第一句做成大标题
+  const scam = face === 'alert' && !view.card
+  const layoutCls = view.card ? (pair ? 'is-pair' : 'is-single') : scam ? 'is-alert' : 'is-solo'
 
   return (
     <Stage background="var(--elder-bg)">
@@ -213,7 +215,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       {corner && (
         <motion.div layout="position" className={`talk ${layoutCls}`} transition={{ layout: MOVE }} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           {/* 字幕区高 = 744 − 上沿 240 − 下边距 56；宽度和 elder.css 里 .talk 一致 */}
-          <Chat lines={view.lines} width={pair ? 470 : 540} height={448} />
+          <Chat lines={view.lines} width={scam ? 1021 : pair ? 470 : 540} height={448} headline={scam} />
         </motion.div>
       )}
       {corner && (
@@ -222,9 +224,9 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
         </div>
       )}
 
-      {/* 醒着但还没开始聊（全屏眼睛）时角上留着时钟；聊起来就收起，免得抢字幕 */}
-      {view.clock && showFace && !corner && (
-        <div className="clock" aria-label="Demo clock">
+      {/* 醒着时角上留着时钟；聊起来变小变淡，不抢字幕，但到货、提醒那几幕仍看得出是哪天几点 */}
+      {view.clock && showFace && (
+        <div className={`clock${corner ? ' clock--quiet' : ''}`} aria-label="Demo clock">
           <span className="clock__label">Demo clock</span>
           <span className="clock__time">{clockLabel(view.clock)}</span>
         </div>

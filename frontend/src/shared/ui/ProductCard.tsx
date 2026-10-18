@@ -15,6 +15,7 @@ type Props = {
   product: Product
   size?: 'elder' | 'compact'
   done?: boolean // 开心脸出现时盖「Ordered」章
+  tag?: string // 并排时卡片顶部的小标签（Skip this / Try this）
 }
 
 // 名字按第一个逗号断成两行：「Calcium 600mg」大字，「120 tablets」小一号（只是排版换行）
@@ -24,12 +25,13 @@ function splitName(name: string): [string, string | null] {
 }
 
 // 两端共用：老人端大卡、监护人端小卡是同一个组件
-export default function ProductCard({ product, size = 'elder', done = false }: Props) {
+export default function ProductCard({ product, size = 'elder', done = false, tag }: Props) {
   const img = productImage(product.id)
   const risk = product.risk
   const [title, sub] = splitName(product.name)
   return (
     <article className={`pcard pcard--${size}${risk ? ' pcard--risk' : ''}${done ? ' pcard--done' : ''}`}>
+      {tag && <span className="pcard__tag">{tag}</span>}
       <div className="pcard__media">
         {img ? <img src={img} alt="" draggable={false} /> : <span className="pcard__mono">{title.slice(0, 1)}</span>}
       </div>
