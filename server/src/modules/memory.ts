@@ -139,6 +139,14 @@ export function createAlert(level: Alert['level'], rule: number | null, title: s
   if (level === 'red' || level === 'normal') toGuardian({ type: 'alert', ...alert });
   return alert;
 }
+/** Deepgram split one scam sentence in two: add the second half to the same alert instead of raising another. */
+export function extendAlert(id: string, text: string): void {
+  const alert = get('alerts', id);
+  if (!alert) return;
+  alert.body = `${alert.body} ${text}`.trim();
+  put('alerts', id, alert);
+  if (alert.level === 'red') toGuardian({ type: 'alert', ...alert });
+}
 export function saveGrandmaNote(id: string, note: string): void {
   const alert = get('alerts', id);
   if (!alert) return;

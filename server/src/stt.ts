@@ -19,7 +19,7 @@ export function createLiveTranscriber(onTranscript: TranscriptHandler, options: 
   let segments: string[] = [];
   let lastFinal = '';
   let flushTimer: ReturnType<typeof setTimeout> | undefined;
-  const params = new URLSearchParams({ model: 'nova-3', smart_format: 'true', interim_results: 'true', endpointing: '300', utterance_end_ms: '1200', vad_events: 'true' });
+  const params = new URLSearchParams({ model: 'nova-3', smart_format: 'true', interim_results: 'true', endpointing: '1000', utterance_end_ms: '1500', vad_events: 'true' });
   if (options.pcmSampleRate) { params.set('encoding', 'linear16'); params.set('sample_rate', String(options.pcmSampleRate)); params.set('channels', '1'); }
   const socket = new WebSocket(`wss://api.deepgram.com/v1/listen?${params}`, {
     headers: { Authorization: `Token ${key}` }, handshakeTimeout: 5_000,
@@ -46,7 +46,7 @@ export function createLiveTranscriber(onTranscript: TranscriptHandler, options: 
       if (result.speech_final || result.from_finalize) deliver();
       else {
         if (flushTimer) clearTimeout(flushTimer);
-        flushTimer = setTimeout(deliver, 1_000);
+        flushTimer = setTimeout(deliver, 1_500);
         flushTimer.unref();
       }
     } catch { /* Ignore malformed provider events. */ }
