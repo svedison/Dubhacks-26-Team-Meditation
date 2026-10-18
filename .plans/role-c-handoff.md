@@ -38,7 +38,9 @@ npm run typecheck
 npm test
 ```
 
-37 tests currently pass, including actual ephemeral localhost HTTP/WebSocket transport for Scene 2 and Scene 3, all three sharing levels, one red alert plus grandma note, a database-failure rollback, repeat receipt, same-ID retries, and a fresh-process SQLite persistence check. Only external Claude output is stubbed in the full-flow test; TTS is disabled. No test calls paid APIs.
+38 tests currently pass, including actual ephemeral localhost HTTP/WebSocket transport for Scene 2 and Scene 3, all three sharing levels, one red alert plus grandma note, a database-failure rollback, repeat receipt, same-ID retries, and a fresh-process SQLite persistence check. Only external Claude output is stubbed in the full-flow test; TTS is disabled. No test calls paid APIs. The production `npm start` entrypoint also passed the existing `npm run smoke` script on port 8799 with external keys disabled.
+
+An independent read-only review found one urgency-regex regression involving decimal amounts (`must pay $500.00 today`). A new test reproduced the failure; decimal punctuation is now preserved within the urgency phrase while real sentence boundaries remain separate. No other actionable findings or deferred minor findings were reported for this simulation scope.
 
 This is backend acceptance evidence, not a claim that a physical phone/iPad, real speech recognition, frontend Simulated label, or live provider latency has been checked.
 

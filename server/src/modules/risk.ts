@@ -8,7 +8,9 @@ import { orderSchema } from '../contracts.js';
 export interface CheckResult { ok: boolean; reason: string | null; alternative?: Product }
 export interface PaymentResult { status: 'paid' | 'simulated_paid'; ref: string }
 export function isScam(text: string): boolean {
-  const normalized = text.normalize('NFKC').replace(/[‐‑–—-]/g, ' ').replace(/\s+/g, ' ');
+  // Decimal points in prices are not sentence boundaries for urgency matching.
+  const normalized = text.normalize('NFKC').replace(/[‐‑–—-]/g, ' ').replace(/\s+/g, ' ')
+    .replace(/(?<=\d)\.(?=\d)/g, '');
   return /\bgift\s*cards?\b|\b(?:wire|bank|money)\s+transfer\b|\bsend\s+money\b|\bsomeone\s+called\b|礼品卡|转账|有人打电话|今天必须/i.test(normalized)
     || /\b(?:must|have to|need to)\b[^.!?]{0,100}\btoday\b|\btoday\b[^.!?]{0,100}\b(?:must|have to|need to)\b/i.test(normalized);
 }

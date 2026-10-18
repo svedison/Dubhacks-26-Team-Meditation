@@ -48,6 +48,13 @@ test('ordinary today and telephone mentions do not block normal shopping', () =>
   }
 });
 
+test('same-day urgency includes decimal amounts but does not cross sentence boundaries', () => {
+  for (const text of ['They said I must pay $500.00 today', 'I have to buy the $18.00 calcium today', 'Today I must send $500.00']) {
+    assert.deepEqual(risk.check('calcium-120', text), { ok: false, reason: 'scam' }, text);
+  }
+  assert.deepEqual(risk.check('calcium-120', 'I must buy calcium next week. Today I am resting.'), { ok: true, reason: null });
+});
+
 test('payment returns an explicitly simulated result without writing an order', async () => {
   const result = await risk.pay(draft());
   assert.equal(result.status, 'simulated_paid');
