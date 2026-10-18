@@ -40,12 +40,16 @@ TTS 首选 MiniMax：fetch `https://api.minimax.io/v1/t2a_v2`，`speech-02-turbo
 首次部署：登录 dashboard.render.com（用 GitHub 账号），New → Blueprint → 选这个仓库 → Apply。它会要四个值：`ANTHROPIC_API_KEY`、`MINIMAX_API_KEY`、`DEEPGRAM_API_KEY`、`DEBUG_TOKEN`（自己定一个口令）。部署完的网址形如 `https://trusttag.onrender.com`，iPad 打开 `网址/elder`，手机打开 `网址/guardian`。
 
 - `PUBLIC_BASE_URL` 在 Render 上不用填：后端自动用 Render 注入的 `RENDER_EXTERNAL_URL` 拼语音地址。其他平台或 ngrok 仍要填。
-- 设了 `DEBUG_TOKEN` 后，`/debug/clock` 和 `/debug/reset` 要带口令，否则 401：
+- 设了 `DEBUG_TOKEN` 后，`/debug/clock` 和 `/debug/reset` 要带口令，否则 401。优先用请求头，口令里有 `+`、`&`、`#`、空格时放在 `?token=` 里会被 URL 解析改掉：
 
 ```sh
-curl -X POST "https://trusttag.onrender.com/debug/reset?token=口令"
-curl -X POST "https://trusttag.onrender.com/debug/clock?token=口令" -H 'Content-Type: application/json' -d '{"now":"2026-10-22T17:00:00.000Z"}'
+curl -X POST https://trusttag.onrender.com/debug/reset -H 'x-debug-token: 口令'
+curl -X POST https://trusttag.onrender.com/debug/clock -H 'x-debug-token: 口令' -H 'Content-Type: application/json' -d '{"now":"2026-10-22T17:00:00.000Z"}'
+# 也接受 -H 'Authorization: Bearer 口令' 或 ?token=口令
 ```
+
+  两边都会去掉首尾空白（往 Render 环境变量里粘口令时常带上换行）。一直 401 时看 Render 的 Logs：每次不匹配都会打一行 `Debug token mismatch: got N characters via ..., DEBUG_TOKEN has M`，对一下 M 是不是你记的口令长度；不是就在 Dashboard → milo → Environment 里重设 `DEBUG_TOKEN`（改环境变量会自动重启服务）。
+- `GET /api/health` 不要口令，任何人都能看后端此刻在干什么：`{state, turn:{id,stage,stage_ms,text}|null, elder_connected, stt_sessions, mic_session, commit}`。`turn` 不为 null 且 `stage_ms` 很大，就是有一轮卡住了（现在最多 10 秒就会被看门狗放掉）；`commit` 是 Render 当前跑的提交，用来确认新代码已上线。
 
 - 免费档 15 分钟没人访问会休眠，再打开要等约一分钟：演示前先开一次 `/elder`。每次重新部署或重启 SQLite 清零，相当于自动 `/debug/reset`。
 - 密钥只放在 Render 的环境变量里，不进仓库；`server/.env` 只在本机用。
@@ -74,11 +78,22 @@ curl -X POST localhost:8787/api/utterance -H 'content-type: application/json' -d
 ## 和 A 的前端对接（已接好）
 
 - **托管前端**：`cd frontend && npm install && npm run build` 生成 `frontend/dist/`，后端启动时发现它就直接托管：`/elder`、`/guardian/*` 回落到 `index.html`，`/api`、`/ws`、`/debug`、`/audio` 不受影响。这样 iPad 只需要一个 HTTPS 地址（ngrok 指向 8787），不用设 `VITE_BACKEND_URL`。
-- **麦克风上传**：A 的 iPad 把 16 kHz 单声道 16 位 PCM 按块 `POST /api/audio?seq=N&sr=16000&speech=1[&end=1]`，一句话结束的块带 `end=1`。后端把这些块喂给同一条 Deepgram live 连接（`encoding=linear16`），`end=1` 时发 `Finalize` 让 Deepgram 立刻出最终文本，文本再进对话流水线；每个请求立刻返回 `202 {ok, seq, stt}`，不等 Claude。`stt: false` 表示没有 Deepgram key。90 秒没有新块自动断开 Deepgram。
+- **麦克风上传**：A 的 iPad 把 16 kHz 单声道 16 位 PCM 按块 `POST /api/audio?seq=N&sr=16000&speech=1[&end=1]`，一句话结束的块带 `end=1`。后端把这些块喂给同一条 Deepgram live 连接（`encoding=linear16`），`end=1` 时发 `Finalize` 让 Deepgram 立刻出最终文本，文本再进对话流水线；每个请求立刻返回 `202 {ok, seq, stt}`，不等 Claude。`stt: false` 表示没有 Deepgram key。90 秒没有新块自动断开 Deepgram；Deepgram 自己挂断的连接下一块到达时立刻重开（以前会一直往死连接里灌、字幕全没，直到 90 秒没人说话）。`speech=1` 的块同时告诉流水线「奶奶正在说话」，见下一节。
+- **Deepgram 断句**：`endpointing` 从 1000 ms 提到 1500 ms（`utterance_end_ms` 2000）。iPad 现在停顿 1.2 秒才算一句说完并发 `end=1`，后端不能比它更急，否则 1.1 秒的喘气就会在设备决定之前被 Deepgram 切成两句。正常情况仍由 `end=1` → `Finalize` 立刻出结果，延迟不变。
 - 不带 `seq` 的整段音频仍走原来的整段转写路径。
 - **唤醒名**默认改成 `Milo`（A 的界面文案叫 Milo），mock、contracts、seed 一致。
 - **表情顺序**（A 10/18 的要求）：现在是 thinking → happy/worried/alert → `speak`/`ask` → 老人端 `spoke` → listening。说话期间脸就是那个表情，不再先发 `speaking`。
 - 后端不发 `connected` 事件；A 看到的那个来自别的后端（D 的独立 harness 或代理），契约里已写明只发表里列的事件。
+
+## 对话流水线：一轮永远会结束，半句话不单独回答（2026-10-18 线上卡死之后）
+
+线上曾经一句「I want to buy something to eat, I feeling a little bit of headache」被切成两段，第二段进来后状态停在 `thinking` 五分钟以上，后面所有话都排在它后面没人处理。现在的规则：
+
+- **每一步有上限**：Claude 和 TTS 调用除了自带的 4 秒截止，流水线上再包一层 5 秒；到点拿不到结果就当没有（Claude → 兜底回答，TTS → `audio_url: null` 让浏览器自己念）。
+- **看门狗**：一轮在任一阶段（waiting / holding / thinking / responding）超过 10 秒没有进展，就被放掉：发一次「Sorry, say that again?」（worried 脸）→ `speak` → 老人端回 `spoke` → listening，队列继续处理后面的话。日志里是 `[pipeline] turn #N made no progress ... releasing the conversation`。连兜底都发不出去时直接强制回 listening。
+- **断句合并**：一句被切成两段时，第二段到达而第一段还没决定怎么回（排队中 / 等设备播完 / 等奶奶说完 / Claude 还在想），第一段这一轮作废（Claude 调用被 abort），用「第一段 第二段」拼起来重新走一轮，只回答一次。字幕上第二段单独显示一行，不重复第一段。Claude 已经给出结果、开始生成语音以后到的话算新的一句，不再合并（避免「yes」「please」合并时把已下的单重复或丢掉确认）。
+- **等她说完**：`/api/audio` 的 `speech=1` 块每 0.25 秒一来就说明奶奶还在说话。第一段文本到了但麦克风还在送 `speech=1`，先不问 Claude（状态留在 listening），等 `end=1` 和 Deepgram 的下一段文本到了再合并；Claude 已经答了但她在这期间又开口，同样等她说完让后半句接管。最多等 6 秒。她没在说话时这一步零延迟。
+- 单元测试在 `test/recovery.test.ts`；本地用 `ANTHROPIC_API_KEY=` 置空也能跑。
 
 ## iPad / HTTPS
 
