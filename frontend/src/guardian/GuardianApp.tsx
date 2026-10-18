@@ -1,6 +1,6 @@
 import { ChevronDown, Home, Pill, ReceiptText, Settings as SettingsIcon } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import AlertCard from '../shared/ui/AlertCard'
 import { clockLabel, hoursBetween, recentLabel } from '../shared/format'
@@ -83,25 +83,22 @@ function HomePage() {
     return () => window.clearTimeout(t)
   }, [loaded])
   return (
-    // 电脑宽度时分两栏：左边是要处理的卡，右边是本周回顾
+    // 电脑宽度时分两栏：左边是要处理的卡，右边是她那边的相框和本周回顾
     <section className="g-page g-home">
       <FrameNow photo={settings?.photos[0] ?? SAMPLE_PHOTOS[0]} worried={red.length > 0} />
       <div className="g-home__main">
       <h1 className="g-h1">{red.length ? `Call ${name} today` : yellow ? 'Take a look' : 'All good'}</h1>
-      <p className="g-lede">{red.length || yellow ? 'Milo noticed something.' : 'Nothing needs you right now.'}</p>
+      {/* 只有普通卡（比如提醒设好了）时不说「没有要你管的」，免得和下面那张卡对不上 */}
+      {(red.length > 0 || yellow || open.length === 0) && (
+        <p className="g-lede">{red.length || yellow ? 'Milo noticed something.' : 'Nothing needs you right now.'}</p>
+      )}
       <div className="g-stack">
-        {/* 收走的卡片不再占位，下面的内容直接到位，不会等它消失后再往上跳 */}
-        <AnimatePresence initial={false} mode="popLayout">
+        {/* 收走的卡片高度慢慢收起，下面的内容跟着平滑上移，不叠字也不跳 */}
+        <AnimatePresence initial={false}>
           {[...red, ...rest].map((a) => (
             <AlertCard key={a.id} alert={a} now={clock} phone={settings?.phone ?? null} fresh={freshIds.has(a.id)} onArchive={(id) => void archive(id).catch((e: Error) => console.error(e))} />
           ))}
         </AnimatePresence>
-        {open.length === 0 && (
-          <motion.div className="g-empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.3 }}>
-            {/* 眼睛已经在上面的相框里了，这里只留一句话 */}
-            <p>If Milo needs you, it shows here.</p>
-          </motion.div>
-        )}
       </div>
       </div>
       <ThisWeek animateIn={settled} />
@@ -121,6 +118,13 @@ function FrameNow({ photo, worried }: { photo: string; worried: boolean }) {
 }
 
 // 本周回顾：最近 7 天（按演示时钟）点过 Got it 的卡，收成灰色的一行，时间倒序
+// 这一块是在页面打开以后才出现的（第一次点 Got it）：等上面的卡片收完再淡入，不会压在卡片下沿。
+// 要不要淡入只看出现那一刻；页面刚打开时就在的，之后也不会再淡一次
+function WeekSection({ enter, children }: { enter: boolean; children: ReactNode }) {
+  const [fade] = useState(enter)
+  return <section className={`g-week${fade ? ' g-week--enter' : ''}`} aria-label="This week">{children}</section>
+}
+
 function ThisWeek({ animateIn }: { animateIn: boolean }) {
   const { alerts, clock } = useGuardian()
   const now = clock ?? new Date().toISOString()
@@ -130,7 +134,7 @@ function ThisWeek({ animateIn }: { animateIn: boolean }) {
   const [openId, setOpenId] = useState<string | null>(null)
   if (week.length > 0 && seen.length === 0) return null
   return (
-    <section className="g-week" aria-label="This week">
+    <WeekSection enter={animateIn}>
       <h2 className="g-h2">This week</h2>
       {seen.length === 0 ? (
         <p className="g-note">Quiet week so far.</p>
@@ -174,7 +178,7 @@ function ThisWeek({ animateIn }: { animateIn: boolean }) {
           </AnimatePresence>
         </ul>
       )}
-    </section>
+    </WeekSection>
   )
 }
 

@@ -54,7 +54,7 @@ export default function MemoryPage() {
                   aria-label={m.paused ? 'Resume reminder' : 'Pause reminder'}
                   onClick={() => void saveMemory(m.id, { paused: !m.paused }).catch((e: Error) => console.error(e))}
                 >
-                  {m.paused ? <Play strokeWidth={2.4} /> : <Pause strokeWidth={2.4} />}
+                  {m.paused ? <Play fill="currentColor" strokeWidth={0} /> : <Pause fill="currentColor" strokeWidth={0} />}
                   <span>{m.paused ? 'Resume' : 'Pause'}</span>
                 </button>
             </li>

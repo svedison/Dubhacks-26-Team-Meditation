@@ -140,7 +140,8 @@
 /* 并排时卡窄：价格放到名字下面 */
 .card-stage--pair .pcard__head { flex-direction: column; gap: 8px; }
 .card-stage--pair .pcard__title { font-size: 25px; }
-.card-stage--pair .pcard__sub { font-size: 18px; }
+/* 两张卡并排时卡窄：只留名字、价格和判定，规格那一小行不放 */
+.card-stage--pair .pcard__sub { display: none; }
 .card-stage--pair .pcard__price { font-size: 46px; }
 .card-stage--pair .pcard__point-text strong { font-size: 20px; }
 .card-stage--pair .pcard__point-text span { font-size: 18px; }
@@ -260,3 +261,9 @@
 /* 顶部时间条出来的那 2.6 秒里，右上角的小时钟先藏起来，同一个时间不出现两遍 */
 .stage:has(.clock-jump) .clock { opacity: 0; }
 .clock { transition: opacity 300ms ease, transform 300ms ease; }
+
+/* 待机提示条最前面那双闭着的眼睛 */
+.wake-strip__eyes { display: inline-flex; align-items: center; gap: 9px; padding: 12px 13px; border-radius: 16px; background: #1f1813; }
+.wake-strip__eyes i { width: 18px; height: 4px; border-radius: 999px; background: #fff1dc; animation: idle-breathe 4s ease-in-out infinite; }
+@keyframes idle-breathe { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .wake-strip__eyes i { animation: none; } }

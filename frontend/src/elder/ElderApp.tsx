@@ -139,7 +139,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
     }
     if (e.type === 'state' || e.type === 'ask' || e.type === 'transcript') pendingIdle.current = false
     // 她开口说新的话、或者设备要开口问她：上一句留下的开心、担心表情立刻收起，脸回到后端当前的状态（提问时不该是笑脸）
-    if ((e.type === 'transcript' && e.role === 'grandma' && !player.playing) || e.type === 'ask') {
+    if ((e.type === 'transcript' && e.role === 'grandma') || e.type === 'ask') {
       window.clearTimeout(emotionTimer.current)
       clearEmotionAfterTalk.current = false
       setEmotion(null)
@@ -281,6 +281,8 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       <AnimatePresence>
         {!showFace && (
           <motion.div key="strip" className="wake-strip" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }} transition={{ duration: 0.5 }}>
+            {/* 待机时那双眼睛闭着、轻轻呼吸，和子女手机上的 Milo 标志、相框是同一个样子 */}
+            <span className="wake-strip__eyes" aria-hidden><i /><i /></span>
             {wakeName && <span className="wake-strip__say">Say “{wakeName}”</span>}
             {now && <span className="wake-strip__clock">{clockLabel(now)}</span>}
           </motion.div>
