@@ -23,15 +23,10 @@ const MOVE = { duration: 0.8, ease: [0.43, 0.195, 0.02, 1] as const }
 
 export default function ElderApp() {
   const [live, setLive] = useState<{ mic: MicStream; player: Player } | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [starting, setStarting] = useState(false)
 
   // 必须在点击里同步启动：AudioContext、静音循环、speechSynthesis 解锁都要用户手势
   const start = () => {
-    // 启动要几秒（加载语音模型），这段时间再点不重复启动
-    if (live || starting) return
-    setStarting(true)
-    setError(null)
+    if (live) return
     // 在 Safari 里打开时，用网页全屏收起地址栏（Safari 会在左上角留一个退出全屏的 ×）。
     // 从主屏幕当 App 打开时本来就没有地址栏，不再请求全屏，也就没有那个 ×
     const asApp = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone === true
@@ -43,19 +38,19 @@ export default function ElderApp() {
     const started = mic.start()
     const player = new Player(mic.ctx!)
     player.unlock()
-    started
-      .then(() => setLive({ mic, player }))
-      .catch((e: Error) => { console.error(e); setError(`${e.name}: ${e.message}`); setStarting(false) })
+    // 点一下就进待机画面，语音模型在后台继续加载
+    setLive({ mic, player })
+    started.catch((e: Error) => console.error('[elder] mic', e))
   }
 
   if (!live) {
     return (
       <Stage background="var(--elder-bg)">
         <img className="wake__bg" src={SAMPLE_PHOTOS[0]} alt="" draggable={false} />
-        <button className={`wake${starting ? ' is-starting' : ''}`} onClick={start}>
+        <button className="wake" onClick={start}>
           <span className="wake__eyes" aria-hidden><i /><i /></span>
           <span className="wake__name">Milo</span>
-          <span className="wake__hint">{error ? "Mic didn't start. Tap to try again." : starting ? 'Waking up…' : 'Tap to start'}</span>
+          <span className="wake__hint">Tap to start</span>
         </button>
       </Stage>
     )
