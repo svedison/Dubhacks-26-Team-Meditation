@@ -13,7 +13,7 @@ export const shelfSeed: Product[] = [
 ];
 export const defaultSettings: Settings = {
   elder_name: 'Grandma', address: '123 Maple St', phone: '555-0100', card_last4: '4242',
-  card_owner: 'guardian', monthly_baseline_cents: 15000, share_level: 'default', wake_name: 'Lily', photos: [],
+  card_owner: 'guardian', monthly_baseline_cents: 15000, share_level: 'default', wake_name: 'Milo', photos: [],
 };
 export const historicalOrder: Order = {
   id: 'ord_00', product_id: 'calcium-120', price_cents: 1800, status: 'paid', block_reason: null,

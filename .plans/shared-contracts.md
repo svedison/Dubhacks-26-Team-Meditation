@@ -30,7 +30,7 @@
 // Settings（监护人一开始的设置）
 { "elder_name": "Grandma", "address": "...", "phone": "...",
   "card_last4": "4242", "card_owner": "elder|guardian", "monthly_baseline_cents": 15000,
-  "share_level": "minimum|default|open", "wake_name": "Lily", "photos": ["url"] }
+  "share_level": "minimum|default|open", "wake_name": "Milo", "photos": ["url"] }
 ```
 
 ## REST（后端提供）

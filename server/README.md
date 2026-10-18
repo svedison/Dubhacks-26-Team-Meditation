@@ -32,6 +32,13 @@ Claude 每轮最多一次 `messages.stream()` + `finalMessage()`，结构化输�
 
 TTS 首选 MiniMax：fetch `https://api.minimax.io/v1/t2a_v2`，`speech-02-turbo`、声音 `Arrogant_Miss`、speed 0.9、`language_boost: English`、非流式 hex 返回后解码成 MP3。没有 MiniMax key 时退到 OpenAI `gpt-4o-mini-tts`（voice `sage`）。按提供商、模型、声音、速度和文本哈希缓存到 `audio/`，通过 `/audio/<hash>.mp3` 提供。注意：MiniMax 把 Arrogant_Miss 列在普通话声音下，英文由 `language_boost` 带动，演示前请用一句英文实测听感。
 
+## 和 A 的前端对接（已接好）
+
+- **托管前端**：`cd frontend && npm install && npm run build` 生成 `frontend/dist/`，后端启动时发现它就直接托管：`/elder`、`/guardian/*` 回落到 `index.html`，`/api`、`/ws`、`/debug`、`/audio` 不受影响。这样 iPad 只需要一个 HTTPS 地址（ngrok 指向 8787），不用设 `VITE_BACKEND_URL`。
+- **麦克风上传**：A 的 iPad 把 16 kHz 单声道 16 位 PCM 按块 `POST /api/audio?seq=N&sr=16000&speech=1[&end=1]`，一句话结束的块带 `end=1`。后端把这些块喂给同一条 Deepgram live 连接（`encoding=linear16`），`end=1` 时发 `Finalize` 让 Deepgram 立刻出最终文本，文本再进对话流水线；每个请求立刻返回 `202 {ok, seq, stt}`，不等 Claude。`stt: false` 表示没有 Deepgram key。90 秒没有新块自动断开 Deepgram。
+- 不带 `seq` 的整段音频仍走原来的整段转写路径。
+- **唤醒名**默认改成 `Milo`（A 的界面文案叫 Milo），mock、contracts、seed 一致。
+
 ## iPad / HTTPS
 
 ```bash

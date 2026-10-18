@@ -35,7 +35,7 @@ function reset() {
   state = {
     now: "2026-10-17T18:00:00Z",
     settings: { elder_name: "Grandma", address: "123 Maple St", phone: "555-0100", card_last4: "4242",
-      card_owner: "guardian", monthly_baseline_cents: 15000, share_level: "default", wake_name: "Lily", photos: [] },
+      card_owner: "guardian", monthly_baseline_cents: 15000, share_level: "default", wake_name: "Milo", photos: [] },
     orders: [{ id: "ord_00", product_id: "calcium-120", price_cents: 1800, status: "paid", block_reason: null,
       created_at: "2026-09-10T15:00:00Z", deliver_on: "2026-09-14", received: true }],
     memories: [], alerts: [],
@@ -59,7 +59,7 @@ async function say(text, extra = {}) {
 function heard(text) { toElder({ type: "state", state: "listening" }); toElder({ type: "transcript", role: "grandma", text }); }
 
 async function sceneRefill() {
-  heard("Lily, the purple bottle is almost empty.");
+  heard("Milo, the purple bottle is almost empty.");
   toElder({ type: "state", state: "thinking" }); await sleep(1200);
   toElder({ type: "card", product: P("calcium-120") });
   await say("That's your calcium, 120 tablets, $18. It'll arrive Thursday. Want me to order it?");

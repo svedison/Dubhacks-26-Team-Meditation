@@ -4,9 +4,11 @@ import cors from '@fastify/cors';
 import websocket from '@fastify/websocket';
 import staticFiles from '@fastify/static';
 import { mkdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { z } from 'zod';
-import { audioDir } from './config.js';
+import { audioDir, serverRoot } from './config.js';
 import { all, get, getSettings, put, remove, resetDatabase, saveSettings } from './db.js';
 import { acknowledgeSpoke, addClient, toGuardian } from './bus.js';
 import { now, resetClock, setClock, startClock, stopClock } from './clock.js';
@@ -21,6 +23,10 @@ import { FALLBACK_REPLY } from './llm.js';
 const utteranceSchema = z.object({ text: z.string().trim().min(1).max(8_000), source: z.enum(['voice', 'keyboard']).default('keyboard') });
 const idSchema = z.object({ id: z.string().min(1).max(200) });
 const clockSchema = z.object({ now: z.string().datetime({ offset: true }) });
+const audioQuerySchema = z.object({ seq: z.coerce.number().int().nonnegative().optional(), sr: z.coerce.number().int().positive().default(16000),
+  speech: z.coerce.number().int().optional(), end: z.coerce.number().int().optional() });
+// A builds to frontend/dist; when present the backend hosts it so /elder, /guardian, /api and /ws share one origin (iPad needs one HTTPS URL).
+const frontendDist = resolve(serverRoot, '../frontend/dist');
 
 export async function buildServer() {
   const app = Fastify({ logger: true, bodyLimit: 10 * 1024 * 1024 });
@@ -78,9 +84,29 @@ export async function buildServer() {
     const body = utteranceSchema.parse(request.body);
     return handleUtterance(body.text, body.source);
   });
+  // Two upload modes. A's iPad mic: many small raw PCM chunks (16 kHz mono s16le) with ?seq=N[&end=1], one request
+  // in flight at a time, so this must answer immediately and never block on Claude; chunks are streamed to one shared
+  // Deepgram live session and final transcripts enter the pipeline asynchronously. Legacy: a whole clip with no ?seq.
+  let pcmSession: { live: LiveTranscriber; sampleRate: number; idle?: ReturnType<typeof setTimeout> } | null = null;
+  const dropPcmSession = () => { if (pcmSession) { clearTimeout(pcmSession.idle); pcmSession.live.close(); liveConnections.delete(pcmSession.live); pcmSession = null; } };
   app.post('/api/audio', async (request, reply) => {
     if (!Buffer.isBuffer(request.body)) return reply.code(400).send({ error: 'Send an audio blob with an audio/* or application/octet-stream content type' });
+    const query = audioQuerySchema.parse(request.query ?? {});
     const version = audioGeneration;
+    if (query.seq !== undefined) {
+      if (pcmSession && pcmSession.sampleRate !== query.sr) dropPcmSession();
+      if (!pcmSession || !liveConnections.has(pcmSession.live)) {
+        const live = createLiveTranscriber(text => version === audioGeneration ? handleUtterance(text, 'voice') : undefined, { pcmSampleRate: query.sr });
+        liveConnections.add(live);
+        pcmSession = { live, sampleRate: query.sr };
+      }
+      clearTimeout(pcmSession.idle);
+      pcmSession.idle = setTimeout(dropPcmSession, 90_000);
+      pcmSession.idle.unref();
+      if (request.body.length) pcmSession.live.send(request.body);
+      if (query.end) pcmSession.live.finalize();
+      return reply.code(202).send({ ok: true, seq: query.seq, stt: Boolean(process.env.DEEPGRAM_API_KEY) });
+    }
     const text = await transcribeAudio(request.body, request.headers['content-type'] || 'application/octet-stream');
     if (!text || version !== audioGeneration) return { reply_text: FALLBACK_REPLY, audio_url: null, state: state.current };
     return handleUtterance(text, 'voice');
@@ -128,16 +154,26 @@ export async function buildServer() {
   });
   app.post('/debug/clock', async request => ({ now: await setClock(clockSchema.parse(request.body).now) }));
   app.post('/debug/reset', async () => {
-    audioGeneration++;
+    audioGeneration++; dropPcmSession();
     for (const live of liveConnections) live.close();
     liveConnections.clear();
     pipeline.reset(); resetDatabase(); resetClock();
     return { ok: true };
   });
+  if (existsSync(resolve(frontendDist, 'index.html'))) {
+    await app.register(staticFiles, { root: frontendDist, prefix: '/', decorateReply: false, wildcard: false, index: ['index.html'] });
+    // SPA fallback: /elder, /guardian/* etc. render index.html; API-looking paths still 404 as JSON.
+    app.setNotFoundHandler((request, reply) => {
+      const path = request.url.split('?')[0];
+      if (request.method === 'GET' && !/^\/(api|debug|ws|audio)(\/|$)/.test(path) && !path.includes('.')) return reply.type('text/html').sendFile('index.html', frontendDist);
+      return reply.code(404).send({ error: 'Not found' });
+    });
+    app.log.info(`Hosting frontend from ${frontendDist}`);
+  }
   const unregisterMemory = registerMemoryTicks();
   app.addHook('onReady', async () => { startClock(); });
   app.addHook('onClose', async () => {
-    audioGeneration++;
+    audioGeneration++; dropPcmSession();
     for (const live of liveConnections) live.close();
     liveConnections.clear(); stopClock(); unregisterMemory(); pipeline.reset();
   });

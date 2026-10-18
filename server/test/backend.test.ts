@@ -26,7 +26,7 @@ after(() => { pipeline.reset(); clock.stopClock(); db.sqlite.close(); });
 
 test('seed, risk checks, payment adapter and monthly sharing rules', async () => {
   assert.equal(db.all('products').length, 3);
-  assert.equal(db.getSettings().wake_name, 'Lily');
+  assert.equal(db.getSettings().wake_name, 'Milo');
   assert.equal(risk.check('calcium-120', '').ok, true);
   assert.equal(risk.check('glucosamine-usp', '').ok, true);
   assert.equal(risk.check('miracle-joint', '').alternative?.id, 'glucosamine-usp');
@@ -90,7 +90,7 @@ test('scam creates a rule-7 red alert and next answer becomes grandma_note', asy
 test('voice wake gate, empty-name onboarding, and offline fallback', async () => {
   const ignored = await pipeline.handleUtterance('the purple bottle is empty', 'voice');
   assert.equal(ignored.state, 'idle'); assert.equal(ignored.reply_text, '');
-  const fallback = await pipeline.handleUtterance('Lilly hello', 'voice');
+  const fallback = await pipeline.handleUtterance('Mylo hello', 'voice');
   assert.equal(fallback.reply_text, FALLBACK_REPLY); assert.equal(fallback.audio_url, null);
   pipeline.reset(); db.saveSettings({ ...db.getSettings(), wake_name: '' });
   const ask = await pipeline.handleUtterance('hello', 'voice');

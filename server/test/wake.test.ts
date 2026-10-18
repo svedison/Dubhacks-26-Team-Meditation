@@ -6,6 +6,9 @@ test('wake names tolerate case, punctuation, spelling and phonetic STT variants'
   for (const phrase of ['Lily!', 'Hey LILY, the bottle is empty.', 'Lilly help me', 'Lili please', 'Lilee', 'Li ly, hello', 'Lilyy']) {
     assert.equal(matchesWakeName(phrase, 'Lily'), true, phrase);
   }
+  for (const phrase of ['Milo!', 'Hey MILO, the purple bottle is empty.', 'Mylo help me', 'Me-lo please', 'Milow', 'Mi lo, hello']) {
+    assert.equal(matchesWakeName(phrase, 'Milo'), true, phrase);
+  }
   assert.equal(matchesWakeName('MaryJane, help', 'Mary Jane'), true);
   assert.equal(matchesWakeName('Sofie hello', 'Sophie'), true);
 });
