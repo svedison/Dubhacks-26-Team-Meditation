@@ -15,7 +15,7 @@ import { now, resetClock, setClock, startClock, stopClock } from './clock.js';
 import { memorySchema, settingsSchema } from './contracts.js';
 import { handleUtterance, pipeline } from './pipeline.js';
 import { state } from './state.js';
-import { createLiveTranscriber, transcribeAudio, type LiveTranscriber } from './stt.js';
+import { createLiveTranscriber, recentDeepgram, transcribeAudio, type LiveTranscriber } from './stt.js';
 import { ledger, publishOrder, visaMode } from './modules/risk.js';
 import { credentialStatus, visaSandbox } from './modules/visa-sandbox.js';
 import { deleteMemory, receiveOrder, registerMemoryTicks, resetMemoryModule, updateMemory } from './modules/memory.js';
@@ -63,7 +63,8 @@ export async function buildServer() {
         if (!live || live.closed || !liveConnections.has(live)) {
           if (live) liveConnections.delete(live);
           const version = audioGeneration;
-          live = createLiveTranscriber(text => version === audioGeneration ? handleUtterance(text, 'voice') : undefined, { keyterms: [getSettings().wake_name] });
+          live = createLiveTranscriber(text => version === audioGeneration ? handleUtterance(text, 'voice') : undefined,
+            { keyterms: [getSettings().wake_name], onInterim: text => { if (version === audioGeneration) pipeline.heardInterim(text); } });
           liveConnections.add(live);
         }
         live.send(Array.isArray(data) ? Buffer.concat(data) : Buffer.from(data as ArrayBuffer));
@@ -99,7 +100,8 @@ export async function buildServer() {
       // A session Deepgram hung up on is replaced on the next chunk; before, its chunks were silently dropped until 90 s of silence.
       if (pcmSession && (pcmSession.sampleRate !== query.sr || pcmSession.live.closed)) dropPcmSession();
       if (!pcmSession || !liveConnections.has(pcmSession.live)) {
-        const live = createLiveTranscriber(text => version === audioGeneration ? handleUtterance(text, 'voice') : undefined, { pcmSampleRate: query.sr, keyterms: [getSettings().wake_name] });
+        const live = createLiveTranscriber(text => version === audioGeneration ? handleUtterance(text, 'voice') : undefined,
+          { pcmSampleRate: query.sr, keyterms: [getSettings().wake_name], onInterim: text => { if (version === audioGeneration) pipeline.heardInterim(text); } });
         liveConnections.add(live);
         pcmSession = { live, sampleRate: query.sr };
       }
@@ -188,8 +190,9 @@ export async function buildServer() {
     try { secret_files = readdirSync('/etc/secrets'); } catch { secret_files = null; }
     return { mode, ...files, secret_files, env: { VISA_SANDBOX_DIR: process.env.VISA_SANDBOX_DIR ?? null, VISA_SANDBOX_PREFLIGHT: process.env.VISA_SANDBOX_PREFLIGHT ?? null }, hello };
   });
-  // What Deepgram actually delivered lately and whether it woke the device: the thing to look at when "Milo" is missed.
-  app.get('/debug/heard', async () => ({ wake_name: getSettings().wake_name, heard: pipeline.recentlyHeard() }));
+  // What Deepgram actually delivered lately and whether it woke the device, plus its raw interim/final messages:
+  // the thing to look at when "Milo" is missed.
+  app.get('/debug/heard', async () => ({ wake_name: getSettings().wake_name, heard: pipeline.recentlyHeard(), deepgram: recentDeepgram() }));
   app.post('/debug/reset', async () => {
     audioGeneration++; dropPcmSession();
     for (const live of liveConnections) live.close();

@@ -123,6 +123,7 @@ npx tsx ../tools/shelf/build-shelf.mts --write --recalls
 
 - **唤醒**：Deepgram 连接带上 nova-3 的 `keyterm=<唤醒名>`，专门提高这个词的识别率；后端匹配兼容 "my low"、"me low"、"mellow"、"Milow" 这些常见误听（`wake.ts`）；一个字的唤醒常在连接握手完成前就说完，Finalize 以前会被丢掉，现在排队到连上再发；麦克风会话 90 秒空闲断开改成 10 分钟（KeepAlive 维持），演示里每次开口不用再付重连延迟。iPad 端 VAD 阈值 0.5/250 ms 放到 0.4/150 ms（`micStream.ts`），轻声一个 "Milo" 也会上传。
 - **查实际听到了什么**：`GET /debug/heard`（带口令）列出最近 30 句 Deepgram 交出的文字、来源、有没有唤醒、判成什么意图。唤醒不稳先看这里，再决定是调匹配还是换名字。
+- **只喊一声 "Milo" 也要醒（2026-10-18 第三次实测："单说 Milo 不醒，带 Milo 的整句才醒"）**：Deepgram 文档写明，Finalize 之后的最终结果*不保证*——缓冲区里音频太少时（一个词 0.4 s 加 iPad 送来的 1.2 s 静音）可能什么都不回，这个词就留在 Deepgram 里，直到下一句话把它一起顶出来，所以看起来是下一句才唤醒。现在三处一起改（`stt.ts`、`pipeline.ts`）：① 每个 `end=1` 在 Finalize 之前先补 1.5 s 静音（只对裸 PCM），静音总长超过 Deepgram 自己的 1.5 s endpointing，这个词当场被收尾送回；② 待机时 Deepgram 的 interim（中间结果）只要匹配唤醒名就直接开窗（`pipeline.heardInterim`），不等 final——开窗无害，脸也早一秒反应；interim 永远不进购物流程，final 到了照常走原来的路（只有名字就静默保持在听）；③ `GET /debug/heard` 多了 `deepgram` 字段：最近 40 条 Deepgram 原始消息（interim / final / 我们发的 finalize，带文字和时间）。再有"喊了没醒"，先看这里：没有 interim 和 final 是 iPad 没传或 Deepgram 没认出；有 interim 没 final 是 Finalize 没回；文字歪了是匹配要调。
 - **后半句**：以前只有 Claude 还在想的时候，后半句才会并进同一轮；现在直到语音真正发出去之前都可以并（多了 TTS 那一秒多）。已经下单、报警、答过 Memory 问题的轮次例外，不会被替换。
 - 名字换不换：改拼写（Millo）没用，发音一样；要换就换 Hazel 或 Daisy 这种辅音清楚、没有常见词同音的名字，需要同时改 A 的文案和后端警报正文。
 

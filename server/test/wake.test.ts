@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { extractWakeName, levenshtein, matchesWakeName } from '../src/wake.js';
+import { extractWakeName, isOnlyWakeName, levenshtein, matchesWakeName } from '../src/wake.js';
 
 test('wake names tolerate case, punctuation, spelling and phonetic STT variants', () => {
   for (const phrase of ['Lily!', 'Hey LILY, the bottle is empty.', 'Lilly help me', 'Lili please', 'Lilee', 'Li ly, hello', 'Lilyy']) {
@@ -29,4 +29,10 @@ test('common STT shapes of a short name wake it; unrelated words do not', () => 
   for (const heard of ['Milo', 'Mylo', 'my low', 'Me low, I want tea', 'mellow', 'Milow', 'Nilo', 'MILO!']) assert.equal(matchesWakeName(heard, 'Milo'), true, heard);
   // Known benign false wakes, accepted for a short name: "milk", "mile", "mail", "mild", "meal", "melon" (one letter or one consonant off).
   for (const heard of ['hello there', 'the TV is loud', 'my love', 'mine', 'me too', 'mom called', 'my little one', 'family', 'smile']) assert.equal(matchesWakeName(heard, 'Milo'), false, heard);
+});
+test('only the name (with a filler at most) opens the window silently; a greeting or a mishearing in two words gets an answer', () => {
+  for (const heard of ['Milo', 'Milo.', 'hey Milo', 'Okay, Milo!', 'Mylo', 'Milo?']) assert.equal(isOnlyWakeName(heard, 'Milo'), true, heard);
+  for (const heard of ['Milo hello', 'my low', 'Milo, the purple bottle', 'hello', '']) assert.equal(isOnlyWakeName(heard, 'Milo'), false, heard);
+  assert.equal(isOnlyWakeName('Mary Jane', 'Mary Jane'), true);
+  assert.equal(isOnlyWakeName('Milo', ''), false);
 });

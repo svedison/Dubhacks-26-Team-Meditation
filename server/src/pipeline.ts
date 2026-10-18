@@ -71,7 +71,7 @@ export class ConversationPipeline {
   private mic = { speechAt: 0, endAt: 0 };
   private emergency: Emergency | null = null;
   /** The last utterances as Deepgram delivered them, for /debug/heard: tune the wake word against what was actually heard. */
-  private heard: { at: string; source: Source; text: string; woke: boolean | null; intent: string | null }[] = [];
+  private heard: { at: string; source: Source; text: string; woke: boolean | null; intent: string | null; interim?: true }[] = [];
   private readonly timeouts: PipelineTimeouts;
   constructor(private dependencies: PipelineDependencies = { decide, synthesize }, timeouts: Partial<PipelineTimeouts> = {}) {
     this.timeouts = { ...DEFAULT_TIMEOUTS, ...timeouts };
@@ -146,6 +146,22 @@ export class ConversationPipeline {
   }
   /** For /debug/heard: the last 30 utterances with what became of them. */
   recentlyHeard(): typeof this.heard { return this.heard.slice(-30); }
+  /** Waking from standby starts over: no offer, small-talk count or history carries across the photo frame. */
+  private freshConversation(): void { this.pending = null; this.chatRounds = 0; this.history = []; }
+  /**
+   * Deepgram's running hypothesis while she is still talking. Opening the window is harmless, so it does not wait for
+   * the final transcript: a one-word "Milo" may never get one (Deepgram does not promise a final for so little audio)
+   * and the face answers to its name a second sooner. Words reach Claude only through the final transcript.
+   */
+  heardInterim(text: string): void {
+    if (state.current !== 'idle' || state.isSpeaking) return;
+    const wakeName = getSettings().wake_name;
+    if (!wakeName || !matchesWakeName(text, wakeName)) return;
+    this.heard.push({ at: new Date().toISOString(), source: 'voice', text, woke: true, intent: null, interim: true });
+    if (this.heard.length > 60) this.heard.shift();
+    this.freshConversation();
+    state.wake();
+  }
   private note(job: Job, patch: Partial<(typeof this.heard)[number]>): void {
     const entry = this.heard.find(h => h === job.heardEntry);
     if (entry) Object.assign(entry, patch);
@@ -363,7 +379,7 @@ export class ConversationPipeline {
     const settings = getSettings();
     toElder({ type: 'transcript', role: 'grandma', text: job.display }); job.displayed = true;
     if (state.current === 'idle') {
-      this.pending = null; this.chatRounds = 0; this.history = [];
+      this.freshConversation();
       const woke = job.source !== 'voice' || matchesWakeName(job.text, settings.wake_name);
       this.note(job, { woke });
       if (!woke) return this.silent();
