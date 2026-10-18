@@ -100,6 +100,24 @@ curl -X POST localhost:8787/api/utterance -H 'content-type: application/json' -d
 - 以前货架上没有的东西一律红脸说 "I can only order from our trusted shelf"。现在是 happy 脸说 *"I don't have that on my shelf yet. Let me find a trusted one for you; I'll have it ready by tomorrow."*，女儿手机上多一张普通卡（标题 "A new wish"，正文带她的原话），是心愿记录不是审批。原则：自由是默认，家人只在风险（诈骗、召回、异常花费）时介入，"没见过"不是风险。
 - **货架可以扩到几百个商品**：`src/shelf.ts` 先按别名、品名、类目词把这句话可能指的商品挑出来（最多 12 个，待确认的商品一定在内；什么都没对上就每类给一个常见品），只把这些给 Claude，提示词不随货架变大。货架不超过 24 个时原样全给，所以 20 个的演示数据行为不变。扩货架只要改 `modules/role-d/data/products.json`，给每个商品配三到五个奶奶会怎么说的 `aliases`。
 
+## 货架数据：一百个真实日用品，从哪来、怎么更新（2026-10-18）
+
+`modules/role-d/data/products.json` 现在是 100 个商品：97 个按独居老人一周的生活挑的日用消耗品（早餐杂货、饮品营养、零食、个护、日用、非处方药、保健品、宠物）加 3 个演示用的风险样本。清单在 `tools/shelf/catalogue.json`，每个商品带门店搜索词和三到五个奶奶会怎么说的 `aliases`；生成脚本是 `tools/shelf/build-shelf.mts`：
+
+```bash
+cd server
+# 只用不需要 key 的来源：NIH 补剂标签库（规格、成分，按品牌匹配）、openFDA（非处方药标签用法）；价格是典型价并在 price_source 里标明
+npx tsx ../tools/shelf/build-shelf.mts --write
+# 有 Kroger 开发者账号时：按一家 QFC 的实时门店价和真实品名生成（默认西雅图 98105 附近，可用 KROGER_ZIP / KROGER_CHAIN 改）
+KROGER_CLIENT_ID=... KROGER_CLIENT_SECRET=... npx tsx ../tools/shelf/build-shelf.mts --write
+# 可选：加两条 FDA 正在进行的保健品召回作为风险样本（会让 D 的"正好三个风险品"测试需要同步改）
+npx tsx ../tools/shelf/build-shelf.mts --write --recalls
+```
+
+- 演示脚本依赖的记录原样保留：calcium-120 仍是 120 片 18 美元、别名 "the purple bottle"，glucosamine-usp、miracle-joint 等三个风险品不变，所以第二幕和第四幕（"estimated to last 119 days"）不受影响。
+- 新商品的图片：老人端按 id 找本地图，找不到显示首字母，A 有空可以给常用的几个补图。
+- 服务端进 Claude 的只是 `src/shelf.ts` 挑出的最多 12 个候选，货架再扩也不拖慢。
+
 ## 奶奶说身体不舒服：紧急就打 911，一般不舒服就陪着（2026-10-18）
 
 以前 "I'm not feeling well" 得到的是 "As an AI I can't give medical advice, please contact your doctor"，第三轮还会被转去购物。现在分两种：
