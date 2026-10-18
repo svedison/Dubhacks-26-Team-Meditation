@@ -44,7 +44,11 @@ export function ledger(): { share_level: Settings['share_level']; month_total_ce
   return {
     share_level: level,
     // Keep the mock's envelope; null means this total is intentionally withheld.
-    month_total_cents: level === 'minimum' ? null : orders.filter(o => o.created_at.slice(0, 7) === month && o.status !== 'blocked').reduce((sum, o) => sum + o.price_cents, 0),
+    month_total_cents: level === 'minimum' ? null : orders.filter(o => {
+      const created = new Date(o.created_at);
+      return Number.isFinite(created.getTime()) && created.toISOString().slice(0, 7) === month
+        && (o.status === 'paid' || o.status === 'simulated_paid');
+    }).reduce((sum, o) => sum + o.price_cents, 0),
     orders: visibleOrders(orders, level),
   };
 }

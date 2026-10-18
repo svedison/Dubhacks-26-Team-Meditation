@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { all, get, getSettings, put, saveSettings } from './db.js';
+import { all, get, getSettings, saveSettings } from './db.js';
 import { now } from './clock.js';
 import { toElder } from './bus.js';
 import { state } from './state.js';
@@ -7,6 +7,7 @@ import { extractWakeName, matchesWakeName, normalize } from './wake.js';
 import { decide, FALLBACK_REPLY, type Context, type Decision } from './llm.js';
 import { synthesize } from './tts.js';
 import * as risk from './modules/risk.js';
+import { placeOrder } from './modules/orders.js';
 import { createAlert, saveGrandmaNote } from './modules/memory.js';
 import type { Card, Emotion, Order, Source, UtteranceResult } from './contracts.js';
 
@@ -94,13 +95,12 @@ export class ConversationPipeline {
     delivery.setUTCDate(delivery.getUTCDate() + 5);
     const draft: Order = { id: `ord_${randomUUID()}`, product_id: product.id, price_cents: product.price_cents,
       status: 'simulated_paid', block_reason: null, created_at, deliver_on: delivery.toISOString().slice(0, 10), received: false };
-    const paid = await risk.pay(draft);
-    if (version !== this.generation) return { text: '', emotion: 'worried' };
-    const order: Order = { ...draft, status: paid.status };
-    put('orders', order.id, order);
-    put('kv', `payment:${order.id}`, paid.ref);
-    risk.publishOrder(order);
-    return { text: "Your simulated order is placed; I'll let you know when it arrives.", emotion: 'happy', order };
+    const order = await placeOrder(draft, () => version === this.generation);
+    if (!order) return { text: '', emotion: 'worried' };
+    const text = order.status === 'simulated_paid'
+      ? "Your simulated order is placed; I'll let you know when it arrives."
+      : "Your order is placed; I'll let you know when it arrives.";
+    return { text, emotion: 'happy', order };
   }
   private async process(text: string, source: Source, version: number): Promise<UtteranceResult> {
     await state.waitForSpeech();
