@@ -1,6 +1,6 @@
 import '../config.js';
 import { createPrivateKey, X509Certificate, type KeyObject } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { isAbsolute, join } from 'node:path';
 import https from 'node:https';
 import { CompactEncrypt, compactDecrypt } from 'jose';
@@ -61,7 +61,22 @@ export function parseSandboxAuth(data: unknown): { username: string; password: s
     return auth;
   } catch { throw new VisaSandboxError('configuration_error'); }
 }
-export function loadSandboxCredentials(dir = process.env.VISA_SANDBOX_DIR): SandboxCredentials {
+export const CREDENTIAL_FILES = ['auth.json', 'client-cert.pem', 'client-key.pem', 'mle-key.pem', 'mle-client-cert.pem', 'mle-key-id.txt', 'mle-server-cert.pem', 'pav-fixture.json'] as const;
+const RENDER_SECRET_FILES = '/etc/secrets'; // where Render mounts Secret Files uploaded in the dashboard
+/** VISA_SANDBOX_DIR, or Render's Secret Files folder when the eight files were uploaded there. */
+export function credentialDir(): string | undefined {
+  const configured = process.env.VISA_SANDBOX_DIR;
+  if (configured) return configured;
+  return existsSync(join(RENDER_SECRET_FILES, 'auth.json')) ? RENDER_SECRET_FILES : undefined;
+}
+/** Which of the eight files are in place (names only, never contents): for /debug/visa. */
+export function credentialStatus(): { dir: string | null; present: string[]; missing: string[] } {
+  const dir = credentialDir() ?? null;
+  const present = dir ? CREDENTIAL_FILES.filter(name => existsSync(join(dir, name))) : [];
+  return { dir, present: [...present], missing: CREDENTIAL_FILES.filter(name => !present.includes(name)) };
+}
+export const credentialsConfigured = (): boolean => credentialStatus().missing.length === 0;
+export function loadSandboxCredentials(dir = credentialDir()): SandboxCredentials {
   try {
     if (!dir || !isAbsolute(dir)) throw new Error();
     const read = (name: string) => readFileSync(join(dir, name), 'utf8');
@@ -139,4 +154,6 @@ export class VisaSandboxClient {
 
 export const visaSandbox = {
   async validateTestAccount() { return new VisaSandboxClient(loadSandboxCredentials()).validateTestAccount(); },
+  /** Connectivity only (mTLS + Basic auth): for /debug/visa. */
+  async hello() { return new VisaSandboxClient(loadSandboxCredentials()).hello(); },
 };

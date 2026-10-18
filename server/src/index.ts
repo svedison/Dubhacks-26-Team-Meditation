@@ -16,7 +16,8 @@ import { memorySchema, settingsSchema } from './contracts.js';
 import { handleUtterance, pipeline } from './pipeline.js';
 import { state } from './state.js';
 import { createLiveTranscriber, transcribeAudio, type LiveTranscriber } from './stt.js';
-import { ledger, publishOrder } from './modules/risk.js';
+import { ledger, publishOrder, visaMode } from './modules/risk.js';
+import { credentialStatus, visaSandbox } from './modules/visa-sandbox.js';
 import { deleteMemory, receiveOrder, registerMemoryTicks, resetMemoryModule, updateMemory } from './modules/memory.js';
 import { FALLBACK_REPLY } from './llm.js';
 
@@ -173,6 +174,17 @@ export async function buildServer() {
     }
   });
   app.post('/debug/clock', async request => ({ now: await setClock(clockSchema.parse(request.body).now) }));
+  // Is the Visa sandbox wired up on this deployment? File names only, the mode, and a live Hello World (no card data).
+  app.get('/debug/visa', async () => {
+    const files = credentialStatus();
+    const mode = visaMode();
+    let hello: { ok: boolean; detail: string } = { ok: false, detail: 'not attempted: credential files missing' };
+    if (!files.missing.length) {
+      try { await visaSandbox.hello(); hello = { ok: true, detail: 'sandbox.api.visa.com answered helloworld over mTLS' }; }
+      catch (error) { hello = { ok: false, detail: error instanceof Error ? error.message : 'error' }; }
+    }
+    return { mode, ...files, hello };
+  });
   // What Deepgram actually delivered lately and whether it woke the device: the thing to look at when "Milo" is missed.
   app.get('/debug/heard', async () => ({ wake_name: getSettings().wake_name, heard: pipeline.recentlyHeard() }));
   app.post('/debug/reset', async () => {

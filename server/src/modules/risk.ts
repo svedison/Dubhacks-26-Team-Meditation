@@ -4,7 +4,13 @@ import { now } from '../clock.js';
 import { toGuardian } from '../bus.js';
 import type { Order, PaymentCheck, Product, Settings } from '../contracts.js';
 import { orderSchema } from '../contracts.js';
-import { visaSandbox, VisaSandboxError } from './visa-sandbox.js';
+import { credentialsConfigured, visaSandbox, VisaSandboxError } from './visa-sandbox.js';
+/** Explicit VISA_SANDBOX_PREFLIGHT wins; otherwise "soft" as soon as the credential files are present (Render Secret Files), else off. */
+export function visaMode(): string {
+  const configured = process.env.VISA_SANDBOX_PREFLIGHT;
+  if (configured !== undefined && configured !== '') return configured;
+  return credentialsConfigured() ? 'soft' : '0';
+}
 
 export interface CheckResult { ok: boolean; reason: string | null; alternative?: Product }
 export interface PaymentResult { status: 'paid' | 'simulated_paid'; ref: string; check?: PaymentCheck | null }
@@ -47,8 +53,8 @@ export async function pay(order: Order): Promise<PaymentResult> {
   const product = get('products', order.product_id);
   if (!product || !check(order.product_id, '').ok) throw new Error('Product is not eligible for payment');
   if (order.price_cents !== product.price_cents) throw new Error('Order price does not match the shelf');
-  const preflight = process.env.VISA_SANDBOX_PREFLIGHT;
-  if (preflight && preflight !== '0' && preflight !== '1' && preflight !== 'soft') throw new VisaSandboxError('configuration_error');
+  const preflight = visaMode();
+  if (preflight !== '0' && preflight !== '1' && preflight !== 'soft') throw new VisaSandboxError('configuration_error');
   // Validates a fixed Visa sandbox fixture, not the elder's card or this purchase. The sanitised outcome rides on the
   // order so both screens can show "card checked with Visa".
   //   1    strict: the check must succeed; failures never silently fall back to simulation.
