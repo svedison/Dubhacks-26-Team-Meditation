@@ -84,6 +84,8 @@
 }
 .btn svg { width: 22px; height: 22px; }
 .btn:active { transform: translateY(2px); }
+/* 收卡时高度往下收，卡里的字和按钮不溢出卡外 */
+.acard { overflow: hidden; }
 /* 能按下去的实体感（参照 Pomegranate、Ebb 的实色底影） */
 .btn--call { background: #fff3e0; color: #1e1a16; box-shadow: 0 3px 0 #d8c3a2; }
 .btn--call:active { box-shadow: 0 1px 0 #d8c3a2; }

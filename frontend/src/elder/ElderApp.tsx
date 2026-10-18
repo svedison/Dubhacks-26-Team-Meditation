@@ -108,6 +108,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
   const [photos, setPhotos] = useState<string[]>(SAMPLE_PHOTOS)
   const [wakeName, setWakeName] = useState<string | null>(null)
   const [elderName, setElderName] = useState('Grandma')
+  const [cardLast4, setCardLast4] = useState<string | null>(null)
   const lastFace = useRef<FaceState>('idle')
   const [emotion, setEmotion] = useState<FaceState | null>(null)
   const [fullHold, setFullHold] = useState(false)
@@ -139,7 +140,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
     }
     if (e.type === 'state' || e.type === 'ask' || e.type === 'transcript') pendingIdle.current = false
     // 她开口说新的话、或者设备要开口问她：上一句留下的开心、担心表情立刻收起，脸回到后端当前的状态（提问时不该是笑脸）
-    if ((e.type === 'transcript' && e.role === 'grandma' && !player.playing) || e.type === 'ask') {
+    if ((e.type === 'transcript' && e.role === 'grandma') || e.type === 'ask') {
       window.clearTimeout(emotionTimer.current)
       clearEmotionAfterTalk.current = false
       setEmotion(null)
@@ -213,6 +214,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
         if (s.photos.length) setPhotos(s.photos)
         setWakeName(s.wake_name)
         setElderName(s.elder_name)
+        setCardLast4(s.card_last4)
       })
       .catch((e: Error) => console.error('[elder] settings', e.message))
   }, [])
@@ -239,7 +241,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
         <PhotoFrame photos={photos} paused={showFace} day={view.clock ? dayKey(view.clock) : null} />
       </motion.div>
       {/* 警报：深酒红，中间亮四周暗。整屏红只留给诈骗；有替代品的假药只把风险卡压红 */}
-      <motion.div className="layer alert-wash" initial={false} animate={{ opacity: face === 'alert' && !pair ? 0.9 : 0 }} transition={{ duration: 0.8, ease: [0.43, 0.195, 0.02, 1] }} />
+      <motion.div className="layer alert-wash" initial={false} animate={{ opacity: face === 'alert' && !pair ? 1 : 0 }} transition={{ duration: 0.8, ease: [0.43, 0.195, 0.02, 1] }} />
       <div className="mat" aria-hidden />
 
       <AnimatePresence>
@@ -267,20 +269,16 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       )}
       {corner && (
         <div className={`cards ${layoutCls}`}>
-          <CardStage card={view.card} />
+          <CardStage card={view.card} cardLast4={cardLast4} />
         </div>
       )}
 
-      {/* 醒着时角上留着时钟；聊起来变小变淡，不抢字幕，但到货、提醒那几幕仍看得出是哪天几点 */}
-      {now && showFace && (
-        <div className={`clock${corner ? ' clock--quiet' : ''}`}>
-          <span className="clock__time">{clockLabel(now)}</span>
-        </div>
-      )}
       <ClockJump clock={view.clock} />
       <AnimatePresence>
         {!showFace && (
           <motion.div key="strip" className="wake-strip" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }} transition={{ duration: 0.5 }}>
+            {/* 待机时那双眼睛闭着、轻轻呼吸，和子女手机上的 Milo 标志、相框是同一个样子 */}
+            <span className="wake-strip__eyes" aria-hidden><i /><i /></span>
             {wakeName && <span className="wake-strip__say">Say “{wakeName}”</span>}
             {now && <span className="wake-strip__clock">{clockLabel(now)}</span>}
           </motion.div>

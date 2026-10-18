@@ -30,11 +30,12 @@
 }
 .g-top__brand { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 900; font-size: 22px; }
 .g-top__eyes { display: inline-flex; gap: 5px; padding: 9px 10px; border-radius: 14px; background: #1f1813; }
-.g-top__eyes i { width: 9px; height: 12px; border-radius: 50%; background: #fff1dc; animation: g-blink 5s infinite; }
+.g-top__eyes { align-items: center; min-height: 31px; }
+.g-top__eyes i { width: 11px; height: 3px; border-radius: 999px; background: #fff1dc; animation: g-frame-breathe 4s ease-in-out infinite; transition: height 300ms ease, width 300ms ease; }
 .g-top__right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; min-width: 0; }
-.g-top__clock { font-size: 15px; font-weight: 700; color: var(--g-sub); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.g-live { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 600; color: var(--g-sub); white-space: nowrap; }
-.g-live::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--g-ok); }
+.g-top__clock { font-size: 16px; font-weight: 700; color: var(--g-sub); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.g-live { display: inline-flex; align-items: center; gap: 6px; font-size: 17px; font-weight: 600; color: var(--g-sub); white-space: nowrap; }
+.g-live::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--g-ok); }
 .g-live--down::before, .g-live--connecting::before { background: #c9a14a; }
 
 .g-main { max-width: 640px; margin: 0 auto; }
@@ -180,7 +181,7 @@
 @media (min-width: 1024px) {
   .g-home { display: grid; grid-template-columns: minmax(0, 1fr) 400px; grid-template-areas: "main frame" "main week"; grid-template-rows: auto 1fr; column-gap: 48px; align-items: start; }
   .g-home .g-home__main { grid-area: main; }
-  .g-home .g-frame { grid-area: frame; margin-top: 18px; }
+  .g-home .g-frame, .g-home .g-frame.is-worried { grid-area: frame; margin-top: 18px; height: 260px; }
   .g-home .g-week { grid-area: week; margin-top: 4px; }
   .g-home .g-week .g-h2 { margin-top: 0; }
 }
@@ -188,7 +189,7 @@
 /* 页头的眼睛担心时：上眼皮内高外低，底色偏红，不眨眼 */
 .g-top__eyes { transition: background 300ms ease; }
 .g-top__eyes.is-worried { background: #4a1f1d; }
-.g-top__eyes.is-worried i { animation: none; clip-path: polygon(0 42%, 100% 6%, 100% 100%, 0 100%); }
+.g-top__eyes.is-worried i { width: 9px; height: 12px; border-radius: 50%; animation: none; clip-path: polygon(0 42%, 100% 6%, 100% 100%, 0 100%); }
 .g-top__eyes.is-worried i + i { clip-path: polygon(0 6%, 100% 42%, 100% 100%, 0 100%); }
 @media (prefers-reduced-motion: reduce) { .g-top__eyes i { animation: none; } }
 
@@ -226,20 +227,21 @@
 .g-mem__week i { width: 18px; height: 18px; border-radius: 50%; background: #e2d8cb; }
 .g-mem__week .is-taken i { background: var(--g-ok); }
 .g-mem__week .is-missed i { background: transparent; box-shadow: inset 0 0 0 3px #c0614f; }
-.g-mem__week .is-before i { background: transparent; border: 2px dashed #d3c8bb; }
-.g-mem__week li:last-child i { outline: 2px solid var(--g-ink); outline-offset: 3px; }
+.g-mem__week .is-before i { width: 6px; height: 6px; margin: 6px 0; background: #d3c8bb; }
+.g-mem__week li:last-child i { outline: 3px solid #e2a23b; outline-offset: 3px; }
 .g-mem__week span { font-size: 14px; font-weight: 800; color: var(--g-sub); font-variant-numeric: tabular-nums; }
 .g-mem__week li:last-child span { color: var(--g-ink); }
 
 /* 首页顶上的「她那边的相框此刻」 */
-.g-frame { position: relative; overflow: hidden; aspect-ratio: 21 / 9; margin: 10px 0 18px; transition: aspect-ratio 500ms cubic-bezier(0.43, 0.195, 0.02, 1); border-radius: var(--radius-l); background: #1f1813; box-shadow: inset 0 0 0 6px #2a211b, 0 8px 22px -14px rgba(30, 26, 22, 0.55); }
+.g-frame { position: relative; overflow: hidden; height: clamp(120px, 40vw, 170px); margin: 10px 0 18px; transition: height 400ms cubic-bezier(0.43, 0.195, 0.02, 1); border-radius: var(--radius-l); background: #1f1813; box-shadow: inset 0 0 0 6px #2a211b, 0 8px 22px -14px rgba(30, 26, 22, 0.55); }
 .g-frame__photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.9); }
 .g-frame::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 50% 45%, rgba(22, 16, 12, 0.15), rgba(22, 16, 12, 0.55)); transition: background 500ms ease; }
 /* 有红色警报时相框收成一条矮条：手机一屏里要同时看得到标题、红卡和 Call 按钮 */
-.g-frame.is-worried { aspect-ratio: 4 / 1; }
+.g-frame.is-worried { height: 88px; }
 .g-frame.is-worried::after { background: radial-gradient(ellipse 60% 70% at 50% 45%, rgba(110, 34, 36, 0.55), rgba(66, 20, 22, 0.85)); }
-.g-frame__eyes { position: absolute; z-index: 1; left: 50%; top: 50%; translate: -50% -50%; display: flex; gap: 26px; }
-.g-frame__eyes i { width: 38px; height: 6px; border-radius: 999px; background: #fff1dc; box-shadow: 0 0 14px rgba(255, 241, 220, 0.45); animation: g-frame-breathe 4s ease-in-out infinite; transition: height 400ms cubic-bezier(0.43, 0.195, 0.02, 1), width 400ms cubic-bezier(0.43, 0.195, 0.02, 1); }
+/* 相框上的眼睛：后面垫一团暗色，眼睛带暖白光晕，一眼看出是 Milo 的眼睛，不像轮播的小圆点 */
+.g-frame__eyes { position: absolute; z-index: 1; left: 50%; top: 50%; translate: -50% -50%; display: flex; align-items: center; gap: 24px; padding: 22px 30px; border-radius: 50%; background: radial-gradient(closest-side, rgba(20, 14, 10, 0.6), rgba(20, 14, 10, 0)); }
+.g-frame__eyes i { width: 34px; height: 8px; border-radius: 999px; background: #fff1dc; box-shadow: 0 0 12px rgba(255, 241, 220, 0.85), 0 0 26px rgba(255, 210, 150, 0.45); animation: g-frame-breathe 4s ease-in-out infinite; transition: height 400ms cubic-bezier(0.43, 0.195, 0.02, 1), width 400ms cubic-bezier(0.43, 0.195, 0.02, 1); }
 .g-frame.is-worried .g-frame__eyes i { width: 26px; height: 30px; border-radius: 50%; animation: none; clip-path: polygon(0 34%, 100% 8%, 100% 100%, 0 100%); }
 .g-frame.is-worried .g-frame__eyes i + i { clip-path: polygon(0 8%, 100% 34%, 100% 100%, 0 100%); }
 @keyframes g-frame-breathe { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
@@ -249,6 +251,31 @@
 .g-total__bar { display: block; height: 10px; margin: 10px 0 2px; border-radius: 999px; background: #efe7dc; overflow: hidden; }
 .g-total__bar i { display: block; height: 100%; border-radius: 999px; background: var(--g-ink); transition: width 600ms cubic-bezier(0.43, 0.195, 0.02, 1); }
 
-/* Money 页：Visa 卡校验一行 + 页底的演示说明 */
-.g-visa { font-weight: 600; color: #1a1f71; }
-.g-note { margin: 14px 2px 0; font-size: 13px; opacity: 0.6; }
+/* 键盘焦点：清楚的琥珀色描边，和圆角风格一致 */
+.g-app :focus-visible { outline: 3px solid #e2a23b; outline-offset: 2px; border-radius: 14px; }
+
+/* 页面打开以后才出现的「This week」：等上面的卡片收完再淡入 */
+.g-week--enter { animation: g-fade-in 250ms ease 250ms both; }
+@keyframes g-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .g-week--enter { animation: none; } }
+
+/* 电脑上用鼠标时的悬停：标签、描边按钮、Call 都有反应 */
+@media (hover: hover) {
+  .g-tab:not(.is-active):hover { background: #efe6d8; }
+  .g-icon-btn:hover, .g-week__btn:hover { background: #f5eee4; }
+  .btn { transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease; }
+  .btn--ghost:hover { background: rgba(255, 255, 255, 0.08); transform: translateY(-1px); }
+  .acard:not(.acard--red) .btn--ghost:hover { background: #f3ece2; }
+  .btn--call:hover { transform: translateY(-1px); box-shadow: 0 4px 0 #d8c3a2; }
+}
+
+/* 订单行里的卡：Visa 标志加尾号 */
+.g-order__card { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 6px; background: #fff; box-shadow: inset 0 0 0 1px var(--g-line); font-weight: 800; color: var(--g-ink); font-variant-numeric: tabular-nums; }
+
+/* Settings 里的那张 Visa 卡 */
+.g-visa-card { position: relative; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto 1fr auto; gap: 6px; aspect-ratio: 1.586; max-width: 340px; padding: 18px 20px; border-radius: 18px; color: #fff; background: linear-gradient(135deg, #1a1f71 0%, #24318f 55%, #3346b0 100%); box-shadow: 0 14px 28px -16px rgba(26, 31, 113, 0.8); overflow: hidden; }
+.g-visa-card::after { content: ''; position: absolute; right: -40px; top: -60px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.16), transparent); pointer-events: none; }
+.g-visa-card svg { grid-column: 2; grid-row: 1; justify-self: end; }
+.g-visa-card__chip { grid-column: 1; grid-row: 1; width: 38px; height: 28px; border-radius: 6px; background: linear-gradient(135deg, #e9d48f, #c9a64a); }
+.g-visa-card__num { grid-column: 1 / -1; grid-row: 3; font-size: 22px; font-weight: 800; letter-spacing: 0.12em; font-variant-numeric: tabular-nums; }
+.g-visa-card__owner { grid-column: 2; grid-row: 3; align-self: end; font-size: 14px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.8; }

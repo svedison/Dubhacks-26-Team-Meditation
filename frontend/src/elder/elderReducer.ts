@@ -4,8 +4,8 @@ import type { ElderEvent, FaceState, Order, Product } from '../shared/contracts'
 export type Line = { id: number; role: 'grandma' | 'ai'; text: string; ask?: boolean }
 
 // answered：卡片出来以后她开过口（用来判断换话题时该不该收卡）。盖章只认后端的 order 事件：报价、拒单（"Okay, I won't
-// order it"）都是开心脸，开心脸本身不代表下单成功；orderStatus 为 simulated_paid 时卡片标 Simulated order
-export type CardView = { product: Product; alternative?: Product; done: boolean; answered: boolean; orderStatus?: Order['status']; paymentCheck?: Order['payment_check'] }
+// order it"）都是开心脸，开心脸本身不代表下单成功；paid 和 simulated_paid 都盖 Ordered 章，下面滑出 Visa 支付条
+export type CardView = { product: Product; alternative?: Product; done: boolean; answered: boolean; orderStatus?: Order['status'] }
 
 export type ElderView = {
   face: FaceState
@@ -76,7 +76,7 @@ export function elderReducer(v: ElderView, e: ElderEvent | { type: 'socket_down'
       if (!v.card || (e.status !== 'paid' && e.status !== 'simulated_paid')) return v
       const product = v.card.alternative?.id === e.product_id ? v.card.alternative
         : v.card.product.id === e.product_id ? v.card.product : null
-      return product ? { ...v, card: { product, done: true, answered: true, orderStatus: e.status, paymentCheck: e.payment_check ?? null } } : v
+      return product ? { ...v, card: { product, done: true, answered: true, orderStatus: e.status } } : v
     }
     case 'clock':
       return { ...v, clock: e.now }
