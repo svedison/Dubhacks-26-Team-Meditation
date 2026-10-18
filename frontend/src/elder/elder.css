@@ -94,6 +94,8 @@
   border-radius: 38px 38px 38px 14px;
   padding: 18px 30px 20px;
 }
+.chat__sent { display: block; }
+.chat__sent + .chat__sent { margin-top: 0.35em; }
 .chat__bubble--l { font-size: 52px !important; }
 .chat__bubble--m { font-size: 46px !important; }
 .chat__bubble--s { font-size: 40px !important; }
@@ -127,10 +129,14 @@
 .card-stage__label { font-size: 28px; font-weight: 900; padding-left: 8px; }
 .card-stage__label--risk { color: #ffd9d2; }
 .card-stage__label--ok { color: #bfe7cb; }
-.card-stage--pair .pcard__price { font-size: 52px; }
-.card-stage--pair .pcard__name { font-size: 22px; }
-.card-stage--pair .pcard__seal-text strong { font-size: 23px; }
-.card-stage--pair .pcard__seal-text span { font-size: 17px; }
+/* 并排时卡窄：价格放到名字下面 */
+.card-stage--pair .pcard__head { flex-direction: column; gap: 8px; }
+.card-stage--pair .pcard__title { font-size: 25px; }
+.card-stage--pair .pcard__sub { font-size: 18px; }
+.card-stage--pair .pcard__price { font-size: 46px; }
+.card-stage--pair .pcard__point-text strong { font-size: 20px; }
+.card-stage--pair .pcard__point-text span { font-size: 16px; }
+.card-stage--pair .pcard__point.is-dose { display: none; }
 .card-stage--pair .pcard__body { padding: 14px 16px 18px; }
 
 /* 演示时钟 */

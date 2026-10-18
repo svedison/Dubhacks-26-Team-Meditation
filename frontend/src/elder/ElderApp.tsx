@@ -168,7 +168,8 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       .catch((e: Error) => console.error('[elder] settings', e.message))
   }, [])
 
-  const base: FaceState = view.face === 'idle' && playing ? 'speaking' : view.face
+  // 后端不再单独发「在说」：只要在播语音，待机、在想、在听都显示成在说的脸
+  const base: FaceState = playing && (view.face === 'idle' || view.face === 'thinking' || view.face === 'listening') ? 'speaking' : view.face
   const face: FaceState = emotion && (base === 'speaking' || base === 'listening') ? emotion : base
   const showFace = view.awake || playing
   const corner = view.conversing && !fullHold

@@ -1,4 +1,4 @@
-import { Check, X } from 'lucide-react'
+import { Check, Pill, X } from 'lucide-react'
 import type { Product, RiskKind } from '../contracts'
 import { money } from '../format'
 import { productImage } from '../productImages'
@@ -17,28 +17,45 @@ type Props = {
   done?: boolean // 开心脸出现时盖「Ordered」章
 }
 
+// 名字按第一个逗号断成两行：「Calcium 600mg」大字，「120 tablets」小一号（只是排版换行）
+function splitName(name: string): [string, string | null] {
+  const i = name.indexOf(',')
+  return i === -1 ? [name, null] : [name.slice(0, i), name.slice(i + 1).trim()]
+}
+
 // 两端共用：老人端大卡、监护人端小卡是同一个组件
 export default function ProductCard({ product, size = 'elder', done = false }: Props) {
   const img = productImage(product.id)
   const risk = product.risk
+  const [title, sub] = splitName(product.name)
   return (
     <article className={`pcard pcard--${size}${risk ? ' pcard--risk' : ''}${done ? ' pcard--done' : ''}`}>
       <div className="pcard__media">
-        {img ? <img src={img} alt="" draggable={false} /> : <span className="pcard__mono">{product.name.slice(0, 1)}</span>}
+        {img ? <img src={img} alt="" draggable={false} /> : <span className="pcard__mono">{title.slice(0, 1)}</span>}
       </div>
       <div className="pcard__body">
-        <div className={`pcard__seal${risk ? ' pcard__seal--risk' : ''}`}>
-          <span className="pcard__seal-mark" aria-hidden>
-            {risk ? <X strokeWidth={3.2} /> : <Check strokeWidth={3.2} />}
-          </span>
-          <span className="pcard__seal-text">
-            <strong>{risk ? 'Not verified' : 'Verified'}</strong>
-            <span>{risk ? RISK_LINE[risk.kind] : product.certification ?? "On Milo's list"}</span>
-          </span>
+        <div className="pcard__head">
+          <h3 className="pcard__name">
+            <span className="pcard__title">{title}</span>
+            {sub && <span className="pcard__sub">{sub}</span>}
+          </h3>
+          {!risk && <div className="pcard__price">{money(product.price_cents)}</div>}
         </div>
-        <h3 className="pcard__name">{product.name}</h3>
-        {!risk && <div className="pcard__price">{money(product.price_cents)}</div>}
-        {!risk && size === 'compact' && product.label_dose && <p className="pcard__meta">{product.label_dose}</p>}
+        <ul className="pcard__points">
+          <li className={`pcard__point ${risk ? 'is-risk' : 'is-ok'}`}>
+            <span className="pcard__mark" aria-hidden>{risk ? <X strokeWidth={3.2} /> : <Check strokeWidth={3.2} />}</span>
+            <span className="pcard__point-text">
+              <strong>{risk ? 'Not verified' : 'Verified'}</strong>
+              <span>{risk ? RISK_LINE[risk.kind] : product.certification ?? "On Milo's list"}</span>
+            </span>
+          </li>
+          {!risk && product.label_dose && (
+            <li className="pcard__point is-dose">
+              <span className="pcard__mark" aria-hidden><Pill strokeWidth={2.6} /></span>
+              <span className="pcard__point-text"><span>{product.label_dose}</span></span>
+            </li>
+          )}
+        </ul>
       </div>
       {done && (
         <div className="pcard__stamp" role="status">
