@@ -64,8 +64,10 @@ export default function LedgerPage() {
       ) : (
         <p className="g-note">Details stay with her.</p>
       )}
-      {/* 演示里的订单走 Visa 沙盒，不真扣钱：全页只在底部说一次 */}
-      <p className="g-ledger__demo"><VisaMark height={13} /> Demo build: orders are placed in the Visa sandbox, no real charge.</p>
+      {/* 演示里的订单走 Visa 沙盒，不真扣钱：全页只在底部说一次；页面上有订单或本月有花费时才说 */}
+      {(ledger.orders.length > 0 || (ledger.month_total_cents ?? 0) > 0) && (
+        <p className="g-ledger__demo"><VisaMark height={13} /> Demo build: orders are placed in the Visa sandbox, no real charge.</p>
+      )}
     </section>
   )
 }
