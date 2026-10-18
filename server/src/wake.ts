@@ -23,10 +23,16 @@ export function matchesWakeName(text: string, wakeName: string): boolean {
   const count = normalize(wakeName).split(' ').length;
   for (let start = 0; start < words.length; start++) {
     for (let size = 1; size <= count + 1 && start + size <= words.length; size++) {
-      const candidate = words.slice(start, start + size).join('');
+      const slice = words.slice(start, start + size);
+      const candidate = slice.join('');
       const tolerance = name.length <= 3 ? 0 : Math.max(1, Math.floor(name.length / 4));
       if (levenshtein(candidate, name) <= tolerance) return true;
       if (Math.abs(candidate.length - name.length) <= 2 && phonetic(name) && phonetic(candidate) === phonetic(name)) return true;
+      // STT splits a short name into two short words ("my low", "me low" for Milo): allow one more edit for that shape.
+      if (size === 2 && slice.every(w => w.length <= 3) && name.length >= 4 && levenshtein(candidate, name) <= tolerance + 1) return true;
+      // "mellow", "milow": same first letter, one consonant off once vowels are dropped.
+      if (size === 1 && candidate.length >= 5 && candidate[0] === name[0] && phonetic(name).length >= 2
+        && levenshtein(phonetic(candidate), phonetic(name)) <= 1) return true;
     }
   }
   return false;

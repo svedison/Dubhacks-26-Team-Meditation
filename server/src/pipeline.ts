@@ -37,13 +37,16 @@ const EMERGENCY_ONGOING = 'Help is on the way. Stay with me.';
 interface Emergency { text: string; alertId: string; phase: 'warning' | 'countdown' | 'called' | 'stopped'; at: number; timer?: ReturnType<typeof setTimeout> }
 
 // A turn moves queued → waiting (the device is still playing the previous answer) → holding (the elder is still
-// talking) → thinking (Claude) → responding (TTS, then the speak event) → done. Up to and including thinking, a
-// further voice fragment is the rest of the same sentence: it replaces the turn with the joined text.
+// talking) → thinking (Claude) → responding (TTS, then the speak event) → done. Until the speak event is out, a
+// further voice fragment is the rest of the same sentence: it replaces the turn with the joined text. A turn that
+// already did something irreversible (placed an order, raised an alert, answered a Memory prompt) is never replaced.
 type Stage = 'queued' | 'waiting' | 'holding' | 'thinking' | 'responding' | 'done';
-const JOINABLE: ReadonlySet<Stage> = new Set(['queued', 'waiting', 'holding', 'thinking']);
+const JOINABLE: ReadonlySet<Stage> = new Set(['queued', 'waiting', 'holding', 'thinking', 'responding']);
 interface Job {
   id: number; text: string; display: string; displayed: boolean; source: Source; version: number;
   alive: boolean; stage: Stage; stageAt: number; arrivedAt: number; claudeMs: number;
+  committed: boolean; // had a side effect the elder would notice (order, alert, Memory answer): not replaceable any more
+  heardEntry?: object;
   controller: AbortController; watchdog?: () => void;
   historyEntry: Context['history'][number] | null; consumedNote: string | null;
 }
@@ -67,6 +70,8 @@ export class ConversationPipeline {
   private running: Job | null = null;
   private mic = { speechAt: 0, endAt: 0 };
   private emergency: Emergency | null = null;
+  /** The last utterances as Deepgram delivered them, for /debug/heard: tune the wake word against what was actually heard. */
+  private heard: { at: string; source: Source; text: string; woke: boolean | null; intent: string | null }[] = [];
   private readonly timeouts: PipelineTimeouts;
   constructor(private dependencies: PipelineDependencies = { decide, synthesize }, timeouts: Partial<PipelineTimeouts> = {}) {
     this.timeouts = { ...DEFAULT_TIMEOUTS, ...timeouts };
@@ -139,6 +144,12 @@ export class ConversationPipeline {
     this.mic = { speechAt: 0, endAt: 0 };
     state.reset();
   }
+  /** For /debug/heard: the last 30 utterances with what became of them. */
+  recentlyHeard(): typeof this.heard { return this.heard.slice(-30); }
+  private note(job: Job, patch: Partial<(typeof this.heard)[number]>): void {
+    const entry = this.heard.find(h => h === job.heardEntry);
+    if (entry) Object.assign(entry, patch);
+  }
   /** For /api/health: what the conversation is doing right now. */
   status(): PipelineStatus {
     const job = this.running ?? (this.latest?.alive ? this.latest : null);
@@ -158,10 +169,13 @@ export class ConversationPipeline {
     const job: Job = {
       id: ++this.seq, text: previous ? `${previous.text} ${clean}` : clean,
       display: previous && !previous.displayed ? `${previous.display} ${clean}` : clean, displayed: false,
-      source, version, alive: true, stage: 'queued', stageAt: Date.now(), arrivedAt: Date.now(), claudeMs: 0,
+      source, version, alive: true, stage: 'queued', stageAt: Date.now(), arrivedAt: Date.now(), claudeMs: 0, committed: false,
       controller: new AbortController(), historyEntry: null, consumedNote: null,
     };
     if (previous) this.abandon(previous, `the sentence went on; turn #${job.id} takes the joined text`);
+    const entry = { at: new Date().toISOString(), source, text: clean, woke: null as boolean | null, intent: null as string | null };
+    this.heard.push(entry); if (this.heard.length > 60) this.heard.shift();
+    job.heardEntry = entry;
     this.latest = job;
     const run = this.queue.then(() => this.run(job));
     this.queue = run.catch(() => {});
@@ -171,7 +185,7 @@ export class ConversationPipeline {
   private continuedTurn(source: Source, version: number): Job | null {
     const previous = this.latest;
     if (source !== 'voice' || !previous || !previous.alive || previous.source !== 'voice' || previous.version !== version) return null;
-    return JOINABLE.has(previous.stage) ? previous : null;
+    return JOINABLE.has(previous.stage) && !previous.committed ? previous : null;
   }
   private dead(job: Job): boolean { return !job.alive || job.version !== this.generation; }
   private setStage(job: Job, stage: Stage): void { job.stage = stage; job.stageAt = Date.now(); job.watchdog?.(); }
@@ -227,7 +241,7 @@ export class ConversationPipeline {
     this.abandon(job, 'watchdog');
     if (!current) return this.silent();
     this.pending = null;
-    const apology: Job = { ...job, alive: true, controller: new AbortController(), watchdog: undefined, historyEntry: null, consumedNote: null };
+    const apology: Job = { ...job, alive: true, committed: true, controller: new AbortController(), watchdog: undefined, historyEntry: null, consumedNote: null };
     try { return await this.respond({ text: FALLBACK_REPLY, emotion: 'worried' }, apology); }
     catch { state.recover(); return this.silent(); }
     finally { apology.alive = false; }
@@ -257,6 +271,7 @@ export class ConversationPipeline {
     const started = Date.now();
     const decision = await this.bounded(`turn #${job.id} Claude`, () => this.dependencies.decide(job.text, context, job.controller.signal), fallbackDecision);
     job.claudeMs = Date.now() - started;
+    this.note(job, { intent: decision.intent + (decision.product_id ? ` ${decision.product_id}` : '') });
     // One line per turn in the server log: what was heard and what the model made of it (the iPad shows neither).
     console.info(`[turn #${job.id}] ${job.source} "${job.text.slice(0, 100)}" -> ${decision.intent}${decision.product_id ? ` ${decision.product_id}` : ''}${decision.intent === 'chat' || decision.intent === 'unwell' ? ` "${decision.reply.slice(0, 80)}"` : ''}`);
     // Claude answered, but the elder went on talking meanwhile: let the rest of the sentence replace this turn.
@@ -348,7 +363,9 @@ export class ConversationPipeline {
     toElder({ type: 'transcript', role: 'grandma', text: job.display }); job.displayed = true;
     if (state.current === 'idle') {
       this.pending = null; this.chatRounds = 0; this.history = [];
-      if (job.source === 'voice' && !matchesWakeName(job.text, settings.wake_name)) return this.silent();
+      const woke = job.source !== 'voice' || matchesWakeName(job.text, settings.wake_name);
+      this.note(job, { woke });
+      if (!woke) return this.silent();
       state.wake(); // Keyboard is an explicit interaction, so it opens the window.
     } else if (state.current !== 'thinking') state.listen(); // a joined sentence keeps the thinking face it already shows
     // The elder paused after the name ("Milo." ... "the purple bottle is empty"): keep listening, the request follows.
@@ -377,7 +394,7 @@ export class ConversationPipeline {
     if (emergency?.phase === 'called' && Date.now() - emergency.at < 90_000 && risk.isEmergency(text)) {
       return this.respond({ text: EMERGENCY_ONGOING, emotion: 'alert' }, job);
     }
-    if (risk.isEmergency(text)) return this.respond(this.startEmergency(text), job);
+    if (risk.isEmergency(text)) { job.committed = true; return this.respond(this.startEmergency(text), job); }
 
     // The rest of a scam sentence that STT split in two ("...someone called." / "They said buy a gift card today"):
     // one warning and one red card are enough, so fold the second half into the same alert and keep listening.
@@ -402,11 +419,12 @@ export class ConversationPipeline {
     // Answers to D's prompts (got the parcel? start reminders? taken it?) never go to the shopping router.
     const memoryReply = memoryAnswer(text);
     if (memoryReply !== null) {
+      job.committed = true; // D recorded the answer
       if (!memoryReply) state.listen(); // D recorded it silently; keep the window open
       return { reply_text: memoryReply, audio_url: null, state: state.current };
     }
     // Local safety rules still work when Claude is unavailable.
-    if (risk.isScam(text)) return this.respond(this.scam(text), job);
+    if (risk.isScam(text)) { job.committed = true; return this.respond(this.scam(text), job); }
     if (!settings.wake_name && !this.awaitingName) {
       this.awaitingName = true;
       return this.respond({ text: "I'm your AI shopping helper; what would you like to call me?", emotion: 'happy' }, job);
@@ -430,8 +448,8 @@ export class ConversationPipeline {
     this.setStage(job, 'responding'); // decided: from here on a new fragment is a new turn, never a replacement
     let plan: ReplyPlan;
     switch (decision.intent) {
-      case 'scam': plan = this.scam(text); break;
-      case 'emergency': plan = this.startEmergency(text); break;
+      case 'scam': job.committed = true; plan = this.scam(text); break;
+      case 'emergency': job.committed = true; plan = this.startEmergency(text); break;
       case 'unwell': {
         // Everyday discomfort: stay with her as a friend, no shelf, no disclaimer loop. Claude's sentence, unless it slipped into refusing.
         this.pending = null;
@@ -442,9 +460,8 @@ export class ConversationPipeline {
       case 'refill': case 'new_request': case 'risky_product':
         this.chatRounds = 0; plan = this.offer(decision.product_id, text); break;
       case 'confirm_yes':
-        plan = /\b(if|unless|maybe|not|don't)\b/i.test(text)
-          ? { text: 'Would you like me to place this order?', emotion: 'worried' }
-          : await this.confirm(job);
+        if (/\b(if|unless|maybe|not|don't)\b/i.test(text)) plan = { text: 'Would you like me to place this order?', emotion: 'worried' };
+        else { job.committed = true; plan = await this.confirm(job); }
         break;
       case 'confirm_no': this.pending = null; plan = { text: "Okay, I won't order it.", emotion: 'happy' }; break;
       case 'name_answer': {

@@ -5,7 +5,11 @@ type TranscriptHandler = (text: string) => void | Promise<unknown>;
 /** `closed` turns true once Deepgram hangs up or errors; the owner then opens a fresh session for the next chunk. */
 export interface LiveTranscriber { send(chunk: Buffer): void; finalize(): void; close(): void; readonly closed: boolean }
 /** Raw PCM input (A's iPad mic uploads): 16 kHz mono 16-bit little-endian. Omit for container audio (webm/mp4). */
-export interface LiveOptions { pcmSampleRate?: number }
+export interface LiveOptions {
+  pcmSampleRate?: number;
+  /** Words Deepgram should favour (nova-3 keyterm prompting): the wake name, so "Milo" is not heard as "my low". */
+  keyterms?: string[];
+}
 interface DeepgramResult {
   type?: string; is_final?: boolean; speech_final?: boolean; from_finalize?: boolean; start?: number; duration?: number;
   channel?: { alternatives?: { transcript?: string }[] };
@@ -24,6 +28,8 @@ export function createLiveTranscriber(onTranscript: TranscriptHandler, options: 
   // above that: with the old 1000 ms a 1.1 s breath split one sentence into two turns before the device had decided.
   const params = new URLSearchParams({ model: 'nova-3', smart_format: 'true', interim_results: 'true', endpointing: '1500', utterance_end_ms: '2000', vad_events: 'true' });
   if (options.pcmSampleRate) { params.set('encoding', 'linear16'); params.set('sample_rate', String(options.pcmSampleRate)); params.set('channels', '1'); }
+  for (const term of options.keyterms ?? []) if (term.trim()) params.append('keyterm', term.trim());
+  let finalizeWhenOpen = false;
   const socket = new WebSocket(`wss://api.deepgram.com/v1/listen?${params}`, {
     headers: { Authorization: `Token ${key}` }, handshakeTimeout: 5_000,
   });
@@ -37,6 +43,8 @@ export function createLiveTranscriber(onTranscript: TranscriptHandler, options: 
     if (closed) { socket.close(); return; }
     for (const chunk of buffered) socket.send(chunk);
     buffered = []; bufferedBytes = 0;
+    // A one-word wake ("Milo.") can end before the handshake finished; its Finalize must not be lost.
+    if (finalizeWhenOpen) { finalizeWhenOpen = false; socket.send(JSON.stringify({ type: 'Finalize' })); }
   });
   socket.on('message', data => {
     try {
@@ -82,7 +90,11 @@ export function createLiveTranscriber(onTranscript: TranscriptHandler, options: 
       }
     },
     // A marks the last chunk of an utterance with end=1; ask Deepgram to flush its final transcript now.
-    finalize() { if (!closed && socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: 'Finalize' })); },
+    finalize() {
+      if (closed) return;
+      if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: 'Finalize' }));
+      else if (socket.readyState === WebSocket.CONNECTING) finalizeWhenOpen = true;
+    },
     close() { cleanup(); if (socket.readyState === WebSocket.CONNECTING) socket.terminate(); else socket.close(); },
   };
 }

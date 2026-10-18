@@ -25,3 +25,8 @@ test('distance and first-conversation name extraction', () => {
   assert.equal(extractWakeName("Let's call you Daisy!"), 'Daisy');
   assert.equal(extractWakeName('I want to buy the purple bottle'), null);
 });
+test('common STT shapes of a short name wake it; unrelated words do not', () => {
+  for (const heard of ['Milo', 'Mylo', 'my low', 'Me low, I want tea', 'mellow', 'Milow', 'Nilo', 'MILO!']) assert.equal(matchesWakeName(heard, 'Milo'), true, heard);
+  // Known benign false wakes, accepted for a short name: "milk", "mile", "mail", "mild", "meal", "melon" (one letter or one consonant off).
+  for (const heard of ['hello there', 'the TV is loud', 'my love', 'mine', 'me too', 'mom called', 'my little one', 'family', 'smile']) assert.equal(matchesWakeName(heard, 'Milo'), false, heard);
+});

@@ -62,7 +62,7 @@ export async function buildServer() {
         if (!live || live.closed || !liveConnections.has(live)) {
           if (live) liveConnections.delete(live);
           const version = audioGeneration;
-          live = createLiveTranscriber(text => version === audioGeneration ? handleUtterance(text, 'voice') : undefined);
+          live = createLiveTranscriber(text => version === audioGeneration ? handleUtterance(text, 'voice') : undefined, { keyterms: [getSettings().wake_name] });
           liveConnections.add(live);
         }
         live.send(Array.isArray(data) ? Buffer.concat(data) : Buffer.from(data as ArrayBuffer));
@@ -98,12 +98,12 @@ export async function buildServer() {
       // A session Deepgram hung up on is replaced on the next chunk; before, its chunks were silently dropped until 90 s of silence.
       if (pcmSession && (pcmSession.sampleRate !== query.sr || pcmSession.live.closed)) dropPcmSession();
       if (!pcmSession || !liveConnections.has(pcmSession.live)) {
-        const live = createLiveTranscriber(text => version === audioGeneration ? handleUtterance(text, 'voice') : undefined, { pcmSampleRate: query.sr });
+        const live = createLiveTranscriber(text => version === audioGeneration ? handleUtterance(text, 'voice') : undefined, { pcmSampleRate: query.sr, keyterms: [getSettings().wake_name] });
         liveConnections.add(live);
         pcmSession = { live, sampleRate: query.sr };
       }
       clearTimeout(pcmSession.idle);
-      pcmSession.idle = setTimeout(dropPcmSession, 90_000);
+      pcmSession.idle = setTimeout(dropPcmSession, 600_000); // KeepAlive holds the socket; a warm session answers the next wake faster
       pcmSession.idle.unref();
       if (request.body.length) pcmSession.live.send(request.body);
       if (query.end) { pcmSession.live.finalize(); pipeline.noteMic('end'); }
@@ -173,6 +173,8 @@ export async function buildServer() {
     }
   });
   app.post('/debug/clock', async request => ({ now: await setClock(clockSchema.parse(request.body).now) }));
+  // What Deepgram actually delivered lately and whether it woke the device: the thing to look at when "Milo" is missed.
+  app.get('/debug/heard', async () => ({ wake_name: getSettings().wake_name, heard: pipeline.recentlyHeard() }));
   app.post('/debug/reset', async () => {
     audioGeneration++; dropPcmSession();
     for (const live of liveConnections) live.close();

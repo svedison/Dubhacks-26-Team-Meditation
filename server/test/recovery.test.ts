@@ -160,3 +160,37 @@ test('/debug accepts the token via header, Bearer or query, trims pasted whitesp
     assert.equal((await app.inject('/api/health')).json().mic_session, true);
   } finally { delete process.env.DEBUG_TOKEN; await app.close(); }
 });
+test('the rest of a sentence still replaces the turn while its voice is being made, but never after an order was placed', async () => {
+  const calls: string[] = [];
+  let ttsCalls = 0;
+  const flow = new ConversationPipeline({
+    decide: async text => {
+      calls.push(text);
+      if (text.includes('yes')) return { intent: 'confirm_yes', product_id: null, reply: '', elder_name: null };
+      if (text.includes('thank')) return { intent: 'chat', product_id: null, reply: "You're welcome, dear.", elder_name: null };
+      return { intent: 'refill', product_id: 'calcium-120', reply: '', elder_name: null };
+    },
+    synthesize: () => new Promise(resolve => { ttsCalls++; setTimeout(() => resolve(null), 120); }),
+  });
+  // Decision made, TTS in flight (120 ms): the continuation joins and only one offer is spoken.
+  const first = flow.handleUtterance('Milo, I want the purple', 'voice');
+  await delay(40);
+  const second = flow.handleUtterance('bottle, the calcium one.', 'voice');
+  const [r1, r2] = await Promise.all([first, second]);
+  assert.equal(r1.reply_text, '');
+  assert.match(r2.reply_text, /Calcium 600mg, 120 tablets is \$18.00/);
+  assert.deepEqual(calls, ['Milo, I want the purple', 'Milo, I want the purple bottle, the calcium one.']);
+  assert.equal(events.filter(e => e.type === 'speak').length, 1);
+  acknowledgeSpoke(); await state.waitForSpeech();
+  // "yes" places the order: a fragment arriving during its TTS is a new turn, and the order is placed exactly once.
+  const yes = flow.handleUtterance('yes', 'voice');
+  await delay(40);
+  const after = flow.handleUtterance('thank you dear', 'voice');
+  const [ry, ra] = await Promise.all([yes, after]);
+  assert.equal(ry.order?.status, 'simulated_paid');
+  assert.equal(ra.reply_text, "You're welcome, dear."); // its own turn, not folded into the order
+  assert.ok(calls.includes('thank you dear'));
+  assert.equal(db.all('orders').length, 2); // the seeded one plus this one, placed exactly once
+  assert.ok(ttsCalls >= 2);
+  flow.reset();
+});

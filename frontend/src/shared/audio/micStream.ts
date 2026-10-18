@@ -124,11 +124,11 @@ export class MicStream {
       getStream: async () => stream,
       pauseStream: async () => {},
       resumeStream: async () => stream,
-      positiveSpeechThreshold: 0.5,
-      negativeSpeechThreshold: 0.35,
+      positiveSpeechThreshold: 0.4, // 一个轻声的「Milo」只有三四百毫秒、隔着桌子音量小：放低一点，多传几段杂音没关系，后端转不出字就没事
+      negativeSpeechThreshold: 0.25,
       // 停顿超过 1.2 秒才算一句说完：老人说话常在半句中间停一下，0.6 秒会把一句话切成两句
       redemptionMs: 1200,
-      minSpeechMs: 250,
+      minSpeechMs: 150,
       onFrameProcessed: (probs, frame) => this.onFrame(probs.isSpeech, frame),
       onSpeechStart: () => this.onSpeechStart(),
       onSpeechEnd: () => this.onSpeechEnd(),
