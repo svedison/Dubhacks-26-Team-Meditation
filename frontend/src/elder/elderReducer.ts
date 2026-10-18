@@ -12,9 +12,11 @@ export type ElderView = {
   lines: Line[]
   card: CardView | null
   clock: string | null
+  // 后端还在待机时收到的她的话：不显示、不唤醒；紧接着后端醒来（她说的是「Milo, …」）才补成第一行字幕
+  heardWhileIdle: string | null
 }
 
-export const initialView: ElderView = { face: 'idle', awake: false, conversing: false, lines: [], card: null, clock: null }
+export const initialView: ElderView = { face: 'idle', awake: false, conversing: false, lines: [], card: null, clock: null, heardWhileIdle: null }
 
 let nextId = 1
 
@@ -34,15 +36,20 @@ export function elderReducer(v: ElderView, e: ElderEvent | { type: 'socket_down'
   switch (e.type) {
     case 'socket_down':
       return { ...initialView, clock: v.clock }
-    case 'state':
+    case 'state': {
       if (e.state === 'idle') return { ...initialView, clock: v.clock }
+      const woke = v.heardWhileIdle && v.face === 'idle' ? addLine(v, 'grandma', v.heardWhileIdle) : v
       return {
-        ...v,
+        ...woke,
         face: e.state,
         awake: true,
-        card: e.state === 'happy' && v.card ? { ...v.card, done: true } : v.card,
+        heardWhileIdle: null,
+        card: e.state === 'happy' && woke.card ? { ...woke.card, done: true } : woke.card,
       }
+    }
     case 'transcript':
+      // 待机时麦克风听到的闲聊（没有叫 Milo，后端也没醒）：先记着不显示，相框保持照片
+      if (v.face === 'idle' && e.role === 'grandma') return { ...v, heardWhileIdle: e.text }
       return addLine(v, e.role, e.text)
     case 'ask':
       // 设备主动开口是新话题：已经下过单的卡片收起来
