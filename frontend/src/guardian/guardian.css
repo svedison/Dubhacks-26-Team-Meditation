@@ -148,3 +148,14 @@
 @media (max-width: 359px) {
   .acard__actions { flex-direction: column; }
 }
+
+/* 本周回顾：灰色的一行一件事 */
+.g-week { margin-top: 18px; }
+.g-week__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.g-week__row { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "dot title seen" "dot time seen"; column-gap: 12px; align-items: center; padding: 14px 16px; border-radius: var(--radius-m); background: #efe7dc; color: var(--g-sub); }
+.g-week__dot { grid-area: dot; width: 12px; height: 12px; border-radius: 50%; background: #c9bfb3; }
+.g-week__row--red .g-week__dot { background: #8a6a52; }
+.g-week__row--yellow .g-week__dot { background: #d6a24a; }
+.g-week__title { grid-area: title; font-size: 20px; font-weight: 800; color: #4a4038; }
+.g-week__time { grid-area: time; font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.g-week__seen { grid-area: seen; font-size: 14px; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: #e2d8cb; color: #6b6158; }

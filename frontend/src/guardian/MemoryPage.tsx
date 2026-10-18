@@ -10,7 +10,7 @@ export default function MemoryPage() {
     <section className="g-page">
       <h1 className="g-h1">Pills</h1>
       <p className="g-lede">Milo reminds her each day.</p>
-      {memories.length === 0 && <p className="g-note">None yet. Starts after a delivery.</p>}
+      {memories.length === 0 && <p className="g-note">Starts when a new bottle arrives.</p>}
       <ul className="g-mems">
         {memories.map((m) => {
           const p = products[m.product_id]

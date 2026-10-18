@@ -2,7 +2,7 @@ import { Home, Pill, ReceiptText, Settings as SettingsIcon } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import AlertCard from '../shared/ui/AlertCard'
-import { clockLabel } from '../shared/format'
+import { clockLabel, hoursBetween } from '../shared/format'
 import LedgerPage from './LedgerPage'
 import MemoryPage from './MemoryPage'
 import SettingsPage from './SettingsPage'
@@ -86,6 +86,44 @@ function HomePage() {
           </div>
         )}
       </div>
+      <ThisWeek />
+    </section>
+  )
+}
+
+// 本周回顾：最近 7 天（按演示时钟）点过 Got it 的卡，收成灰色的一行，时间倒序
+function ThisWeek() {
+  const { alerts, clock } = useGuardian()
+  const now = clock ?? new Date().toISOString()
+  const week = alerts.filter((a) => hoursBetween(a.created_at, now) <= 24 * 7)
+  const seen = week.filter((a) => a.archived).sort((x, y) => hoursBetween(y.created_at, x.created_at))
+  if (week.length > 0 && seen.length === 0) return null
+  return (
+    <section className="g-week" aria-label="This week">
+      <h2 className="g-h2">This week</h2>
+      {seen.length === 0 ? (
+        <p className="g-note">Quiet week so far.</p>
+      ) : (
+        <ul className="g-week__list">
+          <AnimatePresence initial={false}>
+            {seen.map((a) => (
+              <motion.li
+                key={a.id}
+                layout
+                className={`g-week__row g-week__row--${a.level}`}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              >
+                <span className="g-week__dot" aria-hidden />
+                <span className="g-week__title">{a.title}</span>
+                <time className="g-week__time">{clockLabel(a.created_at)}</time>
+                <span className="g-week__seen">Seen</span>
+              </motion.li>
+            ))}
+          </AnimatePresence>
+        </ul>
+      )}
     </section>
   )
 }
