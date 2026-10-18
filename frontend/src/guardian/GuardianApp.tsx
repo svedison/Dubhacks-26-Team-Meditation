@@ -29,7 +29,7 @@ export default function GuardianApp() {
 }
 
 function TopBar() {
-  const { status, clock, settings } = useGuardian()
+  const { status, clock } = useGuardian()
   return (
     <header className="g-top">
       <div className="g-top__brand">
@@ -37,8 +37,8 @@ function TopBar() {
         <span>TrustTag</span>
       </div>
       <div className="g-top__right">
-        {clock && <span className="g-top__clock">Demo clock · {clockLabel(clock)}</span>}
-        <span className={`g-live g-live--${status}`}>{status === 'open' ? `${settings?.elder_name ?? 'Mom'}'s frame is on` : 'Reconnecting…'}</span>
+        {clock && <span className="g-top__clock">Demo · {clockLabel(clock)}</span>}
+        <span className={`g-live g-live--${status}`}>{status === 'open' ? 'Frame on' : 'Reconnecting…'}</span>
       </div>
     </header>
   )
@@ -53,10 +53,8 @@ function HomePage() {
   const name = settings?.elder_name ?? 'Mom'
   return (
     <section className="g-page">
-      <h1 className="g-h1">{red.length ? 'One thing needs you today' : `All calm at ${name}'s`}</h1>
-      <p className="g-lede">
-        {red.length ? 'TrustTag stopped something and told her first. A quick call helps.' : 'Nothing needs you right now. Reminders and deliveries show up here.'}
-      </p>
+      <h1 className="g-h1">{red.length ? `Call ${name} today` : 'All good'}</h1>
+      <p className="g-lede">{red.length ? 'TrustTag stopped something.' : 'Nothing needs you now.'}</p>
       <div className="g-stack">
         <AnimatePresence initial={false}>
           {[...red, ...rest].map((a) => (
@@ -66,7 +64,7 @@ function HomePage() {
         {open.length === 0 && (
           <div className="g-empty">
             <span className="g-empty__eyes" aria-hidden><i /><i /></span>
-            <p>All quiet. You will see a card here within seconds if anything comes up.</p>
+            <p>New cards show up here.</p>
           </div>
         )}
       </div>
@@ -77,8 +75,8 @@ function HomePage() {
 function TabBar() {
   const tabs = [
     { to: '/guardian', label: 'Home', icon: Home, end: true },
-    { to: '/guardian/ledger', label: 'Spending', icon: ReceiptText, end: false },
-    { to: '/guardian/memory', label: 'Reminders', icon: Pill, end: false },
+    { to: '/guardian/ledger', label: 'Money', icon: ReceiptText, end: false },
+    { to: '/guardian/memory', label: 'Pills', icon: Pill, end: false },
     { to: '/guardian/settings', label: 'Settings', icon: SettingsIcon, end: false },
   ]
   return (

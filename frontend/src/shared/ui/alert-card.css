@@ -8,7 +8,7 @@
   color: var(--a-ink);
   border: 1px solid var(--a-line);
   border-radius: var(--radius-l);
-  padding: 18px 20px 20px;
+  padding: 20px 22px 22px;
   font-family: var(--font-ui);
 }
 
@@ -28,8 +28,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 900;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #f4d9a6;
@@ -44,19 +44,19 @@
 }
 .acard__chip--soft { color: #9a6514; }
 .acard__chip--soft::before { background: #e2a23b; box-shadow: 0 0 0 4px rgba(226, 162, 59, 0.18); }
-.acard__icon { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #eef4ee; color: #2e7d4f; }
+.acard__icon { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #eef4ee; color: #2e7d4f; }
 .acard__icon svg { width: 18px; height: 18px; }
-.acard__time { font-size: 14px; color: var(--a-sub); font-variant-numeric: tabular-nums; }
+.acard__time { font-size: 15px; font-weight: 700; color: var(--a-sub); font-variant-numeric: tabular-nums; }
 
-.acard__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 27px; line-height: 1.15; letter-spacing: -0.01em; }
-.acard--normal .acard__title { font-size: 21px; }
-.acard__body { margin: 8px 0 0; font-size: 17px; line-height: 1.45; color: var(--a-sub); }
+.acard__title { margin: 0; font-family: var(--font-display); font-weight: 900; font-size: 34px; line-height: 1.1; letter-spacing: -0.01em; }
+.acard--normal .acard__title { font-size: 27px; }
+.acard__body { margin: 8px 0 0; font-size: 21px; font-weight: 600; line-height: 1.4; color: var(--a-sub); }
 .acard--red .acard__body { color: #e9dfd2; }
 
 /* 奶奶的话：小标签加一条竖线的引语 */
 .acard__note { margin: 16px 0 0; padding: 0 0 0 14px; border-left: 2px solid #f4b860; }
-.acard__note-label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--a-sub); margin-bottom: 3px; }
-.acard__note p { margin: 0; font-size: 17px; line-height: 1.4; color: var(--a-ink); }
+.acard__note-label { display: block; font-size: 13px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; color: var(--a-sub); margin-bottom: 3px; }
+.acard__note p { margin: 0; font-size: 21px; font-weight: 700; line-height: 1.35; color: var(--a-ink); }
 .acard__note--empty p { color: var(--a-sub); }
 
 .acard__actions { display: flex; gap: 10px; margin-top: 16px; }
@@ -67,18 +67,18 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 52px;
+  min-height: 60px;
   padding: 0 18px;
-  border-radius: 16px;
+  border-radius: 999px;
   font: inherit;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 23px;
+  font-weight: 900;
   text-decoration: none;
   border: 0;
   cursor: pointer;
   transition: transform 120ms ease, box-shadow 120ms ease;
 }
-.btn svg { width: 20px; height: 20px; }
+.btn svg { width: 22px; height: 22px; }
 .btn:active { transform: translateY(2px); }
 /* 能按下去的实体感（参照 Pomegranate、Ebb 的实色底影） */
 .btn--call { background: #fff3e0; color: #1e1a16; box-shadow: 0 3px 0 #d8c3a2; }

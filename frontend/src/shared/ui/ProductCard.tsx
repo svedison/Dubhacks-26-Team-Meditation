@@ -4,11 +4,11 @@ import { money } from '../format'
 import { productImage } from '../productImages'
 import './product-card.css'
 
-// 有风险时不显示价格（划掉的价格在购物界面里会被读成「打折」），换成一句原因
+// 有风险时不显示价格（划掉的价格在购物界面里会被读成「打折」），换成一句很短的原因
 const RISK_LINE: Record<RiskKind, string> = {
-  fda_fraud: 'On the FDA fraud list',
-  recall: 'Recalled by the maker',
-  unverified: 'Not sold anywhere we trust',
+  fda_fraud: 'FDA fraud list',
+  recall: 'Recalled',
+  unverified: 'Unknown seller',
 }
 
 type Props = {
@@ -32,13 +32,13 @@ export default function ProductCard({ product, size = 'elder', done = false }: P
             {risk ? <X strokeWidth={3.2} /> : <Check strokeWidth={3.2} />}
           </span>
           <span className="pcard__seal-text">
-            <strong>{risk ? 'Not verified' : 'Verified'}</strong>
-            <span>{risk ? RISK_LINE[risk.kind] : product.certification ? `${product.certification} certified` : 'Trusted store'}</span>
+            <strong>{risk ? 'Not safe' : 'Verified'}</strong>
+            <span>{risk ? RISK_LINE[risk.kind] : product.certification ?? 'Trusted store'}</span>
           </span>
         </div>
         <h3 className="pcard__name">{product.name}</h3>
         {!risk && <div className="pcard__price">{money(product.price_cents)}</div>}
-        {!risk && product.label_dose && <p className="pcard__meta">{product.label_dose}</p>}
+        {!risk && size === 'compact' && product.label_dose && <p className="pcard__meta">{product.label_dose}</p>}
       </div>
       {done && (
         <div className="pcard__stamp" role="status">

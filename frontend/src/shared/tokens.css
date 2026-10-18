@@ -1,10 +1,10 @@
-@import '@fontsource-variable/lexend';
-@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/nunito';
 
 /* 设计规范：老人端暖胡桃棕底 + 暖白眼睛；监护人端浅色暖纸底。两端共用字体和圆角等级 */
 :root {
-  --font-ui: 'Lexend Variable', system-ui, sans-serif;
-  --font-display: 'Fraunces Variable', Georgia, serif;
+  /* 圆头字体：可爱、好认，0 不带斜杠；标题和价格也用它，只靠字重拉开层级 */
+  --font-ui: 'Nunito Variable', system-ui, sans-serif;
+  --font-display: 'Nunito Variable', system-ui, sans-serif;
 
   --elder-bg: #1f1813;
   --elder-bg-alert: #6e2224;
@@ -12,7 +12,7 @@
   --face-blush: #f68096;
   --face-spark: #ffd27a;
 
-  --radius-s: 12px;
-  --radius-m: 20px;
-  --radius-l: 28px;
+  --radius-s: 16px;
+  --radius-m: 24px;
+  --radius-l: 34px;
 }

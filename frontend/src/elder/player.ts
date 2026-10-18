@@ -11,6 +11,9 @@ export class Player {
   private buf: Uint8Array<ArrayBuffer>
   private ttsLevel = 0
   private voice: SpeechSynthesisVoice | null = null
+  private current: HTMLAudioElement | null = null
+  private abort: (() => void) | null = null
+  private generation = 0 // stop() 以后被打断的那一句不再回 spoke
   onDone: () => void = () => {}
   onBusy: (busy: boolean) => void = () => {}
 
@@ -33,6 +36,17 @@ export class Player {
     const u = new SpeechSynthesisUtterance(' ')
     u.volume = 0
     speechSynthesis.speak(u)
+  }
+
+  // 后端断开时调用：清空队列，停掉正在播的声音
+  stop() {
+    this.generation++
+    this.queue = []
+    this.current?.pause()
+    this.current = null
+    speechSynthesis.cancel()
+    this.ttsLevel = 0
+    this.abort?.()
   }
 
   enqueue(item: Item) {
@@ -69,9 +83,10 @@ export class Player {
     }
     this.busy = true
     this.onBusy(true)
+    const gen = this.generation
     if (item.audio_url) await this.playUrl(item.audio_url)
     else await this.speak(item.text)
-    this.onDone()
+    if (gen === this.generation) this.onDone()
     void this.next()
   }
 
@@ -79,8 +94,10 @@ export class Player {
     return new Promise<void>((resolve, reject) => {
       const el = new Audio(url)
       el.crossOrigin = 'anonymous'
+      this.current = el
       const src = this.ctx.createMediaElementSource(el)
       src.connect(this.analyser)
+      this.abort = () => { src.disconnect(); resolve() }
       el.onended = () => { src.disconnect(); resolve() }
       el.onerror = () => { src.disconnect(); reject(new Error(`audio failed: ${url}`)) }
       void el.play()
@@ -106,6 +123,7 @@ export class Player {
         resolve()
       }
       const watchdog = window.setTimeout(() => { speechSynthesis.cancel(); finish('timed out') }, 2000 + words * 550)
+      this.abort = () => finish('stopped')
       // speechSynthesis 拿不到音频数据：每读到一个词给嘴型一个脉冲
       u.onboundary = () => { this.ttsLevel = 0.75 + Math.random() * 0.25 }
       u.onstart = () => { this.ttsLevel = 0.8 }

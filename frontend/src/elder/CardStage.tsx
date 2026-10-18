@@ -19,7 +19,7 @@ export default function CardStage({ card }: { card: CardView | null }) {
           {card.alternative ? (
             <>
               <div className="card-stage__slot">
-                <span className="card-stage__label card-stage__label--risk">What you asked for</span>
+                <span className="card-stage__label card-stage__label--risk">Not safe</span>
                 <ProductCard product={card.product} />
               </div>
               <motion.div
@@ -28,7 +28,7 @@ export default function CardStage({ card }: { card: CardView | null }) {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.35, type: 'spring', stiffness: 200, damping: 24 }}
               >
-                <span className="card-stage__label card-stage__label--ok">A safer choice</span>
+                <span className="card-stage__label card-stage__label--ok">Try this</span>
                 <ProductCard product={card.alternative} done={card.done} />
               </motion.div>
             </>

@@ -30,17 +30,18 @@ function emphasize(text: string): ReactNode[] {
   })
 }
 
-// 句子越长字越小，保证一屏放得下：短句 42px，中等 36px，长句 31px
+// 句子越长字越小，保证一屏放得下：短句 52px，中等 46px，长句 40px
 function sizeClass(text: string) {
-  if (text.length <= 80) return 'chat__bubble--l'
-  if (text.length <= 140) return 'chat__bubble--m'
+  if (text.length <= 64) return 'chat__bubble--l'
+  if (text.length <= 120) return 'chat__bubble--m'
   return 'chat__bubble--s'
 }
 
-// 屏幕上只留两句：最新一句，以及它前面紧挨着的另一方的一句
+// 屏幕上只留两句：最新一句，以及它前面紧挨着的另一方的一句；AI 这句太长时只留它自己
 function visible(lines: Line[]): Line[] {
   const last = lines.at(-1)
   if (!last) return []
+  if (last.role === 'ai' && last.text.length > 110) return [last]
   const prev = lines.at(-2)
   return prev && prev.role !== last.role ? [prev, last] : [last]
 }

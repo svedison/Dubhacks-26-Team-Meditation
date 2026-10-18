@@ -52,7 +52,7 @@ export default function ElderApp() {
         <button className={`wake${starting ? ' is-starting' : ''}`} onClick={start}>
           <span className="wake__eyes" aria-hidden><i /><i /></span>
           <span className="wake__name">TrustTag</span>
-          <span className="wake__hint">{error ? `Microphone didn't start. ${error}` : starting ? 'Waking up…' : 'Tap anywhere to start listening'}</span>
+          <span className="wake__hint">{error ? `Microphone didn't start. ${error}` : starting ? 'Waking up…' : 'Tap to start'}</span>
         </button>
       </Stage>
     )
@@ -109,11 +109,15 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
 
   useEffect(() => {
     if (status === 'down') {
+      // 后端断开：停掉正在说的话，脸直接回到照片待机
+      pendingIdle.current = false
+      clearEmotionAfterTalk.current = false
+      player.stop()
       lastFace.current = 'idle'
       setEmotion(null)
       dispatch({ type: 'socket_down' })
     }
-  }, [status])
+  }, [status, player])
 
   useEffect(() => {
     let release: number | undefined
@@ -204,7 +208,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
       <AnimatePresence>
         {!showFace && (
           <motion.div key="strip" className="wake-strip" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }} transition={{ duration: 0.5 }}>
-            {wakeName && <span className="wake-strip__say">Say “{wakeName}” to talk</span>}
+            {wakeName && <span className="wake-strip__say">Say “{wakeName}”</span>}
             {view.clock && <span className="wake-strip__clock">Demo clock · {clockLabel(view.clock)}</span>}
           </motion.div>
         )}

@@ -28,8 +28,8 @@ export default function AlertCard({ alert, now, phone, fresh, onArchive }: Props
       transition={{ type: 'spring', stiffness: 320, damping: 28 }}
     >
       <header className="acard__head">
-        {level === 'red' && <span className="acard__chip">Check in today</span>}
-        {level === 'yellow' && <span className="acard__chip acard__chip--soft">Worth a look</span>}
+        {level === 'red' && <span className="acard__chip">Call today</span>}
+        {level === 'yellow' && <span className="acard__chip acard__chip--soft">Take a look</span>}
         {level === 'normal' && <span className="acard__icon" aria-hidden><Pill strokeWidth={2.2} /></span>}
         <time className="acard__time">{timeAgo(alert.created_at, now)}</time>
       </header>
@@ -37,7 +37,7 @@ export default function AlertCard({ alert, now, phone, fresh, onArchive }: Props
       <p className="acard__body">{alert.body}</p>
       {showNote && (
         <blockquote className={`acard__note${alert.grandma_note ? '' : ' acard__note--empty'}`}>
-          <span className="acard__note-label">Her note</span>
+          <span className="acard__note-label">She said</span>
           <p>{alert.grandma_note ? `“${alert.grandma_note}”` : NO_NOTE}</p>
         </blockquote>
       )}

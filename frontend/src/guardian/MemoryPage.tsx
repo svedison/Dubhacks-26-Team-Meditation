@@ -9,9 +9,9 @@ export default function MemoryPage() {
   const name = settings?.elder_name ?? 'Mom'
   return (
     <section className="g-page">
-      <h1 className="g-h1">Reminders</h1>
-      <p className="g-lede">What TrustTag reminds {name} to take, from the label on the bottle.</p>
-      {memories.length === 0 && <p className="g-note">No reminders yet. One is set up after a delivery arrives and {name} confirms how to take it.</p>}
+      <h1 className="g-h1">Pills</h1>
+      <p className="g-lede">The frame reminds {name} each day.</p>
+      {memories.length === 0 && <p className="g-note">None yet. One starts after a delivery.</p>}
       <ul className="g-mems">
         {memories.map((m) => {
           const p = products[m.product_id]
@@ -33,9 +33,9 @@ export default function MemoryPage() {
                 </button>
               </div>
               <dl className="g-mem__facts">
-                <div><dt>Started</dt><dd>{dayLabel(m.start_date)}</dd></div>
-                <div><dt>Left</dt><dd>About {days} days</dd></div>
-                <div><dt>Last</dt><dd>{m.log.length ? ANSWER_TEXT[m.log.at(-1)!.answer] : 'Not yet'}</dd></div>
+                <div><dt>Since</dt><dd>{dayLabel(m.start_date)}</dd></div>
+                <div><dt>Left</dt><dd>{days} days</dd></div>
+                <div><dt>Today</dt><dd>{m.log.length ? ANSWER_TEXT[m.log.at(-1)!.answer] : 'Not yet'}</dd></div>
               </dl>
             </li>
           )
