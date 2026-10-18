@@ -134,14 +134,14 @@ AI: "Great. That bottle should last about four months. I'll order more before it
 
 ## 7. 四份活（都是端到端开发，队里自己认领）
 
-每人一个文档，接口以 `shared-contracts.md` 为准。演示、Devpost 文字和视频不是一个人的角色，周日凌晨四幕跑通后全队一起做。
+每人一个文档，接口以 `shared-contracts.md` 为准。两端界面合成一个角色，因为商品卡片、警报卡片、Memory 记录是同一组组件；原来的后端拆成「语音和 AI」与「风险、交易和 Visa」两份，后者把订单和账本也带走，B 才扛得住。演示、Devpost 文字和视频不是一个人的角色，四幕跑通后全队一起做。前端先对着 `tools/mock-server` 开发。
 
 | 活 | 文档 | 一句话目标 | 交付时点 |
 | --- | --- | --- | --- |
-| A 老人端 iPad | `.plans/role-a-elder-ipad-spec.md` | 评委对相框说英文，脸动、有声、有字幕、有卡片 | 13:00 麦克风门禁；18:00 第二幕画面 |
-| B 后端和 AI | `.plans/role-b-backend-ai-spec.md` | 一句话进来 2 秒内出回答、状态、卡片、语音；该买的买，该拦的拦 | 14:00 接口定稿；16:00 一句话闭环；18:00 全链路 |
-| C 监护人端 | `.plans/role-c-guardian-app-spec.md` | 真手机放 iPad 旁，诈骗 2 秒内出红卡，Memory 出普通卡 | 18:00 红卡；01:00 普通卡和分享层级 |
-| D Memory、异常检测和数据 | `.plans/role-d-memory-anomaly-data-spec.md` | 演示时钟推到到货和第二天 8 点，设备主动开口；规则 7 推红卡；整套货架和演示数据 | 16:00 货架 JSON；18:00 规则 7；01:00 第四幕 |
+| A 老人端和监护人端 | `.plans/role-a-frontends-spec.md` | 评委对相框说英文，脸动、有声、有字幕、有卡片；旁边手机 2 秒内出红卡 | 立刻麦克风验证；20:00 第二幕两端画面 |
+| B 语音和 AI | `.plans/role-b-voice-ai-spec.md` | 一句话进来 2 秒内出回答、状态、语音；判断类型后交给 C | 30 分钟内骨架上线；16:30 一句话闭环；20:00 全链路 |
+| C 风险、交易和 Visa | `.plans/role-c-risk-payment-visa-spec.md` | 能买、不能买、改买什么；付款、订单、按层级的账本；Visa 沙盒 | 16:30 check/pay 单测；20:00 下单和红卡；之后试沙盒 |
+| D Memory、异常检测和数据 | `.plans/role-d-memory-anomaly-data-spec.md` | 演示时钟推到到货和第二天 8 点，设备主动开口；规则 7 推红卡；整套货架和演示数据 | 16:00 货架 JSON；20:00 规则 7；01:00 第四幕 |
 
 ## 8. 待办和未决
 
