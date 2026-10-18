@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { wsUrl } from './config'
 
 export type SocketStatus = 'connecting' | 'open' | 'down'
@@ -40,7 +40,8 @@ export function useSocket<In, Out>(role: 'elder' | 'guardian', onMessage: (msg: 
     }
   }, [role])
 
-  const send = (msg: Out) => {
+  // send 每次渲染都是同一个函数：页面把它放进 effect 依赖时，不会每次渲染都重跑那个 effect
+  const send = useCallback((msg: Out) => {
     const ws = wsRef.current
     if (!ws || ws.readyState !== WebSocket.OPEN) {
       console.error('[ws] not open, dropped', msg)
@@ -48,7 +49,7 @@ export function useSocket<In, Out>(role: 'elder' | 'guardian', onMessage: (msg: 
     }
     ws.send(JSON.stringify(msg))
     return true
-  }
+  }, [])
 
   return { status, send }
 }

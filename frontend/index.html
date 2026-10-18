@@ -12,7 +12,14 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script>
       // 两个页面各用一份「添加到主屏幕」配置：/elder 是横屏全屏的相框，/guardian 是竖屏的手机 App
-      document.head.insertAdjacentHTML('beforeend', '<link rel="manifest" href="/manifest-' + (location.pathname.startsWith('/guardian') ? 'guardian' : 'elder') + '.webmanifest">')
+      var guardian = location.pathname.startsWith('/guardian')
+      document.head.insertAdjacentHTML('beforeend', '<link rel="manifest" href="/manifest-' + (guardian ? 'guardian' : 'elder') + '.webmanifest">')
+      // 手机端是浅色底：状态栏用深色字、浏览器顶栏用纸色，并且允许双指放大；相框保持深色、不能缩放
+      if (guardian) {
+        document.querySelector('meta[name="theme-color"]').content = '#f7f1e8'
+        document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]').content = 'default'
+        document.querySelector('meta[name="viewport"]').content = 'width=device-width, initial-scale=1.0, viewport-fit=cover'
+      }
     </script>
     <meta name="description" content="A talking photo frame that shops safely for Grandma and tells you when to call." />
     <title>Milo</title>

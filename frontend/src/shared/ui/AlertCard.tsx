@@ -1,6 +1,6 @@
 import { Check, Phone, Pill } from 'lucide-react'
 import { motion } from 'motion/react'
-import { useState } from 'react'
+import { useState, type Ref } from 'react'
 import type { Alert } from '../contracts'
 import { timeAgo } from '../format'
 import './alert-card.css'
@@ -10,13 +10,16 @@ type Props = {
   now: string | null
   phone: string | null
   fresh: boolean
+  // 等后端确认再收卡：失败时卡片留在原处并提示重试
   onArchive: (id: string) => Promise<void>
+  // AnimatePresence 的 popLayout 要拿到卡片本身的 DOM 才能让退场的卡片不占位
+  ref?: Ref<HTMLElement>
 }
 
 const NO_NOTE = "Grandma didn't want to explain this one"
 
 // 等级只按后端给的 level 渲染：red 置顶、中性深色、带 Call 和 Got it；yellow 普通卡无电话；normal 普通卡
-export default function AlertCard({ alert, now, phone, fresh, onArchive }: Props) {
+export default function AlertCard({ alert, now, phone, fresh, onArchive, ref }: Props) {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState(false)
   const archive = async () => {
@@ -31,6 +34,7 @@ export default function AlertCard({ alert, now, phone, fresh, onArchive }: Props
   const showNote = level !== 'normal'
   return (
     <motion.article
+      ref={ref}
       layout
       className={`acard acard--${level}`}
       initial={fresh ? { opacity: 0, y: -28, scale: 0.97 } : false}
@@ -53,18 +57,17 @@ export default function AlertCard({ alert, now, phone, fresh, onArchive }: Props
           <p>{alert.grandma_note ? `“${alert.grandma_note}”` : NO_NOTE}</p>
         </blockquote>
       )}
-      {level !== 'normal' && (
-        <div className="acard__actions">
-          {level === 'red' && phone && (
-            <a className="btn btn--call" href={`tel:${phone.replace(/[^\d+]/g, '')}`}>
-              <Phone aria-hidden strokeWidth={2.4} /> Call
-            </a>
-          )}
-          <button className="btn btn--ghost" disabled={saving} onClick={() => void archive()}>
-            <Check aria-hidden strokeWidth={2.6} /> {saving ? 'Saving…' : 'Got it'}
-          </button>
-        </div>
-      )}
+      {/* 普通卡（比如用药提醒设好了）也能收进本周回顾，不会一直挂在首页 */}
+      <div className="acard__actions">
+        {level === 'red' && phone && (
+          <a className="btn btn--call" href={`tel:${phone.replace(/[^\d+]/g, '')}`}>
+            <Phone aria-hidden strokeWidth={2.4} /> Call
+          </a>
+        )}
+        <button className="btn btn--ghost" disabled={saving} onClick={() => void archive()}>
+          <Check aria-hidden strokeWidth={2.6} /> {saving ? 'Saving…' : 'Got it'}
+        </button>
+      </div>
       {saveError && <p className="acard__error" role="alert">Didn't save. Try again.</p>}
     </motion.article>
   )
