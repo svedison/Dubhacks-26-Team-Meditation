@@ -14,6 +14,16 @@ export function isScam(text: string): boolean {
   return /\bgift\s*cards?\b|\b(?:wire|bank|money)\s+transfer\b|\bsend\s+money\b|\bsomeone\s+called\b|礼品卡|转账|有人打电话|今天必须/i.test(normalized)
     || /\b(?:must|have to|need to)\b[^.!?]{0,100}\btoday\b|\btoday\b[^.!?]{0,100}\b(?:must|have to|need to)\b/i.test(normalized);
 }
+// Sudden, serious trouble happening now: the pipeline starts the 911 countdown without waiting for Claude.
+// Past-tense stories ("my chest hurt last week") are left to the model, which sees the tense.
+export function isEmergency(text: string): boolean {
+  const normalized = text.normalize('NFKC').replace(/[‐‑–—-]/g, ' ').replace(/\s+/g, ' ');
+  if (/\b(?:yesterday|last (?:night|week|month|year)|years? ago|when i was)\b/i.test(normalized)) return false;
+  return /\bchest (?:pain|hurts?|is tight|pressure)\b|\bheart attack\b|\b(?:can'?t|cannot|can not|hard to|trouble|difficulty) breath(?:e|ing)\b|\bshort of breath\b|\bnot breathing\b/i.test(normalized)
+    || /\b(?:i|she|he|grandma|mom) (?:just )?fell\b|\bfell (?:down|over)\b|\bhad a fall\b|\b(?:can'?t|cannot) get up\b|\bbleeding (?:a lot|badly|heavily)\b|\bwon'?t stop bleeding\b|\blot of blood\b/i.test(normalized)
+    || /\bstroke\b|\bface is drooping\b|\b(?:can'?t|cannot) move my (?:arm|leg|face)\b|\bslurred\b|\bpassed out\b|\bfaint(?:ed|ing)\b|\bunconscious\b/i.test(normalized)
+    || /\b911\b|\bambulance\b|\b(?:it s|its|this is) an emergency\b|救命|胸口?[痛疼]|喘不上气|摔倒|中风|晕倒/i.test(normalized); // "help me find calcium" must not dial 911
+}
 // The pipeline creates rule-7 alerts through D,
 // so check stays repeatable (it is called again immediately before payment).
 export function check(product_id: string | null, text: string): CheckResult {

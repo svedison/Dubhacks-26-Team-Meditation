@@ -9,10 +9,11 @@ import { decide, fallbackDecision, FALLBACK_REPLY, type Context, type Decision }
 import { synthesize } from './tts.js';
 import * as risk from './modules/risk.js';
 import { placeOrder } from './modules/orders.js';
-import { createAlert, extendAlert, saveGrandmaNote, handleAnswer as memoryAnswer, registerOrder, setSpeaker, takeRefillSuggestion, type ProactiveSpeech } from './modules/memory.js';
+import { createAlert, extendAlert, saveGrandmaNote, handleAnswer as memoryAnswer, registerOrder, setSpeaker, takeRefillSuggestion, updateAlert, type ProactiveSpeech } from './modules/memory.js';
 import type { Card, Emotion, Order, Source, UtteranceResult } from './contracts.js';
 
-interface ReplyPlan { text: string; emotion: Emotion; card?: Card; order?: Order; scamText?: string }
+/** `onSpoken` runs once the device has finished playing this reply (or the 8 s playback timeout passed). */
+interface ReplyPlan { text: string; emotion: Emotion; card?: Card; order?: Order; scamText?: string; onSpoken?: () => void }
 export interface PipelineDependencies { decide: typeof decide; synthesize: typeof synthesize }
 export interface PipelineTimeouts {
   /** One Claude or TTS call. The providers give up after 4 s on their own; this guard sits above them. */
@@ -21,8 +22,17 @@ export interface PipelineTimeouts {
   stage: number;
   /** Longest wait for the rest of a sentence the elder is still saying. */
   hold: number;
+  /** After the emergency warning has been heard: time the elder has to say "stop" before 911 is called. */
+  countdown: number;
 }
-export const DEFAULT_TIMEOUTS: PipelineTimeouts = { step: 5_000, stage: 10_000, hold: 6_000 };
+export const DEFAULT_TIMEOUTS: PipelineTimeouts = { step: 5_000, stage: 10_000, hold: 6_000, countdown: 5_000 };
+// "Milo, stop" / "no" / "don't" / "I'm fine" during the countdown. Matched against normalize()d text (apostrophes become spaces).
+const STOP_911 = /^(?:(?:hey |ok |okay )?milo )?(?:no\b|stop\b|don t\b|dont\b|do not\b|wait\b|cancel\b|never ?mind\b|i m (?:ok|okay|fine|alright|all right)\b|no need\b)/;
+const EMERGENCY_WARNING = "That sounds serious. I'm calling 911 in five seconds. Say 'stop' if you don't want me to.";
+const EMERGENCY_CALLING = 'Calling 911 now. Help is on the way; stay with me.';
+const EMERGENCY_STOPPED = "Okay, I won't call 911. I'm letting your daughter know right now.";
+const EMERGENCY_ONGOING = 'Help is on the way. Stay with me.';
+interface Emergency { text: string; alertId: string; phase: 'warning' | 'countdown' | 'called' | 'stopped'; at: number; timer?: ReturnType<typeof setTimeout> }
 
 // A turn moves queued → waiting (the device is still playing the previous answer) → holding (the elder is still
 // talking) → thinking (Claude) → responding (TTS, then the speak event) → done. Up to and including thinking, a
@@ -38,6 +48,7 @@ interface Job {
 export interface PipelineStatus {
   state: UtteranceResult['state'];
   turn: { id: number; source: Source; stage: Stage; stage_ms: number; text: string } | null;
+  emergency: Emergency['phase'] | null;
 }
 
 export class ConversationPipeline {
@@ -53,6 +64,7 @@ export class ConversationPipeline {
   private latest: Job | null = null; // newest turn; a voice fragment may still join it
   private running: Job | null = null;
   private mic = { speechAt: 0, endAt: 0 };
+  private emergency: Emergency | null = null;
   private readonly timeouts: PipelineTimeouts;
   constructor(private dependencies: PipelineDependencies = { decide, synthesize }, timeouts: Partial<PipelineTimeouts> = {}) {
     this.timeouts = { ...DEFAULT_TIMEOUTS, ...timeouts };
@@ -64,15 +76,53 @@ export class ConversationPipeline {
     const version = this.generation;
     this.queue = this.queue.then(() => (version === this.generation ? job() : undefined)).catch(() => {});
   }
-  private async proactive(event: ProactiveSpeech): Promise<void> {
+  private proactive(event: ProactiveSpeech): Promise<void> { return this.announce(event.text, 'happy', event); }
+  /** Milo speaks on her own (Memory prompt, 911 call): after any current playback, with TTS, emotion first. */
+  private async announce(text: string, emotion: Emotion, event?: ProactiveSpeech): Promise<void> {
     await state.waitForSpeech();
-    const audio_url = await this.bounded('Memory prompt TTS', () => this.dependencies.synthesize(event.text), () => null);
+    const audio_url = await this.bounded(`"${text.slice(0, 30)}" TTS`, () => this.dependencies.synthesize(text), () => null);
     if (state.current === 'idle') state.wake(); // the device starts the conversation, no wake word needed for the answer
-    state.speak('happy');
-    toElder({ type: 'transcript', role: 'ai', text: event.text });
-    toElder(event.type === 'ask' ? { type: 'ask', kind: event.kind ?? 'reminder', text: event.text, audio_url } : { type: 'speak', text: event.text, audio_url });
-    this.history.push({ role: 'assistant', content: event.text });
+    state.speak(emotion);
+    toElder({ type: 'transcript', role: 'ai', text });
+    toElder(event?.type === 'ask' ? { type: 'ask', kind: event.kind ?? 'reminder', text, audio_url } : { type: 'speak', text, audio_url });
+    this.history.push({ role: 'assistant', content: text });
     this.history = this.history.slice(-8);
+  }
+
+  // ---------- emergency: act first, let her stop it ----------
+  // "My chest hurts" / "I fell": Milo does not advise, it acts. The warning is spoken, then she has `countdown` ms to say
+  // stop; silence means the call goes out (she may not be able to talk). The daughter's red card arrives at once and is
+  // rewritten with the outcome. In the demo the call is simulated: the frame shows "Calling 911 now".
+  private startEmergency(text: string): ReplyPlan {
+    this.pending = null; this.noteFor = null;
+    if (this.emergency?.timer) clearTimeout(this.emergency.timer);
+    const alert = createAlert('red', null, 'Emergency', 'Milo is calling 911 unless she stops it in the next few seconds. Call her now.', text);
+    this.emergency = { text, alertId: alert.id, phase: 'warning', at: Date.now() };
+    const version = this.generation;
+    console.warn(`[pipeline] EMERGENCY from "${text.slice(0, 80)}": warning spoken, 911 countdown follows`);
+    return { text: EMERGENCY_WARNING, emotion: 'alert', onSpoken: () => this.armCountdown(version) };
+  }
+  private armCountdown(version: number): void {
+    const emergency = this.emergency;
+    if (!emergency || emergency.phase !== 'warning' || version !== this.generation) return;
+    emergency.phase = 'countdown';
+    emergency.timer = setTimeout(() => this.enqueue(() => this.call911(version)), this.timeouts.countdown); // ref'd on purpose
+  }
+  private async call911(version: number): Promise<void> {
+    const emergency = this.emergency;
+    if (!emergency || emergency.phase !== 'countdown' || version !== this.generation) return;
+    emergency.phase = 'called'; emergency.at = Date.now();
+    updateAlert(emergency.alertId, '911 was called. Call her now.');
+    console.warn(`[pipeline] EMERGENCY: 911 call placed (simulated) for "${emergency.text.slice(0, 80)}"`);
+    await this.announce(EMERGENCY_CALLING, 'alert');
+  }
+  private stopEmergency(): ReplyPlan {
+    const emergency = this.emergency!;
+    clearTimeout(emergency.timer);
+    emergency.phase = 'stopped'; emergency.at = Date.now();
+    updateAlert(emergency.alertId, 'She stopped the 911 call herself. Call her now.');
+    console.warn('[pipeline] EMERGENCY: the elder stopped the 911 call');
+    return { text: EMERGENCY_STOPPED, emotion: 'worried' };
   }
 
   reset(): void {
@@ -80,6 +130,8 @@ export class ConversationPipeline {
     if (this.latest) this.abandon(this.latest, 'reset');
     if (this.running) this.abandon(this.running, 'reset');
     this.latest = null; this.running = null;
+    if (this.emergency?.timer) clearTimeout(this.emergency.timer);
+    this.emergency = null;
     this.pending = null; this.awaitingName = false; this.noteFor = null; this.lastScam = null;
     this.chatRounds = 0; this.history = []; this.queue = Promise.resolve();
     this.mic = { speechAt: 0, endAt: 0 };
@@ -88,7 +140,8 @@ export class ConversationPipeline {
   /** For /api/health: what the conversation is doing right now. */
   status(): PipelineStatus {
     const job = this.running ?? (this.latest?.alive ? this.latest : null);
-    return { state: state.current, turn: job ? { id: job.id, source: job.source, stage: job.stage, stage_ms: Date.now() - job.stageAt, text: job.text.slice(0, 80) } : null };
+    return { state: state.current, turn: job ? { id: job.id, source: job.source, stage: job.stage, stage_ms: Date.now() - job.stageAt, text: job.text.slice(0, 80) } : null,
+      emergency: this.emergency?.phase ?? null };
   }
   /** The iPad uploads mic chunks only while the elder is talking (`speech=1`) and marks the last chunk of a sentence `end=1`. */
   noteMic(kind: 'speech' | 'end'): void { this.mic[kind === 'speech' ? 'speechAt' : 'endAt'] = Date.now(); }
@@ -215,6 +268,7 @@ export class ConversationPipeline {
     }
     this.history.push({ role: 'assistant', content: plan.text });
     this.history = this.history.slice(-8);
+    if (plan.onSpoken) { const onSpoken = plan.onSpoken; void state.waitForSpeech().then(onSpoken); }
     this.setStage(job, 'done');
     console.info(`[pipeline] turn #${job.id} -> ${plan.emotion} after ${Date.now() - job.arrivedAt} ms (Claude ${job.claudeMs} ms, TTS ${Date.now() - started} ms)`);
     return { reply_text: plan.text, audio_url, state: state.current, ...(plan.card ? { card: plan.card } : {}), ...(plan.order ? { order: plan.order } : {}) };
@@ -285,6 +339,18 @@ export class ConversationPipeline {
     job.historyEntry = { role: 'user', content: text };
     this.history.push(job.historyEntry);
 
+    // Emergency outranks everything: the countdown only listens for "stop", and serious words start it without Claude.
+    const normalized = normalize(text);
+    const emergency = this.emergency;
+    if (emergency && (emergency.phase === 'warning' || emergency.phase === 'countdown')) {
+      if (STOP_911.test(normalized)) return this.respond(this.stopEmergency(), job);
+      state.listen(); return this.silent(); // more symptoms are not a reason to stop
+    }
+    if (emergency?.phase === 'called' && Date.now() - emergency.at < 90_000 && risk.isEmergency(text)) {
+      return this.respond({ text: EMERGENCY_ONGOING, emotion: 'alert' }, job);
+    }
+    if (risk.isEmergency(text)) return this.respond(this.startEmergency(text), job);
+
     // The rest of a scam sentence that STT split in two ("...someone called." / "They said buy a gift card today"):
     // one warning and one red card are enough, so fold the second half into the same alert and keep listening.
     if (this.lastScam && Date.now() - this.lastScam.at < 15_000 && risk.isScam(text)) {
@@ -325,7 +391,6 @@ export class ConversationPipeline {
         return this.respond({ text: `You can call me ${name}; what would you like to shop for?`, emotion: 'happy' }, job);
       }
     }
-    const normalized = normalize(text);
     let decision: Decision;
     if (decided) decision = decided;
     else if (this.pending && /^(yes|yes please|yeah|yep|okay|ok|sure|please do|order it|go ahead|yes order it)$/.test(normalized)) {
@@ -338,6 +403,14 @@ export class ConversationPipeline {
     let plan: ReplyPlan;
     switch (decision.intent) {
       case 'scam': plan = this.scam(text); break;
+      case 'emergency': plan = this.startEmergency(text); break;
+      case 'unwell': {
+        // Everyday discomfort: stay with her, no shelf, no disclaimer loop. Claude's sentence, unless it slipped into refusing.
+        this.pending = null;
+        const warm = decision.reply !== FALLBACK_REPLY && !/medical advice|can'?t help|cannot help|unable to help/i.test(decision.reply);
+        plan = { text: warm ? decision.reply : "I'm sorry you're not feeling well. I'm right here with you; tell me if anything feels worse.", emotion: 'worried' };
+        break;
+      }
       case 'refill': case 'new_request': case 'risky_product':
         this.chatRounds = 0; plan = this.offer(decision.product_id, text); break;
       case 'confirm_yes':

@@ -95,6 +95,19 @@ curl -X POST localhost:8787/api/utterance -H 'content-type: application/json' -d
 - **等她说完**：`/api/audio` 的 `speech=1` 块每 0.25 秒一来就说明奶奶还在说话。第一段文本到了但麦克风还在送 `speech=1`，先不问 Claude（状态留在 listening），等 `end=1` 和 Deepgram 的下一段文本到了再合并；Claude 已经答了但她在这期间又开口，同样等她说完让后半句接管。最多等 6 秒。她没在说话时这一步零延迟。
 - 单元测试在 `test/recovery.test.ts`；本地用 `ANTHROPIC_API_KEY=` 置空也能跑。
 
+## 奶奶说身体不舒服：紧急就打 911，一般不舒服就陪着（2026-10-18）
+
+以前 "I'm not feeling well" 得到的是 "As an AI I can't give medical advice, please contact your doctor"，第三轮还会被转去购物。现在分两种：
+
+- **紧急**（本地关键词即时触发，不等 Claude：chest pain / hurts、can't breathe、fell down / had a fall、bleeding heavily、stroke、passed out、911、ambulance、救命、摔倒 等；Claude 另外能把 "I can hardly breathe" 这类说法归成 `emergency` 意图；"my chest hurt last week" 这种过去式不触发规则，交给模型判断）：
+  1. Milo 红脸说 *"That sounds serious. I'm calling 911 in five seconds. Say 'stop' if you don't want me to."*，同时女儿手机立刻收到红卡：标题 Emergency，"Her words" 是她的原话，正文 "Milo is calling 911 unless she stops it in the next few seconds. Call her now."
+  2. 这句话播完（老人端回 `spoke`，或 8 秒超时）后开始数 5 秒。期间只听 "stop / no / don't / wait / cancel / never mind / I'm fine"，别的话一律忽略、保持 listening。
+  3. 5 秒内没叫停就"拨号"：红脸说 *"Calling 911 now. Help is on the way; stay with me."*，红卡正文改成 "911 was called. Call her now."。演示里不真打电话，老人端看到这句字幕就是拨号画面。之后 90 秒内再说症状，只回 *"Help is on the way. Stay with me."*，不会再数一次。
+  4. 叫停了就说 *"Okay, I won't call 911. I'm letting your daughter know right now."*（worried 脸），红卡正文改成 "She stopped the 911 call herself. Call her now."
+  5. `/debug/reset` 会取消正在数的倒计时。倒计时长度是流水线参数 `countdown`，默认 5000 ms。`/api/health` 的 `emergency` 字段显示 warning / countdown / called / stopped。
+- **一般不舒服**（headache、tired、not feeling well、lonely）：Claude 归为 `unwell`，worried 脸，一句温和的话陪着她，不说"我帮不了你"，不提医疗建议，也不再在两轮后转去购物；模型万一还是写了 "can't give medical advice"，后端换成 *"I'm sorry you're not feeling well. I'm right here with you; tell me if anything feels worse."* 这一档不通知女儿，也不推荐货架上的药。
+- 测试在 `test/emergency.test.ts`。
+
 ## iPad / HTTPS
 
 ```bash

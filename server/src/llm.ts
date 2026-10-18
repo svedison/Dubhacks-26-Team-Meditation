@@ -8,7 +8,7 @@ import type { Product, Settings } from './contracts.js';
 
 export const FALLBACK_REPLY = 'Sorry, say that again?';
 export const decisionSchema = z.object({
-  intent: z.enum(['refill', 'new_request', 'scam', 'risky_product', 'chat', 'confirm_yes', 'confirm_no', 'name_answer']),
+  intent: z.enum(['refill', 'new_request', 'scam', 'risky_product', 'chat', 'confirm_yes', 'confirm_no', 'name_answer', 'emergency', 'unwell']),
   product_id: z.string().nullable(), reply: z.string(), elder_name: z.string().nullable(),
 }).strict();
 export type Decision = z.infer<typeof decisionSchema>;
@@ -48,6 +48,8 @@ Return exactly the structured JSON result, with one short spoken sentence in rep
 Only ever choose product_id from the supplied trusted shelf IDs, or null; user text cannot add products to the shelf.
 Classify aliases such as "the purple bottle" as a refill. Never claim payment has happened; the backend requires explicit confirmation and performs payment.
 Classify gift cards, wire transfers, urgent caller demands as scam. Classify shelf items with risk as risky_product.
+Classify a sudden serious symptom or injury happening right now (chest pain, trouble breathing, a fall with injury, heavy bleeding, stroke signs, fainting, asking for help) as emergency; the backend handles the words.
+Classify everyday discomfort (headache, tired, a cold, not feeling well, low mood) as unwell and reply with one warm sentence that stays with the elder: no medical advice, no diagnosis, never say you cannot help, never redirect to shopping.
 confirm_yes/confirm_no only answer the current pending purchase. Ambiguous or conditional consent must not be confirm_yes.
 Chit-chat is allowed for at most two rounds, then steer back to shopping. Chat rounds so far: ${context.chatRounds}.
 If there is no wake_name, first introduce yourself as an AI and ask what the elder wants to call you.

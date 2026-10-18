@@ -133,11 +133,19 @@ export function deleteMemory(id: string): void {
 export const listMemories = (): Memory[] => all('memories');
 
 // ---------- scam alerts from the conversation path (rule 7) ----------
-export function createAlert(level: Alert['level'], rule: number | null, title: string, body: string): Alert {
-  const alert: Alert = { id: `al_${randomUUID()}`, level, rule, title, body, grandma_note: null, created_at: now(), archived: false };
+export function createAlert(level: Alert['level'], rule: number | null, title: string, body: string, note: string | null = null): Alert {
+  const alert: Alert = { id: `al_${randomUUID()}`, level, rule, title, body, grandma_note: note, created_at: now(), archived: false };
   put('alerts', alert.id, alert);
   if (level === 'red' || level === 'normal') toGuardian({ type: 'alert', ...alert });
   return alert;
+}
+/** The emergency card follows the outcome (911 called / stopped): rewrite the action line and push it again. */
+export function updateAlert(id: string, body: string): void {
+  const alert = get('alerts', id);
+  if (!alert) return;
+  alert.body = body;
+  put('alerts', id, alert);
+  if (alert.level === 'red' || alert.level === 'normal') toGuardian({ type: 'alert', ...alert });
 }
 /** Deepgram split one scam sentence in two: add the second half to the same alert instead of raising another. */
 export function extendAlert(id: string, text: string): void {

@@ -11,6 +11,7 @@ import type { Memory, Order } from '../src/contracts.js';
 
 process.env.DB_PATH = ':memory:';
 process.env.ANTHROPIC_API_KEY = '';
+process.env.MINIMAX_API_KEY = ''; // a developer's server/.env must not turn offline tests into real TTS calls
 process.env.OPENAI_API_KEY = '';
 process.env.DEEPGRAM_API_KEY = '';
 const db = await import('../src/db.js');
