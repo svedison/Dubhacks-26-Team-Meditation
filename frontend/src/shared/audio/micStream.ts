@@ -125,7 +125,8 @@ export class MicStream {
       resumeStream: async () => stream,
       positiveSpeechThreshold: 0.5,
       negativeSpeechThreshold: 0.35,
-      redemptionMs: 600,
+      // 停顿超过 1.2 秒才算一句说完：老人说话常在半句中间停一下，0.6 秒会把一句话切成两句
+      redemptionMs: 1200,
       minSpeechMs: 250,
       onFrameProcessed: (probs, frame) => this.onFrame(probs.isSpeech, frame),
       onSpeechStart: () => this.onSpeechStart(),
