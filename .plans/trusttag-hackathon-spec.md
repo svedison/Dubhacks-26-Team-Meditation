@@ -48,7 +48,7 @@
 | 大模型 | Claude Opus 5.5（`claude-opus-5-5`），`output_config.effort` 设 `low`，用工具调用选货架商品和判断请求类型 | 演示里出错代价最高，用最强的 Opus 系。全场几百次调用在 10 美元以内。effort 调低是为了把回复压到 2 秒内。队友原先写的是 claude-sonnet-5-5，已统一改成 Opus 5.5，要改回去只改一个模型名 |
 | 大模型备选 | Claude Haiku 5.5（`claude-haiku-5-5`） | 更快更便宜。现场延迟不满意就换模型名 |
 | 语音转文字 | Deepgram Nova 系列；备选 OpenAI 转写接口 | 流式、延迟低、有试用额度。唤醒词靠转写文字模糊匹配，不用单独的唤醒词模型 |
-| 语音合成 | OpenAI TTS；备选 ElevenLabs | 比浏览器自带声音自然很多，直接影响 Design 分 |
+| 语音合成 | MiniMax T2A，声音 Arrogant Miss（`Arrogant_Miss`，bright / bouncy / playful）；备选 OpenAI TTS | 队里 10/17 选定的声音；比浏览器自带声音自然很多，直接影响 Design 分 |
 | 后端 | TypeScript / Node（Express 或 Fastify）+ SQLite + WebSocket | 前后端同一语言，共享数据类型。四人里谁写后端由队里定 |
 | 老人端 | 纯网页，Safari 全屏 + 引导式访问 | 方案已定 |
 | 监护人端 | 手机宽度网页（PWA） | 方案已定 |

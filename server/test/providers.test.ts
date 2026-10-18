@@ -10,7 +10,7 @@ import { defaultSettings, shelfSeed } from '../src/seed.js';
 import { audioDir } from '../src/config.js';
 
 const fetchOriginal = globalThis.fetch;
-const originalEnv = { ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY, OPENAI_API_KEY: process.env.OPENAI_API_KEY, DEEPGRAM_API_KEY: process.env.DEEPGRAM_API_KEY, PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL };
+const originalEnv = { ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY, OPENAI_API_KEY: process.env.OPENAI_API_KEY, MINIMAX_API_KEY: process.env.MINIMAX_API_KEY, DEEPGRAM_API_KEY: process.env.DEEPGRAM_API_KEY, PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL };
 afterEach(() => {
   globalThis.fetch = fetchOriginal;
   for (const [key, value] of Object.entries(originalEnv)) { if (value === undefined) delete process.env[key]; else process.env[key] = value; }
@@ -52,27 +52,29 @@ test('Anthropic SDK makes one streaming structured-output call with correct para
 });
 test('provider errors and missing keys degrade without throwing', async () => {
   globalThis.fetch = async () => { throw new Error('offline'); };
-  process.env.ANTHROPIC_API_KEY = 'test-only'; process.env.OPENAI_API_KEY = 'test-only'; process.env.DEEPGRAM_API_KEY = 'test-only';
+  process.env.ANTHROPIC_API_KEY = 'test-only'; process.env.OPENAI_API_KEY = 'test-only'; process.env.MINIMAX_API_KEY = 'test-only'; process.env.DEEPGRAM_API_KEY = 'test-only';
   assert.equal((await decide('hello', context)).reply, FALLBACK_REPLY);
   assert.equal(await synthesize('test ' + randomUUID()), null);
   assert.equal(await transcribeAudio(Buffer.from('x'), 'audio/webm'), null);
-  process.env.ANTHROPIC_API_KEY = ''; process.env.OPENAI_API_KEY = ''; process.env.DEEPGRAM_API_KEY = '';
+  process.env.ANTHROPIC_API_KEY = ''; process.env.OPENAI_API_KEY = ''; process.env.MINIMAX_API_KEY = ''; process.env.DEEPGRAM_API_KEY = '';
   assert.equal((await decide('hello', context)).reply, FALLBACK_REPLY);
   assert.equal(await synthesize('hello'), null);
   assert.equal(await transcribeAudio(Buffer.from('x'), 'audio/webm'), null);
   const live = createLiveTranscriber(() => { throw new Error('must not transcribe'); });
   live.send(Buffer.from('x')); live.close();
 });
-test('TTS uses fetch, caches MP3 atomically, and produces the public URL', async () => {
-  process.env.OPENAI_API_KEY = 'test-only'; process.env.PUBLIC_BASE_URL = 'https://trusttag.example/';
+test('MiniMax TTS uses Arrogant_Miss, decodes hex, caches MP3 atomically, and produces the public URL', async () => {
+  process.env.MINIMAX_API_KEY = 'test-only'; process.env.OPENAI_API_KEY = ''; process.env.PUBLIC_BASE_URL = 'https://trusttag.example/';
   const text = `Cache check ${randomUUID()}`;
   let calls = 0;
   globalThis.fetch = async (input, init) => {
-    calls++; assert.equal(input, 'https://api.openai.com/v1/audio/speech');
+    calls++; assert.equal(input, 'https://api.minimax.io/v1/t2a_v2');
+    assert.equal((init?.headers as Record<string, string>).Authorization, 'Bearer test-only');
     const body = JSON.parse(String(init?.body));
-    assert.equal(body.model, 'gpt-4o-mini-tts'); assert.equal(body.speed, 0.9);
-    assert.equal(body.response_format, 'mp3'); assert.equal(body.input, text);
-    return new Response(Buffer.from('mock-mp3'), { headers: { 'content-type': 'audio/mpeg' } });
+    assert.equal(body.model, 'speech-02-turbo'); assert.equal(body.voice_setting.voice_id, 'Arrogant_Miss');
+    assert.equal(body.voice_setting.speed, 0.9); assert.equal(body.audio_setting.format, 'mp3');
+    assert.equal(body.stream, false); assert.equal(body.output_format, 'hex'); assert.equal(body.text, text);
+    return Response.json({ base_resp: { status_code: 0, status_msg: 'success' }, data: { audio: Buffer.from('mock-mp3').toString('hex'), status: 2 } });
   };
   const url = await synthesize(text);
   assert.ok(url?.startsWith('https://trusttag.example/audio/'));
@@ -81,6 +83,21 @@ test('TTS uses fetch, caches MP3 atomically, and produces the public URL', async
     assert.equal((await readFile(path)).toString(), 'mock-mp3');
     assert.equal(await synthesize(text), url); assert.equal(calls, 1);
   } finally { await rm(path, { force: true }); }
+});
+test('MiniMax error payload degrades to null; OpenAI is used only when MiniMax key is absent', async () => {
+  process.env.MINIMAX_API_KEY = 'test-only'; process.env.OPENAI_API_KEY = 'test-only';
+  globalThis.fetch = async () => Response.json({ base_resp: { status_code: 1004, status_msg: 'invalid key' } });
+  assert.equal(await synthesize(`err ${randomUUID()}`), null);
+  process.env.MINIMAX_API_KEY = '';
+  const text = `openai ${randomUUID()}`;
+  globalThis.fetch = async (input, init) => {
+    assert.equal(input, 'https://api.openai.com/v1/audio/speech');
+    assert.equal(JSON.parse(String(init?.body)).model, 'gpt-4o-mini-tts');
+    return new Response(Buffer.from('mock-mp3'), { headers: { 'content-type': 'audio/mpeg' } });
+  };
+  const url = await synthesize(text);
+  assert.ok(url);
+  await rm(resolve(audioDir, basename(url!)), { force: true });
 });
 test('Deepgram prerecorded request forwards bytes and extracts final text', async () => {
   process.env.DEEPGRAM_API_KEY = 'test-only';

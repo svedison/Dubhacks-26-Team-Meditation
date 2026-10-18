@@ -21,7 +21,8 @@ npm test
 | `PORT` | `8787`，监听 `0.0.0.0` |
 | `ANTHROPIC_API_KEY` | Claude key，仅供后端使用 |
 | `ANTHROPIC_MODEL` | `claude-opus-5-5`，可由部署者更改 |
-| `OPENAI_API_KEY` | 仅用于 TTS，不用于 LLM |
+| `MINIMAX_API_KEY` | TTS 首选。声音 `MINIMAX_VOICE_ID` 默认 `Arrogant_Miss`（嚣张小姐），模型 `MINIMAX_TTS_MODEL` 默认 `speech-02-turbo`，`MINIMAX_TTS_SPEED` 默认 0.9，`MINIMAX_LANGUAGE_BOOST` 默认 English；`MINIMAX_GROUP_ID` 仅旧账号需要 |
+| `OPENAI_API_KEY` | 备用 TTS（没有 MiniMax key 时用），不用于 LLM |
 | `OPENAI_TTS_VOICE` | `sage` |
 | `DEEPGRAM_API_KEY` | Nova-3 流式及整段转写 |
 | `PUBLIC_BASE_URL` | HTTPS 公网地址；空时使用 `http://localhost:PORT` |
@@ -29,7 +30,7 @@ npm test
 
 Claude 每轮最多一次 `messages.stream()` + `finalMessage()`，结构化输出、effort low，不发送 thinking / temperature / budget_tokens / 强制 tool_choice。模型只能选择货架 ID；拒答、截断、非法 JSON、错误商品 ID、网络错误均降级。无自动重试，Claude 和 TTS 各有 4 秒截止，Deepgram 整段转写 5 秒。正常链路以 2 秒为目标，真实延迟需要有 key 的环境实测；这些截止时间不是 2 秒保证。
 
-TTS 直接 fetch OpenAI `/v1/audio/speech`，使用 `gpt-4o-mini-tts`、speed 0.9、MP3。实现依据 [OpenAI 官方 speech 参数文档](https://developers.openai.com/api/reference/resources/audio/subresources/speech/methods/create)。按文本、声音和模型哈希缓存到 `audio/`，通过 `/audio/<hash>.mp3` 提供。
+TTS 首选 MiniMax：fetch `https://api.minimax.io/v1/t2a_v2`，`speech-02-turbo`、声音 `Arrogant_Miss`、speed 0.9、`language_boost: English`、非流式 hex 返回后解码成 MP3。没有 MiniMax key 时退到 OpenAI `gpt-4o-mini-tts`（voice `sage`）。按提供商、模型、声音、速度和文本哈希缓存到 `audio/`，通过 `/audio/<hash>.mp3` 提供。注意：MiniMax 把 Arrogant_Miss 列在普通话声音下，英文由 `language_boost` 带动，演示前请用一句英文实测听感。
 
 ## iPad / HTTPS
 
@@ -59,7 +60,7 @@ voice 在 idle 时需要模糊唤醒名；keyboard 视为主动操作，直接�
 ## curl 验收
 
 ```bash
-PORT=8799 ANTHROPIC_API_KEY= OPENAI_API_KEY= DEEPGRAM_API_KEY= npm start
+PORT=8799 ANTHROPIC_API_KEY= MINIMAX_API_KEY= OPENAI_API_KEY= DEEPGRAM_API_KEY= npm start
 # 另一个终端：
 curl -s localhost:8799/api/products
 curl -s -X POST localhost:8799/api/utterance \
