@@ -182,7 +182,7 @@ voice 在 idle 时需要模糊唤醒名；keyboard 视为主动操作，直接�
 
 二进制 WS 帧直接传 MediaRecorder 的容器音频（如 WebM/Opus、MP4），每个 elder 连接独立连接 Deepgram；关闭连接时清理。裸 PCM 需要补充 Deepgram encoding/sample_rate 参数。仅 final 转写拼接成一句进入对话流程；不处理 interim 为购物请求。整段音频可 POST `/api/audio`，Content-Type 使用 `audio/webm`、`audio/mp4` 或 `application/octet-stream`，最大 10 MB，不使用 multipart。
 
-`POST /debug/clock {now}` 设置 ISO 演示基点，之后叠加真实经过时间。**时钟默认是西雅图当前的墙上时间**（启动和 `/debug/reset` 时取 America/Los_Angeles 的当前时刻，自动分 PDT/PST）：字符串末尾虽然写 Z，数字就是西雅图的钟面，两端照字面显示，D 的 "08:00" 提醒就是早上 8 点，到货日、账本月份都按这个日期算，没有任何地方拿它和真实时刻比。测试用 `DEMO_CLOCK_START=2026-10-17T18:00:00Z` 钉死（`npm test` 里已带）；线上想钉死也可以在 Render 加同名环境变量。**跳表目标按屏幕上的日期算**：到货日 = 下单日 + 5 天，比如周日 10-18 下的单，第四幕要跳到 `2026-10-23T09:00:00Z`（到货）和 `2026-10-24T08:00:00Z`（提醒），不是写死的 10-22 / 10-23。每秒及手动跳时钟均调用同一组 tick handler 并广播 clock。`POST /debug/reset` 复原种子、时钟、对话、待确认订单及音频连接；旧异步回答不再写入新一轮演示。
+`POST /debug/clock {now}` 设置 ISO 演示基点，之后叠加真实经过时间。**时钟默认是西雅图当前的墙上时间**（启动和 `/debug/reset` 时取 America/Los_Angeles 的当前时刻，自动分 PDT/PST）：字符串末尾虽然写 Z，数字就是西雅图的钟面，两端照字面显示，D 的 "08:00" 提醒就是早上 8 点，到货日、账本月份都按这个日期算，没有任何地方拿它和真实时刻比。测试用 `DEMO_CLOCK_START=2026-10-17T18:00:00Z` 钉死（`npm test` 里已带）；线上想钉死也可以在 Render 加同名环境变量。**跳表目标按屏幕上的日期算**：到货日 = 下单日 + 5 天，比如周日 10-18 下的单，第四幕要跳到 `2026-10-23T09:00:00Z`（到货）和 `2026-10-24T08:00:00Z`（提醒），不是写死的 10-22 / 10-23。不想算日期就用**演示遥控页** `https://trusttag.onrender.com/debug/remote?token=口令`（手机、电脑浏览器都行，放在一边）：三个按钮「到货当天 9:00 AM」「下一次吃药提醒」「回到西雅图现在」加一个「重置演示」，到货日取最早一笔没签收的订单，提醒取 Memory 里下一次吃药时间加 5 秒（在 D 的 60 秒应答窗口内），没有 Memory 时取明早 8:00。按钮背后是 `GET /debug/clock?to=delivery|next-reminder|seattle&token=口令`，也可以直接收藏成书签；`GET /debug/clock?now=2026-10-24T08:00:00Z&token=口令` 等同 POST。每秒及手动跳时钟均调用同一组 tick handler 并广播 clock。`POST /debug/reset` 复原种子、时钟、对话、待确认订单及音频连接；旧异步回答不再写入新一轮演示。
 
 ## curl 验收
 

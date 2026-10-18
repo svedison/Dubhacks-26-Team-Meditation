@@ -11,7 +11,7 @@ import { z } from 'zod';
 import { audioDir, serverRoot } from './config.js';
 import { all, get, getSettings, put, remove, resetDatabase, saveSettings } from './db.js';
 import { acknowledgeSpoke, addClient, hasElder, toGuardian } from './bus.js';
-import { now, resetClock, setClock, startClock, stopClock } from './clock.js';
+import { now, resetClock, seattleWallNow, setClock, startClock, stopClock } from './clock.js';
 import { memorySchema, settingsSchema } from './contracts.js';
 import { handleUtterance, pipeline } from './pipeline.js';
 import { state } from './state.js';
@@ -24,6 +24,55 @@ import { FALLBACK_REPLY } from './llm.js';
 const utteranceSchema = z.object({ text: z.string().trim().min(1).max(8_000), source: z.enum(['voice', 'keyboard']).default('keyboard') });
 const idSchema = z.object({ id: z.string().min(1).max(200) });
 const clockSchema = z.object({ now: z.string().datetime({ offset: true }) });
+const jumpSchema = z.object({ now: z.string().datetime({ offset: true }).optional(), to: z.enum(['seattle', 'delivery', 'next-reminder']).optional() });
+/** The demo remote's shortcuts: the dates come from what is on screen, so nobody computes them during the pitch. */
+function jumpTarget(to: 'seattle' | 'delivery' | 'next-reminder'): string | { error: string } {
+  const current = now(), today = current.slice(0, 10);
+  const dayAfter = (date: string, days: number) => { const d = new Date(`${date}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + days); return d.toISOString().slice(0, 10); };
+  if (to === 'seattle') return new Date(seattleWallNow()).toISOString();
+  if (to === 'delivery') {
+    const due = all('orders').filter(o => !o.received && o.status !== 'blocked' && o.deliver_on >= today).map(o => o.deliver_on).sort()[0];
+    return due ? `${due}T09:00:00.000Z` : { error: 'No order is waiting for delivery; place one first.' };
+  }
+  // The next dose on the schedule, 5 s past it (inside D's 60 s window); tomorrow 8:00 when no Memory exists yet.
+  const candidates: string[] = [];
+  for (const memory of all('memories')) {
+    if (memory.paused) continue;
+    for (const days of [0, 1, 2]) {
+      const date = dayAfter(today, days);
+      if (date < memory.start_date || (memory.end_date && date > memory.end_date)) continue;
+      for (const time of memory.times) { const at = `${date}T${time}:00.000Z`; if (at > current) candidates.push(at); }
+    }
+  }
+  const next = candidates.sort()[0] ?? `${dayAfter(today, 1)}T08:00:00.000Z`;
+  return new Date(Date.parse(next) + 5_000).toISOString();
+}
+// A phone-sized page for whoever presents: the demo clock, and one tap per jump. Opened as /debug/remote?token=...
+const REMOTE_PAGE = `<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Milo 演示遥控</title><style>
+body{margin:0;padding:24px;font:18px/1.4 -apple-system,system-ui,sans-serif;background:#111;color:#eee}
+h1{font-size:20px;margin:0 0 4px;color:#bbb}.now{font-size:34px;font-weight:700;margin:0 0 20px;font-variant-numeric:tabular-nums}
+button{display:block;width:100%;padding:20px;margin:12px 0;font-size:22px;border:0;border-radius:14px;background:#2d6cdf;color:#fff}
+button.warn{background:#8a2a2a;margin-top:32px}.msg{min-height:1.5em;color:#9ad}small{color:#888}
+</style></head><body>
+<h1>Milo 演示时钟</h1><p class="now" id="now">…</p>
+<button data-to="delivery">到货当天 9:00 AM</button>
+<button data-to="next-reminder">下一次吃药提醒</button>
+<button data-to="seattle">回到西雅图现在</button>
+<button class="warn" id="reset">重置演示（清数据，时钟回到现在）</button>
+<p class="msg" id="msg"></p>
+<small>按钮等同 GET /debug/clock?to=…；到货日按屏幕上的订单算，提醒按 Memory 的时间算。时钟每 5 秒从 /api/health 刷新。</small>
+<script>
+const token=new URLSearchParams(location.search).get('token')||'';
+const q=p=>p+(p.includes('?')?'&':'?')+'token='+encodeURIComponent(token);
+const nowEl=document.getElementById('now'),msg=document.getElementById('msg');
+const show=iso=>iso?iso.slice(0,16).replace('T','  '):'—';
+async function refresh(){try{const r=await fetch('/api/health');const j=await r.json();nowEl.textContent=show(j.now)+(j.state?'  ·  '+j.state:'')}catch{nowEl.textContent='后端无响应'}}
+async function act(path,method){msg.textContent='…';try{const r=await fetch(q(path),{method});const j=await r.json().catch(()=>({}));msg.textContent=r.ok?(j.now?'已跳到 '+show(j.now):'已重置'):(j.error||('HTTP '+r.status))}catch(e){msg.textContent=String(e)}refresh()}
+for(const b of document.querySelectorAll('button[data-to]'))b.onclick=()=>act('/debug/clock?to='+b.dataset.to,'GET');
+document.getElementById('reset').onclick=()=>{if(confirm('清空订单、对话和时钟，回到演示开始？'))act('/debug/reset','POST')};
+refresh();setInterval(refresh,5000);
+</script></body></html>`;
 const audioQuerySchema = z.object({ seq: z.coerce.number().int().nonnegative().optional(), sr: z.coerce.number().int().positive().default(16000),
   speech: z.coerce.number().int().optional(), end: z.coerce.number().int().optional() });
 // A builds to frontend/dist; when present the backend hosts it so /elder, /guardian, /api and /ws share one origin (iPad needs one HTTPS URL).
@@ -176,6 +225,15 @@ export async function buildServer() {
     }
   });
   app.post('/debug/clock', async request => ({ now: await setClock(clockSchema.parse(request.body).now) }));
+  // The same jump from a browser tab or the remote page: ?now=<ISO> or ?to=delivery|next-reminder|seattle (plus ?token=).
+  app.get('/debug/clock', async (request, reply) => {
+    const query = jumpSchema.parse(request.query ?? {});
+    const target = query.now ?? (query.to ? jumpTarget(query.to) : null);
+    if (!target) return reply.code(400).send({ error: 'Give now=<ISO time> or to=delivery|next-reminder|seattle' });
+    if (typeof target !== 'string') return reply.code(409).send(target);
+    return { now: await setClock(target) };
+  });
+  app.get('/debug/remote', async (_request, reply) => reply.type('text/html; charset=utf-8').send(REMOTE_PAGE));
   // Is the Visa sandbox wired up on this deployment? File names only, the mode, and a live Hello World (no card data).
   app.get('/debug/visa', async () => {
     const files = credentialStatus();
