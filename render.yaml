@@ -2,7 +2,7 @@
 # Dashboard -> New -> Blueprint -> pick this repo. It asks for the three keys and the debug password on first apply.
 services:
   - type: web
-    name: trusttag
+    name: milo # service was renamed in the dashboard; the URL stays https://trusttag.onrender.com (onrender subdomains are fixed at creation)
     runtime: node
     plan: free
     region: oregon
