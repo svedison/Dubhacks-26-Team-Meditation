@@ -130,13 +130,39 @@ curl -s -X POST localhost:8799/api/audio -H 'content-type: audio/webm' --data-bi
 
 没有 elder 客户端发送 spoke 时，连续两句之间可能等待最多 8 秒；这不是模型延迟。smoke 脚本会重置演示数据，验证三件商品、回答字段和 debug 接口，并打印耗时。
 
+## Visa Sandbox（已接入测试账户验证）
+
+`pay()` 可先调用 **Payment Account Validation**，通过后继续模拟下单。验证的是 Visa 门户提供的固定测试卡，不是 Settings 的卡尾号，也不是老人真实的卡；**不是购买授权或扣款**。Order 仍为 `simulated_paid`，前端必须保留 Simulated。没有接入 Intelligent Commerce 或 Token Service。
+
+把以下文件保存在 Git 仓库外的私有目录（目录权限 700，文件 600）：
+
+- `auth.json`：`{"username":"沙盒 API 用户名","password":"沙盒 API Password"}`，不是网页登录密码。
+- `client-cert.pem` / `client-key.pem`：Two-Way SSL 证书及匹配私钥。
+- `mle-key-id.txt`、`mle-server-cert.pem`、`mle-client-cert.pem`、`mle-key.pem`：同一个 MLE Key ID 的证书及客户端私钥。
+- `pav-fixture.json`：仅使用该项目 Test Data 的成功用例。字段为 `primaryAccountNumber`、`cardExpiryDate`（YYYY-MM）、`cardCvv2Value`、`acquiringBin`、`acquirerCountryCode`、`addressVerificationResults`（street/postalCode）、`cardAcceptor`（idCode/terminalId/name/address，address 包含 state/city/zipCode/country）。不要填真实银行卡。选择预期 actionCode 00 或 85、AVS Y、CVV M 的用例。
+
+先运行独立诊断（输出已脱敏）：
+
+```bash
+export VISA_SANDBOX_DIR="$HOME/.config/milo/visa-sandbox"
+npm run visa:check
+```
+
+诊断依次检查 Hello World 和加密 PAV 响应；任一失败返回非零退出码。它不会写订单或扣款。要让本机后端每次确认购买时先运行测试账户验证，在 `server/.env` 设置 `VISA_SANDBOX_PREFLIGHT=1` 和 `VISA_SANDBOX_DIR` 的绝对路径，然后重启后端。默认 0 不调用 Visa。配置错误、超时、HTTP 错误、明文/损坏响应、拒绝或 AVS/CVV 不匹配均中止下单，不写成功订单；失败后需重新发起购买并确认。
+
+请求固定发往 `sandbox.api.visa.com`，使用 mTLS、Basic Auth 和 RSA-OAEP-256/A128GCM MLE。单次网络请求最多 10 秒、响应最多 1 MiB，无自动重试；MLE 时间戳使用真实时间。凭据和测试卡不进入 Order、WS 消息、日志或 Git。`npm test` 强制关闭外部 Visa 调用，失败/重复/重置场景用可控的外部边界替身验证。
+
+凭据只存在这台电脑；部署或队友电脑需要各自安全配置。此改动不会自动启用线上服务。公开演示后端没有用户认证，勿接入真实卡或真实资金。
+
+官方依据：[PAV](https://developer.visa.com/docs/pav)、[MLE](https://developer.visa.com/docs/message-level-encryption)。
+
 ## C / D 接入点
 
 - `src/contracts.ts`：共享对象的 TS 类型和输入校验；不在响应中增加支付 ref 等字段。
 - `src/db.ts`：六张表均为 `(id TEXT PRIMARY KEY, data TEXT JSON)`。`get(table,id)` / `all(table)` / `put(table,id,value)` / `remove(table,id)`；`transaction(fn)` 只用于同步、非嵌套操作。Settings 存在 `settings/default`，自由 KV 存状态或去重标记。`sqlite` 也可直接访问。
 - C：`modules/risk.ts` 提供 `check(product_id,text)`、`pay(order)`、`ledger()` 和 `publishOrder()`；`modules/orders.ts` 的 `placeOrder(draft,isCurrent?)` 是成功订单的唯一写入点。当前支付始终 simulated_paid，Order 和私有 `kv/payment:<order id>` 在同一事务写入，随后按分享层级推送；同一 ID 同一支付意图的重试复用结果，不同意图拒绝。check 无副作用，可在确认前后重复执行；规则 7 的创建仍在 pipeline 调 D 的 createAlert，避免双重告警。普通 `today` 不触发，礼品卡、转账、来电及「今天必须」类紧迫话术才触发。付款前校验商品、价格、订单格式和资格。
 - D：`modules/memory.ts` 导出 `createAlert(level,rule,title,body)`、`saveGrandmaNote()`、`markReceived()`、`registerMemoryTicks()` 和 `shelfSeed`。红立即推，普通立即推，黄色暂只存库。库存只更新已有 Memory，不擅自建立吃法。`src/seed.ts` 集中放种子，D 可扩展货架。
-- D：在已注册的 tick 占位回调中实现到货/提醒；`onTick((prevNow,now)=>...)` 返回注销函数。用 `kv` 持久化已触发日期，处理前跳和回拨，避免重复提醒。交互通过 `bus.toElder({type:'ask',...})`、`state`、`awaitSpoke()`；在 `pipeline.ts` 模型判断前接入待回答的 received/dose/reminder 流程。**当前没有实现自动到货、提醒、八条异常规则和 Visa 沙盒，这些仍归 C/D。**
+- D：在已注册的 tick 占位回调中实现到货/提醒；`onTick((prevNow,now)=>...)` 返回注销函数。用 `kv` 持久化已触发日期，处理前跳和回拨，避免重复提醒。交互通过 `bus.toElder({type:'ask',...})`、`state`、`awaitSpoke()`；在 `pipeline.ts` 模型判断前接入待回答的 received/dose/reminder 流程。Visa 沙盒账户验证见上节；D 的能力以当前 Memory 模块实现为准。
 
 所有演示业务时间使用 `clock.now()`；20 秒交互窗口、播放超时、API 超时使用真实计时器。此版本为单个奶奶的共享对话，同一进程串行处理输入，不是多租户系统。
 

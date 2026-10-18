@@ -3,3 +3,8 @@ node_modules
 *.db
 *.db-journal
 audio/*.mp3
+*.pem
+*.key
+auth.json
+pav-fixture.json
+mle-key-id.txt
