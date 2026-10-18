@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import ProductCard from '../shared/ui/ProductCard'
-import { dayLabel, money } from '../shared/format'
+import { dayLabel, money, shortDay } from '../shared/format'
 import { useGuardian } from './store'
 
 const LEVEL_TEXT = {
@@ -46,7 +46,8 @@ export default function LedgerPage() {
               {products[o.product_id] && <ProductCard product={products[o.product_id]} size="compact" />}
               <div className="g-order__meta">
                 <span className={`g-pill g-pill--${o.status}`}>{STATUS_TEXT[o.status]}</span>
-                <span>{o.status === 'blocked' ? o.block_reason : o.received ? 'Received' : `Arrives ${dayLabel(o.deliver_on)}`}</span>
+                {/* 每一单前面写下单那天，两单同一个东西也分得清 */}
+                <span>{shortDay(o.created_at)} · {o.status === 'blocked' ? o.block_reason : o.received ? 'Received' : `Arrives ${dayLabel(o.deliver_on)}`}</span>
               </div>
             </li>
           ))}

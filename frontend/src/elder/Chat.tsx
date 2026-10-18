@@ -85,8 +85,8 @@ function HeadlineThenRest({ text, width, height }: { text: string; width: number
 }
 
 export default function Chat({ lines, width, height, headline }: Props) {
-  // 她的话永远在上面一行、Milo 的字幕在下面：位置固定，不会一会儿在上一会儿在下
-  const shown = visible(lines).sort((a, b) => (a.role === b.role ? 0 : a.role === 'grandma' ? -1 : 1))
+  // 按说话的先后从上往下排：她先开口的在上面，Milo 先问的在上面、她的回答在下面
+  const shown = visible(lines)
   // 上面还有奶奶那一句时，给它留出约两行的高度
   const room = shown.length > 1 ? height - 110 : height
   return (

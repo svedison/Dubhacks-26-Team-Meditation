@@ -34,7 +34,8 @@ function Pages() {
         key={location.pathname}
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, transition: { duration: 0.1 } }}
+        // 旧页面直接让位、新页面淡入，切标签时中间不闪一下空白
+        exit={{ opacity: 0, transition: { duration: 0 } }}
         transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
       >
         <Routes location={location}>
@@ -87,7 +88,8 @@ function HomePage() {
     <section className="g-page g-home">
       <FrameNow photo={settings?.photos[0] ?? SAMPLE_PHOTOS[0]} worried={red.length > 0} />
       <div className="g-home__main">
-      <h1 className="g-h1">{red.length ? `Call ${name} today` : yellow ? 'Take a look' : 'All good'}</h1>
+      {/* 有红卡：叫你打电话；有别的卡（黄卡或普通提醒）：Take a look；什么都没有才是 All good */}
+      <h1 className="g-h1">{red.length ? `Call ${name} today` : open.length ? 'Take a look' : 'All good'}</h1>
       {/* 只有普通卡（比如提醒设好了）时不说「没有要你管的」，免得和下面那张卡对不上 */}
       {(red.length > 0 || yellow || open.length === 0) && (
         <p className="g-lede">{red.length || yellow ? 'Milo noticed something.' : 'Nothing needs you right now.'}</p>

@@ -33,9 +33,9 @@
 .g-top__eyes { align-items: center; min-height: 31px; }
 .g-top__eyes i { width: 11px; height: 3px; border-radius: 999px; background: #fff1dc; animation: g-frame-breathe 4s ease-in-out infinite; transition: height 300ms ease, width 300ms ease; }
 .g-top__right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; min-width: 0; }
-.g-top__clock { font-size: 15px; font-weight: 700; color: var(--g-sub); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.g-live { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 600; color: var(--g-sub); white-space: nowrap; }
-.g-live::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--g-ok); }
+.g-top__clock { font-size: 16px; font-weight: 700; color: var(--g-sub); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.g-live { display: inline-flex; align-items: center; gap: 6px; font-size: 17px; font-weight: 600; color: var(--g-sub); white-space: nowrap; }
+.g-live::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--g-ok); }
 .g-live--down::before, .g-live--connecting::before { background: #c9a14a; }
 
 .g-main { max-width: 640px; margin: 0 auto; }
@@ -239,8 +239,9 @@
 /* 有红色警报时相框收成一条矮条：手机一屏里要同时看得到标题、红卡和 Call 按钮 */
 .g-frame.is-worried { height: 88px; }
 .g-frame.is-worried::after { background: radial-gradient(ellipse 60% 70% at 50% 45%, rgba(110, 34, 36, 0.55), rgba(66, 20, 22, 0.85)); }
-.g-frame__eyes { position: absolute; z-index: 1; left: 50%; top: 50%; translate: -50% -50%; display: flex; gap: 26px; }
-.g-frame__eyes i { width: 38px; height: 6px; border-radius: 999px; background: #fff1dc; box-shadow: 0 0 14px rgba(255, 241, 220, 0.45); animation: g-frame-breathe 4s ease-in-out infinite; transition: height 400ms cubic-bezier(0.43, 0.195, 0.02, 1), width 400ms cubic-bezier(0.43, 0.195, 0.02, 1); }
+/* 相框上的眼睛：后面垫一团暗色，眼睛带暖白光晕，一眼看出是 Milo 的眼睛，不像轮播的小圆点 */
+.g-frame__eyes { position: absolute; z-index: 1; left: 50%; top: 50%; translate: -50% -50%; display: flex; align-items: center; gap: 24px; padding: 22px 30px; border-radius: 50%; background: radial-gradient(closest-side, rgba(20, 14, 10, 0.6), rgba(20, 14, 10, 0)); }
+.g-frame__eyes i { width: 34px; height: 8px; border-radius: 999px; background: #fff1dc; box-shadow: 0 0 12px rgba(255, 241, 220, 0.85), 0 0 26px rgba(255, 210, 150, 0.45); animation: g-frame-breathe 4s ease-in-out infinite; transition: height 400ms cubic-bezier(0.43, 0.195, 0.02, 1), width 400ms cubic-bezier(0.43, 0.195, 0.02, 1); }
 .g-frame.is-worried .g-frame__eyes i { width: 26px; height: 30px; border-radius: 50%; animation: none; clip-path: polygon(0 34%, 100% 8%, 100% 100%, 0 100%); }
 .g-frame.is-worried .g-frame__eyes i + i { clip-path: polygon(0 8%, 100% 34%, 100% 100%, 0 100%); }
 @keyframes g-frame-breathe { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
@@ -257,3 +258,13 @@
 .g-week--enter { animation: g-fade-in 250ms ease 250ms both; }
 @keyframes g-fade-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .g-week--enter { animation: none; } }
+
+/* 电脑上用鼠标时的悬停：标签、描边按钮、Call 都有反应 */
+@media (hover: hover) {
+  .g-tab:not(.is-active):hover { background: #efe6d8; }
+  .g-icon-btn:hover, .g-week__btn:hover { background: #f5eee4; }
+  .btn { transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease; }
+  .btn--ghost:hover { background: rgba(255, 255, 255, 0.08); transform: translateY(-1px); }
+  .acard:not(.acard--red) .btn--ghost:hover { background: #f3ece2; }
+  .btn--call:hover { transform: translateY(-1px); box-shadow: 0 4px 0 #d8c3a2; }
+}

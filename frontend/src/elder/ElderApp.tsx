@@ -239,7 +239,7 @@ function ElderLive({ mic, player }: { mic: MicStream; player: Player }) {
         <PhotoFrame photos={photos} paused={showFace} day={view.clock ? dayKey(view.clock) : null} />
       </motion.div>
       {/* 警报：深酒红，中间亮四周暗。整屏红只留给诈骗；有替代品的假药只把风险卡压红 */}
-      <motion.div className="layer alert-wash" initial={false} animate={{ opacity: face === 'alert' && !pair ? 0.9 : 0 }} transition={{ duration: 0.8, ease: [0.43, 0.195, 0.02, 1] }} />
+      <motion.div className="layer alert-wash" initial={false} animate={{ opacity: face === 'alert' && !pair ? 1 : 0 }} transition={{ duration: 0.8, ease: [0.43, 0.195, 0.02, 1] }} />
       <div className="mat" aria-hidden />
 
       <AnimatePresence>

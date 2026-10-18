@@ -38,9 +38,10 @@ export default function MemoryPage() {
               </dl>
               {/* 最近 7 天：吃了是实心，没吃或说晚点是空心圈，还没有记录是浅灰；开始吃之前的日子是虚线圈，今天外面加一圈 */}
               <ol className="g-mem__week" aria-label="Last 7 days">
-                {week.map((d) => {
+                {/* 只从开始吃的那天画起，免得开始前的日子看起来像漏吃 */}
+                {week.filter((d) => d.key >= m.start_date).map((d) => {
                   const answers = m.log.filter((l) => dayKey(l.at) === d.key).map((l) => l.answer)
-                  const cls = answers.includes('taken') ? 'is-taken' : answers.length ? 'is-missed' : d.key < m.start_date ? 'is-before' : ''
+                  const cls = answers.includes('taken') ? 'is-taken' : answers.length ? 'is-missed' : ''
                   return (
                     <li key={d.key} className={cls} aria-label={`${d.key}: ${cls ? (cls === 'is-taken' ? ANSWER_TEXT.taken : ANSWER_TEXT[answers.at(-1)!]) : 'no record'}`}>
                       <i aria-hidden />
