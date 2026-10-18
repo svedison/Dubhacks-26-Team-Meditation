@@ -43,7 +43,7 @@ export default function MemoryPage() {
               </div>
               <dl className="g-mem__facts">
                 <div><dt>Since</dt><dd>{shortDay(m.start_date)}</dd></div>
-                <div><dt>Left</dt><dd>{days} days</dd></div>
+                <div><dt>Left</dt><dd>{days} {days === 1 ? 'day' : 'days'}</dd></div>
                 <div><dt>Last dose</dt><dd>{m.log.length ? ANSWER_TEXT[m.log.at(-1)!.answer] : 'Not yet'}</dd></div>
               </dl>
               {/* 最近 7 天：吃了是实心，没吃或说晚点是空心圈，还没有记录是浅灰；开始吃之前的日子是虚线圈，今天外面加一圈 */}

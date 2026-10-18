@@ -95,6 +95,18 @@ curl -X POST localhost:8787/api/utterance -H 'content-type: application/json' -d
 - **等她说完**：`/api/audio` 的 `speech=1` 块每 0.25 秒一来就说明奶奶还在说话。第一段文本到了但麦克风还在送 `speech=1`，先不问 Claude（状态留在 listening），等 `end=1` 和 Deepgram 的下一段文本到了再合并；Claude 已经答了但她在这期间又开口，同样等她说完让后半句接管。最多等 6 秒。她没在说话时这一步零延迟。
 - 单元测试在 `test/recovery.test.ts`；本地用 `ANTHROPIC_API_KEY=` 置空也能跑。
 
+## 数量：按她说的买，超过平常先问原因（2026-10-18）
+
+- "I want three boxes of tissues" 就买三盒：Claude 的结构化输出多了 `quantity`，本地 `src/quantity.ts` 再兜底解析（"three boxes"、"2 packs"、"a couple of"；"2% milk"、"600 mg"、"100 tablets"、"a dozen eggs" 这类规格不算数量）。报价 *"Three packs of X come to $26.97; would you like me to order them?"*，卡片显示总价和 "3 × 单价"，订单带 `quantity`，`price_cents` 是总价，账本行显示 "× 3"，到货时 D 按包数加库存。
+- **超过平常的量**先问原因：保健品和非处方药超过 2 包、日用食品超过 6 包，Milo 用 worried 脸说 *"Six packs of X is more than usual. Is there a reason you need that many?"*，这时不下单。她的下一句按这样分流：
+  - 说了原因 → 收下原因，按上限封顶（保健品和药最多 3 包，日用最多 12 包）：*"Thank you. I can order up to three at a time, so let's make it three: $54.00. Shall I order them?"*；她说 yes 才下单，下单后女儿收一张普通卡 "A bigger order than usual"，正文带数量、金额和她的原话（是知会，不是审批）。
+  - 说 "no / no reason / I'm not sure" → 从一包开始：*"Then let's start with one… I'll remind you when it runs low. Shall I order it?"*
+  - 换了个数字（"make it two"）→ 按新数量重新报价（仍超平常会再问一次）。
+  - "never mind / cancel" → 不买。
+  - 只说 "yes" → 追问 *"Could you tell me why you need that many?"*
+  - 原因里有诈骗特征（"someone called and said I must buy them today"）→ 走防诈骗流程，红脸红卡，不下单。
+- 测试在 `test/quantity.test.ts`。
+
 ## 货架之外的东西：Milo 去找，不让她去问女儿（2026-10-18）
 
 - 以前货架上没有的东西一律红脸说 "I can only order from our trusted shelf"。现在是 happy 脸说 *"I don't have that on my shelf yet. Let me find a trusted one for you; I'll have it ready by tomorrow."*，女儿手机上多一张普通卡（标题 "A new wish"，正文带她的原话），是心愿记录不是审批。原则：自由是默认，家人只在风险（诈骗、召回、异常花费）时介入，"没见过"不是风险。

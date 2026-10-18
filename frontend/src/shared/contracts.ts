@@ -25,6 +25,7 @@ export type Order = {
   created_at: string
   deliver_on: string
   received: boolean
+  quantity?: number // 这一单几包，没有就是 1；price_cents 是总价
   // 下单前 Visa 沙盒账户校验的脱敏结果（见 shared-contracts.md）；后端没开校验时没有这个字段
   payment_check?: { provider: 'visa_pav'; environment: 'sandbox'; approved: boolean; action_code: string | null; checked_at: string; note: string | null } | null
 }
@@ -78,7 +79,7 @@ export type ElderEvent =
   | { type: 'state'; state: FaceState }
   | { type: 'transcript'; role: 'grandma' | 'ai'; text: string }
   | { type: 'speak'; text: string; audio_url: string | null }
-  | { type: 'card'; product: Product; alternative?: Product }
+  | { type: 'card'; product: Product; alternative?: Product; quantity?: number }
   | ({ type: 'order' } & Order)
   | { type: 'clock'; now: string }
   | { type: 'ask'; text: string; audio_url: string | null; kind: 'received' | 'dose_confirm' | 'reminder' }

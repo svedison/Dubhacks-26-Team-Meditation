@@ -5,8 +5,8 @@ export type Line = { id: number; role: 'grandma' | 'ai'; text: string; ask?: boo
 
 // answered：卡片出来以后她开过口（用来判断换话题时该不该收卡）。盖章只认后端的 order 事件：报价、拒单（"Okay, I won't
 // order it"）都是开心脸，开心脸本身不代表下单成功；paid 和 simulated_paid 都盖 Ordered 章，下面滑出 Visa 支付条。
-// visaChecked：这一单下单前 Visa 沙盒校验过这张卡（order 带 payment_check 且 approved）
-export type CardView = { product: Product; alternative?: Product; done: boolean; answered: boolean; orderStatus?: Order['status']; visaChecked?: boolean }
+// visaChecked：这一单下单前 Visa 沙盒校验过这张卡（order 带 payment_check 且 approved）；quantity：她要的包数（card 事件带来）
+export type CardView = { product: Product; alternative?: Product; done: boolean; answered: boolean; orderStatus?: Order['status']; visaChecked?: boolean; quantity?: number }
 
 export type ElderView = {
   face: FaceState
@@ -71,13 +71,13 @@ export function elderReducer(v: ElderView, e: ElderEvent | { type: 'socket_down'
       // 设备主动开口是新话题：已经下过单的卡片收起来
       return addLine(v.card?.done ? { ...v, card: null, heardWhileIdle: null } : { ...v, heardWhileIdle: null }, 'ai', e.text, true)
     case 'card':
-      return { ...v, awake: true, conversing: true, cardThisTurn: true, card: { product: e.product, alternative: e.alternative, done: false, answered: false } }
+      return { ...v, awake: true, conversing: true, cardThisTurn: true, card: { product: e.product, alternative: e.alternative, done: false, answered: false, quantity: e.quantity } }
     case 'order': {
       // 后端只在明确确认且下单成功后发 order：这才是盖章的依据
       if (!v.card || (e.status !== 'paid' && e.status !== 'simulated_paid')) return v
       const product = v.card.alternative?.id === e.product_id ? v.card.alternative
         : v.card.product.id === e.product_id ? v.card.product : null
-      return product ? { ...v, card: { product, done: true, answered: true, orderStatus: e.status, visaChecked: e.payment_check?.approved === true } } : v
+      return product ? { ...v, card: { product, done: true, answered: true, orderStatus: e.status, visaChecked: e.payment_check?.approved === true, quantity: e.quantity ?? v.card.quantity } } : v
     }
     case 'clock':
       return { ...v, clock: e.now }

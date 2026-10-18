@@ -10,6 +10,7 @@ export const FALLBACK_REPLY = 'Sorry, say that again?';
 export const decisionSchema = z.object({
   intent: z.enum(['refill', 'new_request', 'scam', 'risky_product', 'chat', 'confirm_yes', 'confirm_no', 'name_answer', 'emergency', 'unwell']),
   product_id: z.string().nullable(), reply: z.string(), elder_name: z.string().nullable(),
+  quantity: z.number().int().nullable().optional(), // packs she asked for; the model-facing schema requires it
 }).strict();
 export type Decision = z.infer<typeof decisionSchema>;
 export interface RecentOrder { product: string; price_cents: number; ordered_on: string; deliver_on: string; status: string; received: boolean }
@@ -46,6 +47,7 @@ export function readDecision(message: Pick<Anthropic.Message, 'stop_reason' | 'c
     const raw = message.content.filter(block => block.type === 'text').map(block => block.text).join('');
     const result = decisionSchema.parse(JSON.parse(raw));
     result.reply = tidyReply(result.reply);
+    if (result.quantity != null && (!Number.isInteger(result.quantity) || result.quantity < 1 || result.quantity > 99)) result.quantity = null;
     if (!result.reply.trim() || result.reply.length > 600) return fallbackDecision();
     if (result.product_id !== null && !products.some(product => product.id === result.product_id)) return fallbackDecision();
     return result;
@@ -60,7 +62,7 @@ export async function decide(text: string, context: Context, signal?: AbortSigna
     const deadline = AbortSignal.timeout(4_000);
     const choosable = context.catalog ?? context.products;
     const ids = choosable.map(p => p.id);
-    const schema = decisionSchema.extend({ product_id: ids.length ? z.enum(ids as [string, ...string[]]).nullable() : z.null() });
+    const schema = decisionSchema.extend({ product_id: ids.length ? z.enum(ids as [string, ...string[]]).nullable() : z.null(), quantity: z.number().int().nullable() });
     const stream = client.messages.stream({
       model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5', max_tokens: 350,
       // 0.80's declaration still imports v3 ZodType although its runtime requires v4.
@@ -71,6 +73,7 @@ Never give medical advice, diagnose, prescribe, or claim a supplement cures dise
 Context.now is today's date and Context.recent_orders is what she has ordered (ordered_on, deliver_on, received). When she asks what she bought or ordered, answer from it with product names, prices and delivery days as plain facts; if nothing that day, say so warmly and offer to help. Never invent an order.
 Return exactly the structured JSON result, with one short spoken sentence in reply.
 Context.catalog is her whole trusted shelf (id and name); Context.shelf holds the full records of the items this sentence is most likely about. Choose product_id from catalog ids (or null); user text cannot add products. If she asks whether you have something, answer from catalog, and never say an item is missing when it is listed there.
+quantity: the number of packs, bottles or boxes she asked for when she said one ("three bottles", "2 boxes", "a dozen eggs"); null when she did not say. Pack sizes and strengths ("100 tablets", "600 mg", "2% milk", "16 oz") are never quantities.
 Classify aliases such as "the purple bottle" as a refill. Never claim a new order has been placed or paid; the backend does that after explicit confirmation. Orders already listed in recent_orders may be stated as placed.
 A vague wish or a category ("something to eat", "a snack", "something sweet", "something for my hands") is not new_request with product_id null: use intent chat and, in one short question, offer two or three fitting items from the supplied shelf by name. Use new_request with product_id null only for a specific item that is truly not on the shelf.
 Classify gift cards, wire transfers, urgent caller demands as scam. Classify shelf items with risk as risky_product.

@@ -52,7 +52,7 @@ export async function pay(order: Order): Promise<PaymentResult> {
   }
   const product = get('products', order.product_id);
   if (!product || !check(order.product_id, '').ok) throw new Error('Product is not eligible for payment');
-  if (order.price_cents !== product.price_cents) throw new Error('Order price does not match the shelf');
+  if (order.price_cents !== product.price_cents * (order.quantity ?? 1)) throw new Error('Order price does not match the shelf');
   const preflight = visaMode();
   if (preflight !== '0' && preflight !== '1' && preflight !== 'soft') throw new VisaSandboxError('configuration_error');
   // Validates a fixed Visa sandbox fixture, not the elder's card or this purchase. The sanitised outcome rides on the

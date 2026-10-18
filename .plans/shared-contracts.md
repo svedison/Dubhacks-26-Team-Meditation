@@ -69,6 +69,8 @@
 | `order` | Order 对象 | 仅明确确认且下单成功后发给老人端；匹配商品后盖 **Ordered** 章。开心表情不代表下单成功。Order 可带可选的 `payment_check`（见下），有且 `approved` 时老人端加一行 "Card checked with Visa"。老人端不显示 "Simulated"：状态仍是 `simulated_paid`，监护人端 Money 页底部一次性注明 "Demo: Visa sandbox, no real charge"。监护人端仍沿用分享过滤规则 |
 | `clock` | `{now}` | 角上更新演示时钟 |
 
+`quantity`（Order 和 `card` 事件的可选字段，2026-10-18）：这一单几包，缺省为 1；Order 的 `price_cents` 是总价。老人端卡片在 quantity > 1 时显示总价和 "n × 单价"，监护人端账本行显示 "× n"。
+
 `payment_check`（Order 的可选字段，2026-10-18）：`{provider: "visa_pav", environment: "sandbox", approved: boolean, action_code: string|null, checked_at: ISO 时间, note: string|null}`。是下单前对 Visa 沙盒 Payment Account Validation 的脱敏结果：只说卡校验通过（action code 00/85）或没能校验（note 是原因码），不含卡号、授权码或原始响应。后端 `VISA_SANDBOX_PREFLIGHT=1` 严格模式校验失败不下单；`soft` 演示模式 3 秒内没结果照常模拟下单并带 `approved: false`；`0` 不调用、字段缺省。
 | `ask` | `{text, audio_url, kind: "received|dose_confirm|reminder"}` | Memory 主动开口，等奶奶回答 |
 
